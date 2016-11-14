@@ -1,0 +1,11 @@
+Package: checkr
+Type: Package
+Title: Facilities for checking a character string containing R code.
+Version: 0.1.0
+Author: Daniel Kaplan
+Maintainer: Daniel Kaplan <kaplan@macalester.edu>
+Description: Interogates R code
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1

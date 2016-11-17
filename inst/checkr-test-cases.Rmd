@@ -1,0 +1,37 @@
+---
+title: "Checking checking"
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(tutor)
+library(ggplot2)
+
+# A simple checker function
+
+knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
+```
+
+
+Fill in the code to create this plot:
+
+```{r, echo = FALSE, out.width = "30%"}
+ggplot(mtcars, aes(x = hp, y = mpg)) + 
+  geom_point()
+```
+
+```{r, mtcarplot, exercise=TRUE}
+# I have filled in the blanks so I can check the checker function
+# easily, with just a "Run Code" button push
+p <- ggplot(mtcars, aes( x = hp , y = mpg )) + geom_point()
+p
+```
+
+```{r mtcarplot-solution}
+3 + 2
+```
+
+```{r mtcarplot-check}
+"This is from the check chunk"
+```

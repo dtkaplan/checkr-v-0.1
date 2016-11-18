@@ -7,7 +7,7 @@ first such line is reported.}
 \usage{
 find_content(where = c("returns", "names", "statements", "commands"), what,
   mode = c("class", "number", "match", "regex"),
-  message = "Test writer: give a meaningful fail message")
+  message = "Test writer: give a meaningful fail message", wrong = FALSE)
 }
 \arguments{
 \item{where}{character string specifying whether to look at names of objects
@@ -20,6 +20,10 @@ expressions as expressions.}
 that we're looking for}
 
 \item{mode}{what kind of thing to search for.}
+
+\item{wrong}{mistake to indicate that, to pass,
+the pattern should not be found. Can be used to check for common
+mistakes.}
 }
 \value{
 A list with 3 elements: \code{found} indicating TRUE/FALSE whether the

@@ -9,6 +9,9 @@
 #' @param what character string, regex, class name, number range, or name assigned
 #' that we're looking for
 #' @param mode what kind of thing to search for.
+#' @param wrong mistake to indicate that, to pass,
+#' the pattern should not be found. Can be used to check for common
+#' mistakes.
 #'
 #' @return A list with 3 elements: \code{found} indicating TRUE/FALSE whether the
 #' item was found; \code{line} the line number where the item was found; \code{code}
@@ -16,7 +19,8 @@
 #' @export
 find_content <- function(where = c("returns", "names", "statements", "commands"),
                          what, mode = c("class", "number", "match", "regex"),
-                         message = "Test writer: give a meaningful fail message") {
+                         message = "Test writer: give a meaningful fail message",
+                         wrong = FALSE) {
   # search among the results for a match
   where <- match.arg(where)
   mode <- match.arg(mode)
@@ -28,6 +32,9 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   )
   if (mode == "number" && ! (length(what) == 2 || is.numeric(what)) )
     stop("Specify a range of 2 numbers.")
+  success <- !wrong
+  success_message <- ifelse(wrong, message, "")
+  fail_message <- ifelse(wrong, "", message)
   f <- function(code) {
     if ("code" %in% names(code)) {
       # just give the code element produced by the previous step
@@ -38,55 +45,70 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
       content <- pre_process(results[[k]])
       if (mode == "class") {
         if (inherits(content, what))
-          return(list(found = TRUE, line = k, code = code, message = ""))
+          return(list(found = success, line = k, code = code, message = success_message))
 
       } else if (mode %in% c("match", "regex") ) {
         if (any(grepl(what, content, fixed = mode == "match")))
-          return(list(found = TRUE, line = k, code = code, message = ""))
+          return(list(found = success, line = k, code = code, message = success_message))
       } else if (mode == "number") {
         if (is.numeric(content) &&
             content >= min(what) &&
             content <= max(what))
-          return(list(found = TRUE, line = k, code, message = ""))
+          return(list(found = success, line = k, code, message = success_message))
       } else if (mode == "names") {
         if (any(grepl(what, content, fixed = mode == "match")))
-          return(list(found = TRUE, line = k, code = code, message = "" ))
+          return(list(found = success, line = k, code = code, message = success_message ))
       }
     }
-    return(list(found = FALSE, line = NA, code = code,
-                message = message))
+    return(list(found = ! success, line = NA, code = code,
+                message = fail_message))
   }
 
   f # return the function created
 }
 #' @export
-in_returns <- function(what, mode, message) {
+in_returns <- function(what, mode, message, wrong = FALSE) {
   mode <- as.character(substitute(mode))
   find_content(where = "returns",
-               what = what, mode = mode, message = message)
+               what = what, mode = mode, message = message, wrong = wrong)
 }
 #' @export
-in_names <- function(what, mode, message) {
+in_names <- function(what, mode, message, wrong = FALSE) {
   mode <- as.character(substitute(mode))
   find_content(where = "names",
-               what = what, mode = mode, message = message)
+               what = what, mode = mode, message = message, wrong = wrong)
 }
 #' @export
-in_statements <- function(what, mode, message){
+in_statements <- function(what, mode, message, wrong = FALSE){
   mode <- as.character(substitute(mode))
   find_content(where = "statements",
-               what = what, mode = mode, message = message)
+               what = what, mode = mode, message = message, wrong = wrong)
+}
+
+# a functional form for testing functions and arguments
+# with this, you can set up the test beforehand and pass the code to it later.
+
+#' @export
+fun_test <- function(call_text, message = "get a real message", mistake = FALSE) {
+  f <- function(code) {
+    find_function(code, call_text, message = message, mistake = mistake)
+  }
+
+  f
 }
 
 # call_text -- string containing what the call should
 # look like, e.g. "2 + 2". Use NULL for any arguments for which
 # a place is needed but for which you don't care what the value is.
+# "success" means that the pattern was found
 #
 #' @export
-find_function <- function(call_text, code, message = "get a real message") {
+find_function <- function(code, call_text, message = "get a real message", mistake = FALSE) {
   expanded <- as.list(parse(text = call_text)[[1]])
   the_fun <- expanded[[1]]
-
+  success_value <- ! mistake
+  success_message <- ifelse(mistake, message, "")
+  fail_message <- ifelse(mistake, "", message)
   result <- list()
   valid_lines <- numeric(0)
   for (k in code$valid_lines) {
@@ -95,13 +117,14 @@ find_function <- function(call_text, code, message = "get a real message") {
     for (j in inds) {
       result <- match_the_arguments(all_calls$args[[j]], expanded)
       if(result)
-        return(list(found = TRUE, line = k, code = code, message = "" ))
+        return(list(found = success_value, line = k, code = code, message = success_message ))
     }
   }
 
-  return(list(found = FALSE, line = NA, code = code, message = message))
+  return(list(found = ! success_value, line = NA, code = code, message = fail_message))
 }
 
+# THIS DOESN'T NEED TO BE EXPORTED
 #' @export
 match_the_arguments <- function(actual, desired) {
   # does the function itself match (it should if we got this far)
@@ -129,7 +152,7 @@ match_the_arguments <- function(actual, desired) {
     found_it <- FALSE
     for (j in 1:length(actual)) {
 
-      if (already_matched[j]) next
+      if (already_matched[j] || found_it) next
 
       if ( (! is.null(desired[[k]])) && (desired[[k]] == actual[[j]])) {
         found_it <- TRUE
@@ -146,7 +169,6 @@ match_the_arguments <- function(actual, desired) {
 # Get a list of the functions and the arguments on
 # a specified line of the expressions
 
-#' @export
 get_functions_in_line <- function(code, line) {
   EX <- code$expressions[[line]]
   res <- list(fun_names = setdiff(all.names(EX), all.vars(EX)))

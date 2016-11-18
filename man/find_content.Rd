@@ -7,7 +7,7 @@ first such line is reported.}
 \usage{
 find_content(where = c("returns", "names", "statements", "commands"), what,
   mode = c("class", "number", "match", "regex"),
-  message = "Test writer: give a meaningful fail message", wrong = FALSE)
+  message = "Test writer: give a meaningful fail message", mistake = FALSE)
 }
 \arguments{
 \item{where}{character string specifying whether to look at names of objects
@@ -21,13 +21,13 @@ that we're looking for}
 
 \item{mode}{what kind of thing to search for.}
 
-\item{wrong}{mistake to indicate that, to pass,
+\item{mistake}{to indicate that, to pass,
 the pattern should not be found. Can be used to check for common
 mistakes.}
 }
 \value{
-A list with 3 elements: \code{found} indicating TRUE/FALSE whether the
-item was found; \code{line} the line number where the item was found; \code{code}
+A list with 3 elements: \code{passed} indicating TRUE/FALSE whether the
+test was passed; \code{line} the line number where the item was found; \code{code}
 the same as the input.
 }
 \description{

@@ -48,5 +48,8 @@ capture.code <- function(code_text = NULL) {
        names = environments,
        statements = lapply(statements, FUN = as.character),
        expressions = commands,
-       valid_lines = 1:length(R))
+       valid_lines = 1:length(R),
+       passed = TRUE,
+       line = 0,
+       message = "")
 }

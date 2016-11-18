@@ -42,24 +42,26 @@ example_1 <- capture.code(
 test_that("Looking for functions and arguments works", {
   one <- example_1 %>%
     find_function("lm(mpg ~ hp, data = mtcars)", "Wrong model formula in lm()")
-  expect_true(one$found)
+  expect_true(one$passed)
   one <- example_1 %>%
     find_function("lm(data = mtcars)", "Use mtcars as data in lm()")
-  expect_true(one$found)
+  expect_true(one$passed)
   one <- example_1 %>%
     find_function("lm(data = CPS85)", "Use CPS85 as data in lm()")
-  expect_false(one$found)
+  expect_false(one$passed)
 
   one <- example_1 %>%
     find_function("lm(hp ~ mpg)", "check your formula.")
-  expect_false(one$found)
+  expect_false(one$passed)
 
   })
 
 test_that("Looking for mistakes works", {
-  one <- example_1 %>%
-    find_function("lm(hp ~ mpg)", mistake = TRUE, "Check your response variable.")
-  expect_false(one$found)
-
+  test_1 <- fun_test("lm(hp ~ mpg)", mistake = TRUE, "Check your reponse variable.")
+  one <- example_1 %>% test_1
+  expect_true(one$passed)
+  test_2 <- fun_test("lm(mpg ~ hp)", mistake = TRUE, "Well, ... not really a mistake, but just for testing purposes.")
+  two <- example_1 %>% test_2
+  expect_false(two$passed)
   })
 

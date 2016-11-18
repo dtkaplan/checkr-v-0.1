@@ -4,33 +4,27 @@
 #' previous expression's environment as the parent. That way, you can examine
 #' what's changed after each statement.
 #'
-#' searching for objects in the last environment will move as needed to the
+#' Searching for objects in the last environment will move as needed to the
 #' parent environments, and so will give the most recent value of each object.
 #'
-#' @param dot_R_file the name of the file containing the code as text
-#' @param example the name of the example to run (this is just for testing and should
-#' be replaced by a \code{text = } argument for production), which is an alternative
-#' to \code{dot_R_file}.
+#' @param code_text the commands being evaluated as pure text
 #' @return a list containing 1) the \code{results} of each command (which might not have been
 #' saved in an object in the statement itself), 2) a list \code{envlist}
 #' holding the environments created for each command, 3) the statements themselves as
 #' character strings, one string for each command regardless of how many lines
 #' it was spread over in the code, and 4) the statements as expressions (which might
-#' be evaluated in checking code, or parsed, or whatever).
+#' be evaluated in checking code, or parsed, or whatever). Note that all of the elements in the
+#' list have the same number of components, which need to be accessed with \code{[[]]} to get
+#' individual commands
+#'
 #' @examples
-#' foo <- capture.code(example = "example_0.R")
+#' capture.code("x <- 2 + 2\n#then square it\ny <- x^2")
+#' capture.code("for (k in 1:2) {\n x <- k\nsqrt(7)}")
 #' @export
-capture.code <- function(text = NULL, dot_R_file = NULL, example = NULL) {
+capture.code <- function(code_text = NULL) {
   # Get the code from its file or text form
-  if ( ! is.null(text)) {
-    code <- text
-  } else {
-    if (is.null(dot_R_file) && ! is.null(example))
-      dot_R_file <- system.file(example, package = "checkr")
-    code <- readLines(dot_R_file)
-  }
   # turn it into evaluatable commands
-  commands <- parse(text = paste(code, collapse = "\n"))
+  commands <- parse(text = paste(code_text, collapse = "\n"))
 
   R <- list()
   # P <- character(0) #not used. Print the R items instead.
@@ -50,8 +44,9 @@ capture.code <- function(text = NULL, dot_R_file = NULL, example = NULL) {
     R[[k]] <- eval(commands[k], envir = environments[[k]])
   }
 
-  list(results = R,
-       envlist = environments,
-       statements = statements,
-       commands = commands)
+  list(returns = R,
+       names = environments,
+       statements = lapply(statements, FUN = as.character),
+       expressions = commands,
+       valid_lines = 1:length(R))
 }

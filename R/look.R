@@ -53,7 +53,8 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
           return(list(found = TRUE, line = k, code = code, message = "" ))
       }
     }
-    return(list(found = FALSE, line = NA, code = code, message = message))
+    return(list(found = FALSE, line = NA, code = code,
+                message = message))
   }
 
   f # return the function created
@@ -76,19 +77,85 @@ in_statements <- function(what, mode, message){
   find_content(where = "statements",
                what = what, mode = mode, message = message)
 }
+
+# call_text -- string containing what the call should
+# look like, e.g. "2 + 2". Use NULL for any arguments for which
+# a place is needed but for which you don't care what the value is.
+#
 #' @export
-get_functions <- function(what, code) {
-  EX <- code$expressions
-  results <- list(length(EX)) # one item for each command line
-  for (k in 1:length(EX)) {
-    tmp <- list(fun_names = setdiff(all.names(EX[[k]]), all.vars(EX[[k]])))
-    tmp$args <- walk_tree(EX[[k]], tmp$fun_names)
-    results[[k]] <- tmp
+find_function <- function(call_text, code, message = "get a real message") {
+  expanded <- as.list(parse(text = call_text)[[1]])
+  the_fun <- expanded[[1]]
+
+  result <- list()
+  valid_lines <- numeric(0)
+  for (k in code$valid_lines) {
+    all_calls <- get_functions_in_line(code, line = k)
+    inds = which(all_calls$fun_names == the_fun)
+    for (j in inds) {
+      result <- match_the_arguments(all_calls$args[[j]], expanded)
+      if(result)
+        return(list(found = TRUE, line = k, code = code, message = "" ))
+    }
   }
-  results
+
+  return(list(found = FALSE, line = NA, code = code, message = message))
 }
 
 #' @export
+match_the_arguments <- function(actual, desired) {
+  # does the function itself match (it should if we got this far)
+  if( actual[[1]] != desired[[1]]) return(FALSE)
+  # keep track of which arguments in actual we've matched with those in desired
+  already_matched <- rep(FALSE, length(actual))
+  # walk through the names in desired, looking for a match in actual
+  for (nm in names(desired)) {
+    if (nm == "") next
+    match <- which(names(actual) == nm)
+    if (length(match) > 0) {
+      already_matched[match] <- TRUE
+      if ( ! is.null(desired[[nm]])) {
+        # if values don't match, we're done
+        if (desired[[nm]] != actual[[match]]) {
+          return(FALSE)
+        } else {
+        desired[[nm]] <- NULL # remove from the list
+        }
+      }
+    }
+  }
+  # grab the remaining values and see if they have a match in actual
+  for (k in 1:length(desired)) {
+    found_it <- FALSE
+    for (j in 1:length(actual)) {
+
+      if (already_matched[j]) next
+
+      if ( (! is.null(desired[[k]])) && (desired[[k]] == actual[[j]])) {
+        found_it <- TRUE
+        already_matched[j] <- TRUE
+      }
+    }
+    if (is.null(desired[[k]])) found_it <- TRUE  # doesn't matter what the value is
+    if ( ! found_it) return(FALSE)
+  }
+
+  TRUE
+}
+
+# Get a list of the functions and the arguments on
+# a specified line of the expressions
+
+#' @export
+get_functions_in_line <- function(code, line) {
+  EX <- code$expressions[[line]]
+  res <- list(fun_names = setdiff(all.names(EX), all.vars(EX)))
+  res$args <- walk_tree(EX, res$fun_names)
+
+  res
+}
+
+
 walk_tree <- function(EX, fun_names) {
   # get the function and arguments at the highest level
   if (length(EX) == 1) {
@@ -101,6 +168,5 @@ walk_tree <- function(EX, fun_names) {
   } else {
     res <- NULL
   }
-
   res
 }

@@ -124,7 +124,11 @@ p</code></pre>
 <pre class="text"><code>3 + 2</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="mtcarplot-check" data-caption="Exercise" data-lines="0">
-<pre class="text"><code>&quot;This is from the check chunk&quot;</code></pre>
+<pre class="text"><code>test_1 &lt;- fun_test(&quot;aes(y = mpg)&quot;, message = &quot;mpg should be the y aesthetic&quot;)
+test_2 &lt;- fun_test(&quot;aes(x = hp, y = mpg)&quot;, message = &quot;Set the aesthetics via aes() to put the right variables on each axis)&quot;)
+USER_CODE %&gt;% test_1 %&gt;% test_2
+test_3 &lt;- fun_test(&quot;aesppp(z = NULL)&quot;, message = &quot;Looking for z.&quot;)
+USER_CODE %&gt;% test_3</code></pre>
 </div>
 
 <script type="application/shiny-prerendered" data-context="server-start">

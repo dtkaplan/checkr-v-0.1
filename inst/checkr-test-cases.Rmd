@@ -33,5 +33,9 @@ p
 ```
 
 ```{r mtcarplot-check}
-"This is from the check chunk"
+test_1 <- fun_test("aes(y = mpg)", message = "mpg should be the y aesthetic")
+test_2 <- fun_test("aes(x = hp, y = mpg)", message = "Set the aesthetics via aes() to put the right variables on each axis)")
+USER_CODE %>% test_1 %>% test_2
+test_3 <- fun_test("aesppp(z = NULL)", message = "Looking for z.")
+USER_CODE %>% test_3
 ```

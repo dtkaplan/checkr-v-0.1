@@ -5,7 +5,8 @@
 \title{Run the tests from info produced by tutor}
 \usage{
 checkr_run_tests(label = NULL, user_code = NULL, check_code = NULL,
-  envir_result = NULL, evaluate_result = NULL, ...)
+  envir_result = NULL, evaluate_result = NULL, ...,
+  feedback = tutor::feedback, debug = TRUE)
 }
 \arguments{
 \item{tutor_obj}{the checking object produced by tutor

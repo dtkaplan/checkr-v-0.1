@@ -7,7 +7,16 @@ checkr_run_tests <- function(label=NULL,
                              user_code = NULL,
                              check_code = NULL,
                              envir_result = NULL,
-                             evaluate_result = NULL, ...) {
+                             evaluate_result = NULL, ...,
+                             feedback = tutor::feedback,
+                             debug = TRUE) {
+  # while debugging
+  if(debug) {
+    save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
+    saveRDS(list(label = label, user_code = user_code, check_code = check_code, envir = envir_result, evaluate_result = evaluate_result),
+          file = save_file_name)
+  }
+  # the tests
   USER_CODE <- capture.code(user_code)
   test_envir <- new.env()
   assign("USER_CODE", USER_CODE, envir = test_envir)
@@ -21,17 +30,23 @@ checkr_run_tests <- function(label=NULL,
       if (R$passed) next
       else {
         # failed this test
-        return(R$message)
+        return(feedback(paste("Sorry, but", R$message), type = "error", location = "prepend"))
+
       }
 
     }
   }
 
-  return("Good job!")
+  feedback("Good job!", type = "success")
 }
 
 #' @export
 run_tests_from_file <- function(label) {
   raw <- check_info_from_file(label)
-  with(raw, checkr_run_tests(label, user_code, check_code, envir_result, evaluate_result))
+  with(raw, checkr_run_tests(label = label, user_code = user_code,
+                             check_code = check_code,
+                             envir_result = envir_result,
+                             evaluate_result = evaluate_result,
+                             feedback = function(m, ...) m,
+                             debug = FALSE))
 }

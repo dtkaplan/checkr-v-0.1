@@ -191,7 +191,11 @@ match_the_arguments <- function(actual, desired) {
 
 get_functions_in_line <- function(expressions, line) {
   EX <- expressions[[line]]
-  res <- list(fun_names = setdiff(all.names(EX), all.vars(EX)))
+  # find all names that aren't variables. Keep duplicates.
+  N <- all.names(EX)
+  keep <- ! N %in% all.vars(EX)
+  res <- list(fun_names = N[keep])
+
   res$args <- walk_tree(EX, res$fun_names)
 
   res

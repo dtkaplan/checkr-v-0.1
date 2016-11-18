@@ -7,35 +7,56 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(tutor)
 library(ggplot2)
+library(checkr)
 
 # A simple checker function
 
-knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
+# to put the info in a file
+# knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
+
+# to process it in the Rmd document
+knitr::opts_chunk$set(exercise.checker = checkr::checkr_run_tests)
 ```
 
+## Example 1
+
+Modify the code to add two and two:
+
+```{r, example_1, exercise = TRUE}
+1 + 3
+```
+
+```{r example_1-solution}
+2 + 2
+```
+
+```{r example_1-check}
+test_1 <- fun_test("2 + 2", "remember to add two plus two")
+USER_CODE %>% test_1
+```
+
+## Example 2
 
 Fill in the code to create this plot:
 
 ```{r, echo = FALSE, out.width = "30%"}
 ggplot(mtcars, aes(x = hp, y = mpg)) + 
-  geom_point()
+  geom_point(aes(color = carb))
 ```
 
 ```{r, mtcarplot, exercise=TRUE}
-# I have filled in the blanks so I can check the checker function
-# easily, with just a "Run Code" button push
-p <- ggplot(mtcars, aes( x = hp , y = mpg )) + geom_point()
-p
+ggplot(mtcars, aes( x = ___ , y = ___ )) + geom_point()
 ```
 
 ```{r mtcarplot-solution}
-3 + 2
+ggplot(mtcars, aes(x=hp, y = mpg)) + geom_point(aes(color = carb))
 ```
 
 ```{r mtcarplot-check}
 test_1 <- fun_test("aes(y = mpg)", message = "mpg should be the y aesthetic")
-test_2 <- fun_test("aes(x = hp, y = mpg)", message = "Set the aesthetics via aes() to put the right variables on each axis)")
+test_2 <- fun_test("aes(x = hp, y = mpg)", message = "set the aesthetics via aes() to put the right variable on each axis.")
+test_3 <- fun_test("aes(color = carb)", "map carb to the color aethetic")
+USER_CODE %>% test_1
 USER_CODE %>% test_1 %>% test_2
-test_3 <- fun_test("aesppp(z = NULL)", message = "Looking for z.")
 USER_CODE %>% test_3
 ```

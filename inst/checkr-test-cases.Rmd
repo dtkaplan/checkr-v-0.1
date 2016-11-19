@@ -60,3 +60,28 @@ USER_CODE %>% test_1
 USER_CODE %>% test_1 %>% test_2
 USER_CODE %>% test_3
 ```
+
+## Example 3
+
+Use `dplyr` statements to find the mean hp of 4 cyl cars.
+
+```{r mtcardplyr, exercise = TRUE}
+mtcars %>%
+  filter(cyl == 4) %>%
+  summarise(mn = mean(hp))
+```
+
+```{r mtcardplyr-solution}
+mtcars %>%
+  filter(cyl == 4) %>%
+  summarise(mn = mean(hp))
+```
+
+```{r mtcardplyr-check}
+# Note that even though summarise() is used with a named argument
+# we can disregard the name
+test_1 <- chain_test("filter()", "use filter()",
+                    "summarise(mean(hp))", "use summarise() to take mean of hp")
+test_2 <- chain_test("summarise(mn = mean(hp))", "Create a variable mn in summarise")
+USER_CODE %>% test_1 %>% test_2
+```

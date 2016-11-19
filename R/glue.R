@@ -9,6 +9,18 @@ then <- function(EX) {
   EX
 }
 
+#' @export
+next_expression <- function(EX) {
+  get_expression(EX, line = 2)
+}
+
+#' @export
+get_expression <- function(EX, line = 1) {
+  if (line < 1 || line > length(EX$valid_lines))
+    stop("Invalid line number.")
+  EX$valid_lines <- EX$valid_lines[line]
+  EX
+}
 
 #' @export
 either <- function(test_1, test_2) {

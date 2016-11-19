@@ -31,7 +31,7 @@ capture.code <- function(code_text = NULL) {
 
   environments <- list()
   # Get the source code
-  statements <- attr(commands, "srcref")
+  statements <- as.character(commands) #attr(commands, "srcref")
   # Run  the commands one at a time
   for (k in 1:length(commands)) {
     if (k > 1) {

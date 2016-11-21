@@ -36,6 +36,7 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   success_message <- ifelse(mistake, message, "")
   fail_message <- ifelse(mistake, "", message)
   f <- function(captured) {
+    if ( ! captured$pass) return(captured) # short circuit if non-passing input
     success_flag <- FALSE
     search_in <- captured[[where]]
     for (k in captured$valid_lines) {
@@ -105,6 +106,7 @@ in_statements <- function(what, mode, message, mistake = FALSE){
 #' @export
 fun_test <- function(call_text, message = "get a real message", mistake = FALSE) {
   f <- function(capture) {
+    if ( ! capture$pass) return(capture) # short circuit if non-passing input
     find_function(capture, call_text, message = message, mistake = mistake)
   }
 

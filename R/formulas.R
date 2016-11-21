@@ -14,8 +14,15 @@ compare_model_formulas <- function(student, answer) {
   return("")
 }
 
+# check that the formula includes specified terms
+# (there may be additional ones)
+#' @export
+f_has_terms <- function(student, term_formula) {
+  res <- f_same_explanatory(student, term_formula)
 
-# Call only at the highest level
+  attr(res, "missing")
+}
+
 #' @export
 f_same_response <- function(student, answer) {
   stext <- deparse(student)
@@ -40,7 +47,6 @@ f_same_response <- function(student, answer) {
 
 # compare one term to a set of terms
 # accounting for interactions
-#' @export
 term_matches <- function(one, many) {
   # look for simple matches
   inds <- which(many == one)
@@ -101,7 +107,11 @@ f_same_explanatory <- function(student, answer) {
     message <- paste("Formula", stext, missing_text, connector, extra_text)
   }
 
-  message
+  res <- message
+  attr(res, "extras") <- extras
+  attr(res, "missing") <- missing
+
+  res
 }
 
 

@@ -7,7 +7,7 @@ Maintainer: Daniel Kaplan <kaplan@macalester.edu>
 Description: Interogates R code
 License: What license is it under?
 Encoding: UTF-8
-Depends: dplyr, magrittr
+Depends: dplyr, magrittr, testthat
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests: testthat

@@ -3,7 +3,7 @@
 #' @param tutor_obj the checking object produced by tutor
 #' You can also use the result of check_info_from_file()
 #' @export
-checkr_run_tests <- function(label=NULL,
+run_tests <- function(label=NULL,
                              user_code = NULL,
                              check_code = NULL,
                              envir_result = NULL,
@@ -43,7 +43,7 @@ checkr_run_tests <- function(label=NULL,
 #' @export
 run_tests_from_file <- function(label) {
   raw <- check_info_from_file(label)
-  with(raw, checkr_run_tests(label = label, user_code = user_code,
+  with(raw, run_tests(label = label, user_code = user_code,
                              check_code = check_code,
                              envir_result = envir_result,
                              evaluate_result = evaluate_result,

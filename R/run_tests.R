@@ -30,7 +30,7 @@ run_tests <- function(label=NULL,
       if (R$passed) next
       else {
         # failed this test
-        return(feedback(paste("Sorry, but", R$message), type = "error", location = "prepend"))
+        return(feedback(paste("Sorry, but", R$message), type = "info", location = "prepend"))
 
       }
 
@@ -47,6 +47,6 @@ run_tests_from_file <- function(label) {
                              check_code = check_code,
                              envir_result = envir_result,
                              evaluate_result = evaluate_result,
-                             feedback = function(m, ...) m,
+                             feedback = function(m, ...) m, # just return the feedback message
                              debug = FALSE))
 }

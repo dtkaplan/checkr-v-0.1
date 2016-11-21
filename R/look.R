@@ -119,6 +119,12 @@ fun_test <- function(call_text, message = "get a real message", mistake = FALSE)
 # "success" means that the pattern was found
 #
 #' @export
+function_call <- function(call_text, message = "get a real message", mistake = FALSE) {
+  f <- function(capture) {
+    find_function(capture, call_text, message = message, mistake = mistake)
+  }
+  f
+}
 find_function <- function(capture, call_text, message = "get a real message", mistake = FALSE) {
   expanded <- as.list(parse(text = call_text)[[1]])
   the_fun <- expanded[[1]]

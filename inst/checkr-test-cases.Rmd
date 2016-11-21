@@ -18,7 +18,7 @@ library(checkr)
 knitr::opts_chunk$set(exercise.checker = checkr::run_tests)
 ```
 
-## Example 0
+## Example 1
 
 Modify the code to add two and two:
 
@@ -31,26 +31,61 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-test_1 <- fun_test("2 + 2", "remember to add two plus two")
-USER_CODE %>% test_1
+test_0 <- fun_test("NULL + NULL", "use addition (+)")
+test_1 <- fun_test("2 + NULL", "first argument should be two ")
+test_2 <- fun_test("NULL + 2", "second argument should also be two")
+test_3 <- fun_test("2 + 2", "remember to add two plus two")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
 ```
 
-## Example 1
+## Example 2
+
+Use R to compute the length of the hypotenuse of a right triangle with edges of length 3 and 4.
+
+```{r example-triangle, exercise = TRUE}
+# your code goes here
+```
+
+```{r example-triangle-solution}
+sqrt(3^2 + 4^2)
+```
+
+```{r example-triangle-check}
+test_1 <- fun_test("NULL ^ 2", "need to square the lengths")
+test_A <- fun_test("2 ^ 3", "you've reversed the length and the square function", mistake = TRUE)
+test_2 <- fun_test("3 ^ 2", "one of the lengths is 3")
+test_3 <- fun_test("4 ^ 2", "one of the lengths is 4")
+test_4 <- fun_test("sqrt()", "you'll have to use the square-root function to get the length.")
+test_5 <- fun_test("3 ^ 2 + 4 ^ 2", "remember to add the squares")
+test_6 <- check_numeric_result(sqrt(3^2 + 4^2), "the overall result should be 5.")
+USER_CODE %>% test_A %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6
+
+# NEED TO ADD MISTAKE
+
+
+```
+
+## Example 3
 
 This is miscellaneous stuff just to illustrate code checking.  The tests will pass, as is. Modify the code to trigger fail messages.
 
-```{r example-1, exercise = TRUE}
+```{r example-misc, exercise = TRUE}
 x <- 7
 x^2 + 1
 y <- cos(x)
 ```
 
-```{r example-1-check}
+```{r example-misc-check}
 test_1 <- val_by_name("x", "couldn't find object 'x'.")
-test_2 <- val_by_class("numeric", "no number found")
+test_2 <- function_call("cos()", "didn't see the cos() function")
+test_3 <- function_call("x^2", "you didn't square x")
+test_4 <- function_call("x^2 + 1", "you should have added 1 to x^2")
+test_5 <- check_number(cos(7), "is the input to cos() right?")
+test_6 <- check_number(50, "value should have been 50")
 USER_CODE %>% test_1 -> xvalue
 xvalue %>% check_value(test = function(x) {x = 7}, "should have been 7")
-USER_CODE %>% test_2 -> numvalue
+USER_CODE %>% test_2 %>% get_value %>% test_5
+USER_CODE %>% test_3 %>% test_4 %>% get_value %>% test_6
 # make sure there is a value 50 after the x <- 7 line
 ```
 

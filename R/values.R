@@ -71,6 +71,27 @@ check_value <- function(capture, test, message = "Give a helpful message!") {
   capture
 }
 
+#' @export
+get_value <- function(capture) {
+  capture$R[[capture$line]]
+}
+
+#' @export
+check_numeric_result <- function(value, message, ...) {
+  f <- function(capture) {
+    if ( ! capture$passed) return(capture)
+    for (k in valid_lines) {
+      res <- check_number(value, ...)
+      if (res == "") {
+        capture$line <- k
+        return(capture)
+      }
+    }
+    capture$passed <- FALSE
+    return(capture)
+  }
+}
+
 
 get_val_by_name <- function(capture, what, strict = TRUE, message = "Give a real message") {
   res <- no_match(message) # prepare not to find it

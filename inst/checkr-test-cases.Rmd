@@ -52,7 +52,8 @@ sqrt(3^2 + 4^2)
 
 ```{r example-triangle-check}
 test_1 <- fun_test("NULL ^ 2", "need to square the lengths")
-test_A <- fun_test("2 ^ 3", "you've reversed the length and the square function", mistake = TRUE)
+test_A <- fun_test("2 ^ NULL", "you've reversed the length and the square function", mistake = TRUE)
+test_B <- fun_test("2 ^ 3", "you've reversed the length and the square function", mistake = TRUE)
 test_2 <- fun_test("3 ^ 2", "one of the lengths is 3")
 test_3 <- fun_test("4 ^ 2", "one of the lengths is 4")
 test_4 <- fun_test("sqrt()", "you'll have to use the square-root function to get the length.")

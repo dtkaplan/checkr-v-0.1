@@ -141,7 +141,8 @@ USER_CODE %&gt;% test_0 %&gt;% test_1 %&gt;% test_2 %&gt;% test_3</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="example-triangle-check" data-caption="Exercise" data-lines="0">
 <pre class="text"><code>test_1 &lt;- fun_test(&quot;NULL ^ 2&quot;, &quot;need to square the lengths&quot;)
-test_A &lt;- fun_test(&quot;2 ^ 3&quot;, &quot;you&#39;ve reversed the length and the square function&quot;, mistake = TRUE)
+test_A &lt;- fun_test(&quot;2 ^ NULL&quot;, &quot;you&#39;ve reversed the length and the square function&quot;, mistake = TRUE)
+test_B &lt;- fun_test(&quot;2 ^ 3&quot;, &quot;you&#39;ve reversed the length and the square function&quot;, mistake = TRUE)
 test_2 &lt;- fun_test(&quot;3 ^ 2&quot;, &quot;one of the lengths is 3&quot;)
 test_3 &lt;- fun_test(&quot;4 ^ 2&quot;, &quot;one of the lengths is 4&quot;)
 test_4 &lt;- fun_test(&quot;sqrt()&quot;, &quot;you&#39;ll have to use the square-root function to get the length.&quot;)

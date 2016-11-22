@@ -5,6 +5,7 @@
 #' @export
 run_tests <- function(label=NULL,
                              user_code = NULL,
+                             solution_code = NULL,
                              check_code = NULL,
                              envir_result = NULL,
                              evaluate_result = NULL, ...,
@@ -43,10 +44,12 @@ run_tests <- function(label=NULL,
 #' @export
 run_tests_from_file <- function(label) {
   raw <- check_info_from_file(label)
-  with(raw, run_tests(label = label, user_code = user_code,
-                             check_code = check_code,
-                             envir_result = envir_result,
-                             evaluate_result = evaluate_result,
-                             feedback = function(m, ...) m, # just return the feedback message
-                             debug = FALSE))
+  with(raw, run_tests(label = label,
+                      user_code = user_code,
+                      solution_code = solution_code,
+                      check_code = check_code,
+                      envir_result = envir_result,
+                      evaluate_result = evaluate_result,
+                      feedback = function(m, ...) m, # just return the feedback message
+                      debug = FALSE))
 }

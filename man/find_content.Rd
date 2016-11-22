@@ -7,7 +7,8 @@ first such line is reported.}
 \usage{
 find_content(where = c("returns", "names", "statements", "commands"), what,
   mode = c("class", "number", "match", "regex"),
-  message = "Test writer: give a meaningful fail message", mistake = FALSE)
+  message = "Test writer: give a meaningful fail message", mistake = FALSE,
+  ...)
 }
 \arguments{
 \item{where}{character string specifying whether to look at names of objects

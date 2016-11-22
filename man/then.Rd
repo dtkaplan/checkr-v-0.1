@@ -4,10 +4,10 @@
 \alias{then}
 \title{glue to hold the test statements together}
 \usage{
-then(EX)
+then(capture)
 }
 \arguments{
-\item{EX}{A set of expressions of the sort returned by capture.code()}
+\item{capture}{A set of expressions of the sort returned by capture.code()}
 }
 \description{
 glue to hold the test statements together

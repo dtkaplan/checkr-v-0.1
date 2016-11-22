@@ -31,14 +31,14 @@ run_tests <- function(label=NULL,
       if (R$passed) next
       else {
         # failed this test
-        return(feedback(paste("Sorry, but", R$message), type = "info", location = "prepend"))
+        return(feedback(paste("Sorry, but", R$message), correct = FALSE, type = "info", location = "prepend"))
 
       }
 
     }
   }
 
-  feedback("Good job!", type = "success")
+  feedback("Good job!", correct = TRUE, type = "success")
 }
 
 #' @export

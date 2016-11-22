@@ -4,8 +4,8 @@
 \alias{run_tests}
 \title{Run the tests from info produced by tutor}
 \usage{
-run_tests(label = NULL, user_code = NULL, check_code = NULL,
-  envir_result = NULL, evaluate_result = NULL, ...,
+run_tests(label = NULL, user_code = NULL, solution_code = NULL,
+  check_code = NULL, envir_result = NULL, evaluate_result = NULL, ...,
   feedback = tutor::feedback, debug = TRUE)
 }
 \arguments{

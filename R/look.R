@@ -20,7 +20,7 @@
 find_content <- function(where = c("returns", "names", "statements", "commands"),
                          what, mode = c("class", "number", "match", "regex"),
                          message = "Test writer: give a meaningful fail message",
-                         mistake = FALSE) {
+                         mistake = FALSE, ...) {
   # search among the results for a match
   where <- match.arg(where)
   mode <- match.arg(mode)
@@ -35,43 +35,43 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   success <- !mistake
   success_message <- ifelse(mistake, message, "")
   fail_message <- ifelse(mistake, "", message)
-  f <- function(captured) {
-    if ( ! captured$pass) return(captured) # short circuit if non-passing input
+  f <- function(capture) {
+    if ( ! capture$pass) return(capture) # short circuit if non-passing input
     success_flag <- FALSE
-    search_in <- captured[[where]]
-    for (k in captured$valid_lines) {
+    found_in_line <- NA
+    search_in <- capture[[where]]
+    for (k in capture$valid_lines) {
       content <- pre_process(search_in[[k]])
       if (mode == "class") {
         if (inherits(content, what)) {
-          success_flag <- TRUE; break
+          success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode %in% c("match", "regex") ) {
         if (any(grepl(what, content, fixed = mode == "match"))) {
-          success_flag <- TRUE; break
+          success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode == "number") {
         if (is.numeric(content) &&
             content >= min(what) &&
             content <= max(what)) {
-          success_flag <- TRUE; break
+          success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode == "names") {
         if (any(grepl(what, content, fixed = mode == "match"))) {
-          success_flag <- TRUE; break
+          success_flag <- TRUE; found_in_line <- k; break
         }
       }
     }
+    capture$line <- found_in_line
     if (success_flag) {
-      captured$passed = success
-      captured$line = k
-      captured$message = success_message
+      capture$passed = success
+      capture$message = success_message
     } else {
-      captured$passed = ! success
-      captured$line = NA
-      captured$message = fail_message
+      capture$passed = ! success
+      capture$message = fail_message
     }
 
-    captured
+    capture
   }
 
   f # return the function created
@@ -81,37 +81,46 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
 # output of capture.output() as inputs. Test functions always return a result.
 # a result has fields <passed>, <message>, <code>, <lines>. The output of capture.code
 
-#' @export
-in_returns <- function(what, mode, message, mistake = FALSE) {
-  mode <- as.character(substitute(mode))
-  find_content(where = "returns",
-               what = what, mode = mode, message = message, mistake = mistake)
+in_factory <- function(where) {
+  f <- function(what, message = NULL, regex = NULL, number = NULL, class = NULL, mistake = FALSE, ...) {
+    mode = "match"
+    if (!is.null(regex)) mode <- "regex"
+    if (!is.null(number)) mode <- "number"
+    if (!is.null(class)) mode <- "class"
+
+    if (is.null(message))
+      message <-
+        sprintf("couldn't find match to %s'%s'",
+                ifelse(mode == "number", "number ",
+                       ifelse(mode == "class", "class ",
+                       ifelse(mode == "regex", "regex ", ""))),
+                as.character(what))
+
+        find_content(where = where, mode = mode, what = what,
+                     message = message, regex = regex, number = number, class = class, ...)
+  }
+  f
 }
 #' @export
-in_names <- function(what, mode, message, mistake = FALSE) {
-  mode <- as.character(substitute(mode))
-  find_content(where = "names",
-               what = what, mode = mode, message = message, mistake = mistake)
-}
+in_names <- in_factory("names")
 #' @export
-in_statements <- function(what, mode, message, mistake = FALSE){
-  mode <- as.character(substitute(mode))
-  find_content(where = "statements",
-               what = what, mode = mode, message = message, mistake = mistake)
-}
+in_statements <- in_factory("statements")
+#' @export
+in_values <- in_factory("returns")
 
 # a functional form for testing functions and arguments
 # with this, you can set up the test beforehand and pass the code to it later.
 
-#' @export
-fun_test <- function(call_text, message = "get a real message", mistake = FALSE) {
-  f <- function(capture) {
-    if ( ! capture$pass) return(capture) # short circuit if non-passing input
-    find_function(capture, call_text, message = message, mistake = mistake)
-  }
-
-  f
-}
+# this has been replaced with function_call()
+# #' @export
+# fun_test <- function(call_text, message = "get a real message", mistake = FALSE) {
+#   f <- function(capture) {
+#     if ( ! capture$pass) return(capture) # short circuit if non-passing input
+#     find_function(capture, call_text, message = message, mistake = mistake)
+#   }
+#
+#   f
+# }
 
 # call_text -- string containing what the call should
 # look like, e.g. "2 + 2". Use NULL for any arguments for which
@@ -119,13 +128,14 @@ fun_test <- function(call_text, message = "get a real message", mistake = FALSE)
 # "success" means that the pattern was found
 #
 #' @export
-function_call <- function(call_text, message = "get a real message", mistake = FALSE) {
+fcall <- function(call_text, message = "get a real message", mistake = FALSE, in_order = TRUE) {
   f <- function(capture) {
-    find_function(capture, call_text, message = message, mistake = mistake)
+    if ( ! capture$pass) return(capture) # short circuit if non-passing input
+    find_function(capture, call_text, message = message, mistake = mistake, in_order = in_order)
   }
   f
 }
-find_function <- function(capture, call_text, message = "get a real message", mistake = FALSE) {
+find_function <- function(capture, call_text, message = "get a real message", mistake = FALSE, in_order = TRUE) {
   expanded <- as.list(parse(text = call_text)[[1]])
   the_fun <- expanded[[1]]
   success_value <- ! mistake
@@ -136,7 +146,7 @@ find_function <- function(capture, call_text, message = "get a real message", mi
     all_calls <- get_functions_in_line(capture$expressions, line = k)
     inds = which(all_calls$fun_names == the_fun)
     for (j in inds) {
-      result <- match_the_arguments(all_calls$args[[j]], expanded)
+      result <- match_the_arguments(all_calls$args[[j]], expanded, in_order = in_order)
       if(result) {
         capture$line <- k
         capture$passed <- success_value
@@ -154,7 +164,7 @@ find_function <- function(capture, call_text, message = "get a real message", mi
 
 # THIS DOESN'T NEED TO BE EXPORTED
 #' @export
-match_the_arguments <- function(actual, desired) {
+match_the_arguments <- function(actual, desired, in_order = TRUE) {
   # does the function itself match (it should if we got this far)
   if( actual[[1]] != desired[[1]]) return(FALSE)
   # keep track of which arguments in actual we've matched with those in desired
@@ -176,19 +186,29 @@ match_the_arguments <- function(actual, desired) {
     }
   }
   # grab the remaining values and see if they have a match in actual
-  for (k in 1:length(desired)) {
-    found_it <- FALSE
-    for (j in 1:length(actual)) {
-
-      if (already_matched[j] || found_it) next
-
-      if ( (! is.null(desired[[k]])) && (desired[[k]] == actual[[j]])) {
-        found_it <- TRUE
-        already_matched[j] <- TRUE
-      }
+  if (in_order) {
+    found_match <- rep(FALSE, length(desired))
+    for (k in 1:length(desired)) {
+      if ((is.null(desired[[k]])) || (desired[[k]] == actual[[k]]))
+        found_match[k] <- TRUE
     }
-    if (is.null(desired[[k]])) found_it <- TRUE  # doesn't matter what the value is
-    if ( ! found_it) return(FALSE)
+    return(all(found_match))
+
+  } else {
+    for (k in 1:length(desired)) {
+      found_it <- FALSE
+      for (j in 1:length(actual)) {
+
+        if (already_matched[j] || found_it) next
+
+        if ( (! is.null(desired[[k]])) && (desired[[k]] == actual[[j]])) {
+          found_it <- TRUE
+          already_matched[j] <- TRUE
+        }
+      }
+      if (is.null(desired[[k]])) found_it <- TRUE  # doesn't matter what the value is
+      if ( ! found_it) return(FALSE)
+    }
   }
 
   TRUE

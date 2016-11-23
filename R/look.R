@@ -111,108 +111,61 @@ in_values <- in_factory("returns")
 # a functional form for testing functions and arguments
 # with this, you can set up the test beforehand and pass the code to it later.
 
-# this has been replaced with function_call()
-# #' @export
-# fun_test <- function(call_text, message = "get a real message", mistake = FALSE) {
-#   f <- function(capture) {
-#     if ( ! capture$pass) return(capture) # short circuit if non-passing input
-#     find_function(capture, call_text, message = message, mistake = mistake)
-#   }
-#
-#   f
-# }
-
-# call_text -- string containing what the call should
 # look like, e.g. "2 + 2". Use NULL for any arguments for which
 # a place is needed but for which you don't care what the value is.
 # "success" means that the pattern was found
-#
+# @param fun_spec character string describing the function to look for
+# and whatever args are to be matched.
 #' @export
-fcall <- function(call_text, message = "get a real message", mistake = FALSE, in_order = TRUE) {
+fcall <- function(fun_spec, message = NULL, mistake = FALSE, diag = FALSE) {
+  if (is.null(message)) {
+    message <-
+      if (mistake) sprintf("should not be calling %s", fun_spec)
+      else sprintf("couldn't find match to %s", fun_spec)
+  }
+  reference_call <- (parse(text = fun_spec))[[1]]
+  the_fun <- reference_call[[1]]
   f <- function(capture) {
-    if ( ! capture$pass) return(capture) # short circuit if non-passing input
-    find_function(capture, call_text, message = message, mistake = mistake, in_order = in_order)
+    if ( ! capture$passed) return(capture) # short circuit test
+    failed <- FALSE
+    for (j in capture$valid_lines) {
+      all_calls <- get_functions_in_line(capture$expressions, line = j)
+      inds = which(all_calls$fun_names == the_fun)
+      for (i in inds) {
+        call_to_check <- as.call(parse(text = as.character(all_calls$args[[i]])))
+        result <- corresponding_arguments(call_to_check, reference_call)
+        if (length(result$missing) == 0 && length(result$mismatch) == 0) {
+          # no problems found
+          if (mistake) {
+            # but since <mistake> is true, we should fail the test having
+            # found the sought-after pattern
+            capture$passed <- FALSE
+            capture$message <- message
+          } else {
+            capture$passed <- TRUE
+            capture$message <- ""
+            capture$line <- j
+          }
+          return(capture)
+        } else if ( ! mistake) {
+          failed <- TRUE
+        }
+      }
+    }
+
+    # done with all the lines
+    # if we got here, none of the tests passed
+    if (mistake) return(capture)
+    else {
+      capture$passed <- FALSE
+      capture$message <- message
+    }
+
+    capture
   }
   f
 }
-find_function <- function(capture, call_text, message = "get a real message", mistake = FALSE, in_order = TRUE) {
-  expanded <- as.list(parse(text = call_text)[[1]])
-  the_fun <- expanded[[1]]
-  success_value <- ! mistake
-  success_message <- ifelse(mistake, message, "")
-  fail_message <- ifelse(mistake, "", message)
-  result <- list()
-  for (k in capture$valid_lines) {
-    all_calls <- get_functions_in_line(capture$expressions, line = k)
-    inds = which(all_calls$fun_names == the_fun)
-    for (j in inds) {
-      result <- match_the_arguments(all_calls$args[[j]], expanded, in_order = in_order)
-      if(result) {
-        capture$line <- k
-        capture$passed <- success_value
-        capture$message <- message
-        return(capture)
-      }
-    }
-  }
-  capture$passed <- ! success_value
-  capture$line <- NA
-  capture$message <- fail_message
 
-  capture
-}
-
-# THIS DOESN'T NEED TO BE EXPORTED
-#' @export
-match_the_arguments <- function(actual, desired, in_order = TRUE) {
-  # does the function itself match (it should if we got this far)
-  if( actual[[1]] != desired[[1]]) return(FALSE)
-  # keep track of which arguments in actual we've matched with those in desired
-  already_matched <- rep(FALSE, length(actual))
-  # walk through the names in desired, looking for a match in actual
-  for (nm in names(desired)) {
-    if (nm == "") next
-    match <- which(names(actual) == nm)
-    if (length(match) > 0) {
-      already_matched[match] <- TRUE
-      if ( ! is.null(desired[[nm]])) {
-        # if values don't match, we're done
-        if (desired[[nm]] != actual[[match]]) {
-          return(FALSE)
-        } else {
-        desired[[nm]] <- NULL # remove from the list
-        }
-      }
-    }
-  }
-  # grab the remaining values and see if they have a match in actual
-  if (in_order) {
-    found_match <- rep(FALSE, length(desired))
-    for (k in 1:length(desired)) {
-      if ((is.null(desired[[k]])) || (desired[[k]] == actual[[k]]))
-        found_match[k] <- TRUE
-    }
-    return(all(found_match))
-
-  } else {
-    for (k in 1:length(desired)) {
-      found_it <- FALSE
-      for (j in 1:length(actual)) {
-
-        if (already_matched[j] || found_it) next
-
-        if ( (! is.null(desired[[k]])) && (desired[[k]] == actual[[j]])) {
-          found_it <- TRUE
-          already_matched[j] <- TRUE
-        }
-      }
-      if (is.null(desired[[k]])) found_it <- TRUE  # doesn't matter what the value is
-      if ( ! found_it) return(FALSE)
-    }
-  }
-
-  TRUE
-}
 
 # Get a list of the functions and the arguments on
 # a specified line of the expressions

@@ -155,7 +155,7 @@ corresponding_arguments <- function(one, reference) {
       missing[length(missing) + 1] <- nm
       next
     }
-    if (is.null(args_ref[[nm]])) next # we're not concerned about the value
+    if (args_ref[[nm]] == as.name("whatever")) next # we're not concerned about the value
     if (args_ref[[nm]] == as.name("grab_this")) {
       grabbed[[nm]] <- args_one[[nm]]
     } else {
@@ -180,3 +180,5 @@ grab_this <- function() {
   NULL
 }
 
+#' @export
+whatever <- as.name("whatever") # just a flag for argument matching

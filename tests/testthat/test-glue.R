@@ -47,9 +47,9 @@ test_that("checks go in the right sequence", {
 t})
 
 test_that("Negative statements work.", {
-  test_1 <- in_names("z", "match", "should not be a z variable", mistake = TRUE)
+  test_1 <- in_names("z", "should not be a z variable", mistake = TRUE)
   one <- example_1 %>% test_1
-  expect_true(one$passed)
+  expect_false(one$passed)
 })
 
 test_that("Function tests work", {

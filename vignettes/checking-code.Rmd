@@ -1,0 +1,130 @@
+---
+title: "Checking Code Answers"
+author: "Daniel Kaplan"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include = FALSE}
+library(ggplot2)
+library(checkr)
+```
+
+In tutorial systems such as <DataCamp.com> or the `tutor` package in R, problems are posed that call for the student to enter code to solve a stated problem. This package provides a system for checking whether that code has done what's required and, if not, where the problem might fall.
+
+## A trivial example: 2 + 2
+
+To illustrate, consider this trivial problem: Write the code to add two and two. Of course, we expect the student to submit `2 + 2` as the response. But they might have
+
+* submitted nothing
+* submitted something like `3 + 1`
+* submitted something like `2 / 2`
+
+This package allows you to write test statements that will examine the student's submission to make sure the code was of the submitted form.
+
+A tutorial system will typically collect the student code submissions as text, and may evaluate the code in order to verify that it runs.  Here are a few different possible submissions for the `2 + 2` problem:
+
+```{r}
+# three possible submissions to the problem
+submission_1 <- "2 + 2" # correct
+submission_2 <- "2 / 2" # right arguments but wrong function
+submission_3 <- "3 + 2" # right function but wrong arguments
+```
+
+One approach to checking these submissions is to compare them to the correct character string, that is, `"2 + 2"`. But if there is not a match, we can't give any guidance other than "that's wrong."
+
+Here are some tests from `checkr` that are relevant. Each test takes the form of a pattern and a message to return if that pattern is not found.
+```{r}
+library(checkr)
+test_1 <- fcall("whatever + whatever", "need to use addition (+)")
+test_2 <- fcall("2 + whatever", "first argument should be 2")
+test_3 <- fcall("whatever + 2", "second argument should be 2")
+```
+
+To use the tests, we need to provide as input the student submission and collect as output the result of the test.  A tutorial system will have provide a way of doing this. For this vignette, which runs outside of any tutorial system, we'll use `capture.code()` to pass the text submission to the test. Similarly, to display the results we'll have a simple function `show_results()`
+```{r}
+show_results <- function(test_output) {
+  if (test_output$passed) return("Passed!")
+  else return(paste("Sorry, but", test_output$message))
+}
+```
+
+Now to run the various tests on the different submissions:
+```{r}
+capture.code(submission_1) %>% test_1 %>% show_results
+capture.code(submission_2) %>% test_1 %>% show_results
+```
+
+Submission 1 passed, as expected. Submission 2 failed and the failure message indicates what's wrong with the code.
+
+You may be surprised to see that submission 3, which is wrong, nonetheless passes the test
+```{r}
+capture.code(submission_3) %>% test_1 %>% show_results
+```
+This is because `test_1` has been set up to check that the right function is being used, and not to check the arguments. For checking the arguments, `test_2` and `test_3` can be used.
+
+
+Tests can be strung together in a sequence. Whatever test in the sequence is first to fail will produce the output of the whole string. For example:
+```{r}
+capture.code(submission_3) %>% test_1 %>% test_2 %>% test_3 %>% show_results
+```
+`test_1` was passed, but `test_2`, which checks to see that the first argument is `2`, failed. `test_3` was not even run, because `test_2` already failed.
+
+## A richer example
+
+Here's a problem that's more difficult: Using `ggplot()`, make a scatterplot of miles-per-gallon versus horsepower in the `mtcars` data.
+
+Let's look at these possible submissions:
+
+```{r}
+submission_1 <- "ggplot(mtcars, aes(x = mpg, y = hp)) + geom_point()" # Wrong!
+submission_2 <- "ggplot(mtcars, aes(x = hp, y = mpg)) + geom_line()" # Wrong!
+submission_3 <- "ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" # right
+submission_4 <- "mtcars %>% ggplot(aes(y = mpg, x = hp)) + geom_point" # also right
+submission_5 <- "mtcars %>% ggplot() + geom_point(aes(x = hp, y = mpg))" # also right
+submission_6 <- "mtcars %>% ggplot(aes(x = hp)) + geom_point(aes(y=mpg))" # odd, but right
+```
+
+Submission 1 has the roles of the variables `mpg` and `hp` reversed from the problem statement. Submission 2 uses `geom_line()` instead of the required `geom_point()`. Submissions 3 through 6 will all create the specified plot, but each is arranged in a different way.
+
+Here are some tests. Remember, the second argument is the message to return if the test *fails*.
+```{r}
+test_1 <- fcall("ggplot(mapping = aes(x = hp, y = whatever))", "variable 'hp' goes on the x axis")
+test_2 <- fcall("ggplot(mapping = aes(y = mpg, x = whatever))", "variable 'mpg' goes on the y axis")
+test_3 <- fcall("geom_point()", "include a 'geom_point()' layer")
+test_4 <- in_statements("mtcars") 
+test_5 <- fcall("ggplot(data = whatever)", "no data handed to ggplot()")
+test_6 <- check_argument("ggplot(data = grab_this)", test = check_class("data.frame"))
+test_7 <- check_argument("ggplot(data = grab_this)", check_data_frame(mtcars))
+```
+
+We'll chain these five tests together and see the results for the different submissions.
+```{r}
+capture.code(submission_1) %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% 
+  show_results
+capture.code(submission_2) %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% 
+  show_results
+```
+
+YOU WERE GOING TO DO THIS FOR THE REMAINING SUBMISSIONS.
+
+BUT ... Ran into problema 
+
+- `capture.code(submission_3) %>% test_3` doesn't work.
+- also, `test_6` doesn't work.
+
+DEBUG
+
+```r
+capture.code(submission_3) %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% 
+  show_results
+%>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
+  show_results
+```

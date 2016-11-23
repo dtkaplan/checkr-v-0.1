@@ -1,11 +1,19 @@
 context("Compare object values to a standard ")
 
 test_that("numerical comparison works", {
-  expect_true(check_number(5)(5))
-  expect_false(check_number(6, pm = 0.5)(5))
-  expect_true(check_number(6, pm = 1.1)(5))
-  expect_true(check_number(6, tol = 0.5)(5))
-  expect_false(check_number(6, tol = 0.01)(5))
+  expect_true("" == check_number(5)(5))
+  expect_false("" == check_number(6, pm = 0.5)(5))
+  expect_true("" == check_number(6, pm = 1.1)(5))
+  expect_true("" == check_number(6, tol = 0.5)(5))
+  expect_equal("has wrong numerical value", check_number(6, tol = 0.01)(5))
+  expect_equal("should be 6", check_number(6, tol = 0.01, diag = TRUE)(5))
+})
+
+test_that("class comparison works", {
+  mod <- lm(mpg ~ hp, data = mtcars)
+  expect_true("" == check_class("lm")(mod))
+  expect_equal("has wrong class.", check_class("glm")(mod))
+  expect_equal("should have class glm", check_class("glm", diag = TRUE)(mod))
 })
 
 test_that("data frame variable name comparison works", {

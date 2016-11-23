@@ -1,4 +1,4 @@
-context("Functions for getting values")
+context("Strict and non-strict matching works")
 
 
 

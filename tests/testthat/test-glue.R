@@ -72,9 +72,17 @@ test_that("The either() function works", {
   test_3 <- in_names("w", "w not found")
   test_4 <- either(test_1, test_2)
   test_5 <- either(test_1, test_3) # should be wrong
+  test_6 <- in_names("y2", "y2 not found")
+  test_7 <- either(test_1, test_6, test_3) # should be wrong
+  test_8 <- either(test_1, test_6, test_2, test_3) # should be true
   one <- example_1 %>% test_4
   expect_true(one$passed)
   two <- example_1 %>% test_5
   expect_false(two$passed)
+  three <- example_1 %>% test_7
+  expect_false(three$passed)
+  four <- example_1 %>% test_8
+  expect_true(four$passed)
+
 })
 

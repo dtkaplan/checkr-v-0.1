@@ -10,47 +10,11 @@
 # #' @param strict whether the matching name or text can be approximate
 # #' (e.g. capitalization, dots, underscores, ...)
 #
-# # The user interface: create an object, run the test assigning the result
-# # to a named object, and, if passed, you can access the value by attr(obj, "value")
-# #' @export
-# val_by_name <- function(what = what, message = "Give a real message", strict = TRUE ) {
-#   val_by_factory(what = what, message = message, strict = strict, get_mode = get_val_by_name)
-# }
-#
-# #' @export
-# val_by_class <- function(what = what, message = "Give a real message", strict = TRUE ) {
-#   val_by_factory(what = what, message = message, strict = strict, get_mode = get_val_by_class)
-# }
-#
-# #' @export
-# val_by_text_match <- function(what = what, message = "Give a real message", strict = TRUE ) {
-#   val_by_factory(what = what, message = message, strict = strict, get_mode = get_val_by_text_match)
-# }
-#
-# #' @export
-# val_by_argument <- function(what = what, message = "Give a real message", strict = TRUE ) {
-#   val_by_factory(what = what, message = message, strict = strict, get_mode = get_val_by_argument)
-# }
-#
-# val_by_factory <- function(what, message, strict, get_mode) {
-#   f <- function(capture) {
-#     # val_by_name
-#     res <- get_mode(capture, what = what, strict = strict, message = message)
-#     if (is_match(res)) { # Null message, so found the sought-after item
-#       attr(capture, "value") <- res
-#     } else {
-#       capture$passed <- FALSE
-#       capture$message <- message
-#     }
-#
-#     capture
-#   }
-#
-#   f # function to return
-# }
+# # The user interface: identify a line in a capture, then pass the resulting capture to
+# # check_value()
 
 #' @param capture a capture object
-#' @param test the test to run to evaluate the captured value
+#' @param test a function taking one value as an argument. The test to run to evaluate the captured value
 #' @param message the message to give if the test fails
 #' @export
 check_value <- function(test, message = NULL, mistake = FALSE) {
@@ -71,7 +35,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
     if ((mistake && result) || !result) {
       # either the mistaken pattern was found, so the test should fail
       # or the pattern was not found when it should have been (mistake == TRUE) and
-      # so the test failed
+      # so the test fails
       capture$passed = FALSE
       capture$message = paste(message, sprintf("for value of line '%s'", capture$statements[capture$line]))
     }
@@ -80,61 +44,6 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
   }
   f
 }
-# check_value <- function(capture, test, message = "Give a helpful message!") {
-#   if ( ! capture$pass) return(capture) # non-passing input given, so don't do test
-#
-#   val <- attr(capture, "value")
-#   if (is.null(val)) {
-#     capture$message <- "No value captured"
-#     capture$pass <- FALSE
-#   } else {
-#     passing <- test(val)
-#     if ( ! passing) {
-#       capture$pass <- FALSE
-#       capture$message <- message
-#     }
-#   }
-#
-#   capture
-# }
-
-# #' @export
-# get_value <- function(capture) {
-#   capture$R[[capture$line]]
-# }
-
-#' @export
-# check_numeric_result <- function(value, message, ...) {
-#   f <- function(capture) {
-#     if ( ! capture$passed) return(capture)
-#     for (k in capture$valid_lines) {
-#       res <- check_number(value, ...)
-#       if (res == "") {
-#         capture$line <- k
-#         return(capture)
-#       }
-#     }
-#     capture$passed <- FALSE
-#     return(capture)
-#   }
-# }
-
-
-# get_val_by_name <- function(capture, what, strict = TRUE, message = "Give a real message") {
-#   res <- no_match(message) # prepare not to find it
-#   for (k in capture$valid_lines) {
-#     nms <- ls(capture$names[[k]])
-#     match_ind <- get_match_ind(what, nms, strict = strict)
-#     if (length(match_ind) > 0) {
-#       # multiple matches? Get just the first in this environment
-#       # There can't be multiple matches in an environment if strict = TRUE
-#       val <- get(nms[match_ind[1]], capture$names[[k]])
-#       return(val) # value of the object that matched
-#     }
-#   }
-#   return(res) # no match
-# }
-
 
 # THIS NEEDS TO BE FOLDED INTO in_names()
 
@@ -151,45 +60,123 @@ get_match_ind <- function(what, nms, strict = TRUE) {
   }
 }
 
+# @param arg_spec character string describing what we want to match, e.g. "sin(grab_this)"
+# @param test is a function that takes the concordance produced by <arg_spec>
+# and returns a message saying what's wrong. If that message is "", the test passes.
+# Works on a single line
 
-# get_val_by_class <- function(capture, what, strict = TRUE, message = "Give a real message") {
-#
-#   for (k in capture$valid_lines) {
-#     nms <- ls(capture$names[[k]])
-#     for (j in seq_along(nms)) {
-#       val <- get(nms[j], capture$names[[k]])
-#       if (inherits(val, what)) return(val)
-#     }
-#   }
-#   return(no_match(message)) # no match found
-# }
+#' @export
+check_argument <- function(arg_spec, test) {
+  expanded <- as.list(parse(text = arg_spec)[[1]])
+  message <- sprintf("couldn't find match to %s", arg_spec)
+  the_fun <- expanded[[1]]
+  f <- function(capture) {
+    all_calls <- get_functions_in_line(capture$expressions, line = capture$line)
+    inds = which(all_calls$fun_names == the_fun)
+    for (j in inds) {
+      call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
+      result <- corresponding_arguments(call_to_check, expanded)
+      message <- test(result)
+      if(message == "") {
+        # see if <result> passes the test.
+        # If so, we're done
+        # In not, try the next match
+        capture$passed <- TRUE
+        capture$message <- message
+        return(capture)
+      }
+    }
+    # None of the matches passed the test
+    capture$passed <- FALSE
+    capture$line <- NA
+    capture$message <- message
 
-
-
-get_val_by_argument <- function(capture, what, strict = TRUE, message = "Give a real message") {
-  # get the object produced by the first line of the command that matches
-stop("Not yet implemented")
+    capture
+  }
+  f
 }
 
 
-# get_val_by_text_match <- function(capture, what, strict = TRUE, message = "Give a real message") {
-#   # get the object produced by the first line of the command that matches
-#   stop("Not yet implemented")
-# }
-#
-# # create a no-match object
-# no_match <- function(message) {
-#   res <- message
-#   attr(res, "no_match") <- TRUE
-#
-#   res
-# }
-#
-# # test for a no-match object, returning
-# # the message string if it's no match
-# # or "" if there is a match.
-# is_match <- function(res) {
-#   is.null(attr(res, "no_match"))
-# }
+get_function_from_call <- function(call) {
+  res <- call[[1]]
+  if (is.name(res)) res <- get(as.character(res))
 
+  res
+}
+
+# @param value -- a simple value that can be tested by equality
+# @param test -- a function that carries out the test,
+# e.g. check_number(), check_class(), check_data_frame()
+# @param which -- the name or index of the grabbed element to check. Defaults to the first,
+# which is appropriate if there is just one argument being grabbed.
+# @param diag if TRUE, give a more diagnostic version of the source of any error
+
+#' @export
+arg_is <- function(value, which = 1, diag = FALSE, test = NULL) {
+  message <- if (diag) sprintf("argument %s should have value %s.", which, as.character(value))
+  else sprintf("argument %s has wrong value.", which)
+  function(concordance) {
+    if (is.null(test) ) {
+      if (concordance$grabbed[[which]] == value) return("")
+      else return(message)
+    } else {
+      return(test(concordance$grabbed[[which]]))
+    }
+  }
+}
+
+# create a correpondance between the arguments in two function calls
+#' @export
+corresponding_arguments <- function(one, reference) {
+  get_arg_list <- function(the_call) {
+    # expand the call so that all arguments have their
+    # corresponding names in the formal (or a number for primitives)
+    if (is.expression(the_call)) the_call <- as.call(the_call[[1]])
+    the_fun <- get_function_from_call(the_call)
+    if (is.primitive(the_fun)) {
+      result <- as.list(the_call)[-1]
+      names(result) <- 1:length(result)
+    } else {
+      expanded <- match.call(the_fun, the_call)
+      result <- as.list(expanded)[-1]
+    }
+
+    result
+  }
+  args_one <- get_arg_list(one)
+  args_ref <- get_arg_list(reference)
+
+  grabbed <- list()
+  mismatch <- character(0)
+  missing <- character(0)
+  for (nm in names(args_ref)) {
+    if ( ! nm %in% names(args_one)) {
+      # keep track of which arguments didn't match
+      missing[length(missing) + 1] <- nm
+      next
+    }
+    if (is.null(args_ref[[nm]])) next # we're not concerned about the value
+    if (args_ref[[nm]] == as.name("grab_this")) {
+      grabbed[[nm]] <- args_one[[nm]]
+    } else {
+      # check to see if the values match
+      if (is.call(args_ref[[nm]])) {
+        # function call, so recurse
+        result <- corresponding_arguments(args_one[[nm]], args_ref[[nm]])
+        grabbed <- c(grabbed, result$grabbed)
+        missing <- c(missing, result$missing)
+        mismatch <- c(mismatch, result$mismatch)
+      } else if (args_ref[[nm]] != args_one[[nm]]) {
+        mismatch[length(mismatch) + 1] <- nm
+      }
+    }
+  }
+  return(list(grabbed = grabbed, missing = missing, mismatch = mismatch))
+}
+
+#' @export
+grab_this <- function() {
+  # an empty function to be used as a signal to grab the argument in this place
+  NULL
+}
 

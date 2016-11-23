@@ -1,27 +1,5 @@
 #' Check values of objects
 #'
-# #' @param capture a capture object
-# #' @param test a function that takes one argument, the value to be checked.
-# #' Typically this function will be constructed by functions such as the test to run to evaluate the captured value
-# #' @param message the message to give if the test fails
-# #' @export
-# check_value <- function(capture, test, message = "Give a helpful message!") {
-#   if ( ! capture$pass) return(capture) # non-passing input given, so don't do test
-#
-#   val <- attr(capture, "value")
-#   if (is.null(val)) {
-#     capture$message <- "No value captured"
-#     capture$pass <- FALSE
-#   } else {
-#     passing <- test(val)
-#     if ( ! passing) {
-#       capture$pass <- FALSE
-#       capture$message <- message
-#     }
-#   }
-#
-#   capture
-# }
 
 # pm is in absolute numbers
 # tol is how far the ratio is from 1
@@ -29,25 +7,34 @@
 
 #' @export
 check_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, diag = FALSE) {
+  message <- if(diag) {
+    sprintf("should be %s", x)
+  } else {
+    sprintf("has wrong numerical value")
+  }
+
   f <- function(val) {
-    if (x == 0) return(val == 0)
-    if (length(range) == 2) return(val >= min(range) & val <= max(range))
-    if ( ! is.null(tol)) return(abs(val / x - 1) < tol)
-    if ( ! is.null(pm)) return(abs(x - val) < pm)
+    if (x == 0) return(ifelse(val == 0, "", message))
+    if (length(range) == 2) return(ifelse(val >= min(range) & val <= max(range), "", message))
+    if ( ! is.null(tol)) return(ifelse(abs(val / x - 1) < tol, "", message))
+    if ( ! is.null(pm)) return(ifelse(abs(x - val) < pm, "", message))
   }
   f
 }
 
 #' @export
-check_class <- function(x) {
+check_class <- function(x, diag = FALSE) {
+  message <- if(diag) {
+    sprintf("should have class %s", x)
+  } else {
+    "has wrong class."
+  }
+
   f <- function(val) {
-    inherits(val, x)
+    ifelse(inherits(val, x), "", message)
   }
   f
 }
-
-# names should the names match?
-#
 
 #' @export
 check_data_frame <- function(df, names_contain = TRUE, names_match = FALSE,

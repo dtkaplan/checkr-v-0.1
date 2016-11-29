@@ -96,7 +96,10 @@ check_argument <- function(arg_spec, test) {
     # None of the matches passed the test
     capture$passed <- FALSE
     capture$line <- NA
-    capture$message <- message
+    capture$message <- paste("in function call",
+                             sprintf("%s", as.character(the_fun)),
+                             "the argument",
+                             message)
 
     capture
   }

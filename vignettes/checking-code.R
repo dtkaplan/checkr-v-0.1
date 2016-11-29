@@ -142,10 +142,17 @@ test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))},
                       'include both hp and the covariate as explanatory variables')
 test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt))
 
+## ------------------------------------------------------------------------
+submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_1 %>% test_1 %>% test_4 %>% show_results
+submission_3 %>% test_1 %>% test_4 %>% show_results
+
 ## ----eval = FALSE--------------------------------------------------------
-#  submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-#  submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-#  submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-#  submission_1 %>% test_1 %>% test_4  %>% show_results
-#  submission_3 %>% test_1 %>% test_4 %>% show_results
+#  
+#  submission_1 <- capture.code(expand_magrittr("mtcars %>% filter(mpg > 15)"))
+#  test_1 <- fcall("filter()", "should call filter()")
+#  test_2 <- check_argument("mpg > grab_this", match_number(15))
+#  submission_1 %>% test_1 %>% test_2
 

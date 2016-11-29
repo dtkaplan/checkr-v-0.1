@@ -24,6 +24,13 @@
 capture.code <- function(code_text = NULL) {
   # Get the code from its file or text form
   # turn it into evaluatable commands
+
+  code_text <- unlist(strsplit(code_text, "[\n;]"))
+  # deconstruct any magrittr chains
+  for (k in seq_along(code_text))
+    code_text[k] <- expand_chain(code_text[k])
+  code_text <- paste0(code_text, "\n")
+
   commands <- parse(text = paste(code_text, collapse = "\n"))
 
   R <- list()

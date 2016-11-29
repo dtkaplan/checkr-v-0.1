@@ -258,3 +258,39 @@ submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 submission_1 %>% test_1 %>% test_4 %>% show_results
 submission_3 %>% test_1 %>% test_4 %>% show_results
 ```
+
+## Magrittr pipelines
+
+Magrittr pipelines are translated into a sequence of commands. For instance,
+```
+foobar <- mtcars %>% filter(mpg > 15) %>% select(mpg)
+```
+will be evaluated as if it were
+```
+filter(mtcars, mpg > 15) -> ..tmp1..
+select(..tmp1.., mpg) -> foobar
+```
+
+This allows tests to be constructed as if each step in the chain were a separate command; the test statements can be constructed in the ordinary way. Do remember that the first argument to `dplyr` data verbs is `.data =`.
+
+
+```{r}
+submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
+test_1 <- fcall("filter()", "should call filter()")
+test_2 <- check_argument("mpg > grab_this", match_number(15))
+test_2A <- check_argument("mpg > grab_this", match_number(16))
+test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, diag = TRUE))
+submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
+
+```
+
+STILL NEED TO HANDLE INTERNAL CHAINS and EXPLICIT "dot" arguments.
+
+This is not working. I think I need a new check_argument_symbol() that won't try to evaluate the symbols.
+```{r eval = FALSE}
+submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
+test_4 <- fcall("group_by()")
+test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
+submission_2 %>% test_4 %>% test_5
+```

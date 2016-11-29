@@ -44,9 +44,16 @@ capture.code <- function(code_text = NULL) {
     R[[k]] <- eval(commands[k], envir = environments[[k]])
   }
 
+  statements <- lapply(statements, FUN = as.character)
+  # too simple fix to parse magrittr statements
+  # put in the . argument explicitly
+  # problem: Doesn't check for already existing . arguments
+  # Taking it out
+  #  statements <- gsub("%>% (+[a-zA-z._]*\\()", "%>% \\1\\.,", statements)
+
   list(returns = R,
        names = environments,
-       statements = lapply(statements, FUN = as.character),
+       statements = statements,
        expressions = commands,
        valid_lines = 1:length(R),
        passed = TRUE,

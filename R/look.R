@@ -84,10 +84,18 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
 in_factory <- function(where) {
   f <- function(what, message = NULL, regex = NULL, number = NULL, class = NULL, mistake = FALSE, ...) {
     mode = "match"
-    if (!is.null(regex)) mode <- "regex"
-    if (!is.null(number)) mode <- "number"
-    if (!is.null(class)) mode <- "class"
-
+    if (!is.null(regex)) {
+      mode <- "regex"
+      what <- regex
+    }
+    if (!is.null(number)) {
+      mode <- "number"
+      what <- number
+    }
+    if (!is.null(class)) {
+      mode <- "class"
+      what <- class
+    }
     if (is.null(message))
       message <-
         sprintf("couldn't find match to %s'%s'",
@@ -132,7 +140,9 @@ fcall <- function(fun_spec, message = NULL, mistake = FALSE, diag = FALSE) {
       all_calls <- get_functions_in_line(capture$expressions, line = j)
       inds = which(all_calls$fun_names == the_fun)
       for (i in inds) {
-        call_to_check <- as.call(parse(text = as.character(all_calls$args[[i]])))
+        call_to_check <- try(as.call(all_calls$args[[i]]), silent = TRUE)
+        if (inherits(call_to_check, "try-error"))
+          call_to_check <- as.call(parse(text = as.character(all_calls$args[[i]])))
         result <- corresponding_arguments(call_to_check, reference_call)
         if (length(result$missing) == 0 && length(result$mismatch) == 0) {
           # no problems found
@@ -141,6 +151,7 @@ fcall <- function(fun_spec, message = NULL, mistake = FALSE, diag = FALSE) {
             # found the sought-after pattern
             capture$passed <- FALSE
             capture$message <- message
+            capture$line <- j
           } else {
             capture$passed <- TRUE
             capture$message <- ""
@@ -186,6 +197,7 @@ get_functions_in_line <- function(expressions, line) {
 walk_tree <- function(EX, fun_names) {
   # get the function and arguments at the highest level
   if (length(EX) == 1) {
+    if (class(EX) == "call") EX <- EX[[1]]
     if (any(EX == fun_names)) res <- as.character(EX)
     else res <- NULL
   } else if (any(EX[[1]] == fun_names)) {

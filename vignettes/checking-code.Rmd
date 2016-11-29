@@ -11,6 +11,7 @@ vignette: >
 
 ```{r include = FALSE}
 library(ggplot2)
+library(dplyr)
 library(checkr)
 ```
 
@@ -74,6 +75,26 @@ capture.code(submission_3) %>% test_1 %>% test_2 %>% test_3 %>% show_results
 ```
 `test_1` was passed, but `test_2`, which checks to see that the first argument is `2`, failed. `test_3` was not even run, because `test_2` already failed.
 
+## Framework for testing
+
+Before it can be tested, the student answer must run, even if the answer is not correct.
+
+Each student answer will be broken into command lines. A command line contains a complete R command, even if it appears to be divided into multiple text lines. The command line may include assignment, but does not need to.
+
+There are three basic kinds of tests:
+
+1. A location test. That there exists some command line that matches the specified criterion. Location tests look through the command lines in a student answer to find the match. Location tests have several forms:
+    - a character string matches 
+    - a specified function (and, optionally, specified arguments) is called
+    - assignment to a name is done by the statement.
+    Failure to find a location means that the overall test fails. But if the test is passed, you can do additional location tests. At the end of the location-test sequence, you can optionally test for a final value of the last-located command, or the argument to a function in that last-located command.
+2. A final value test. The value computed by that located line matches a specified criterion.
+3. An argument test value. An argument to a function invoked on the located line matches a specified argument.
+
+Before you can apply tests of a value or an argument, a line must have been previously located. So a location test should always be the first test in every sequence. [[I can't decide whether one-line answers should be able to skip the locator.]]
+
+Using `then()` and `previously()` enables you to specify that a given locator test should match the code before or after a previous locator test.
+
 ## A richer example
 
 Here's a problem that's more difficult: Using `ggplot()`, make a scatterplot of miles-per-gallon versus horsepower in the `mtcars` data.
@@ -84,47 +105,156 @@ Let's look at these possible submissions:
 submission_1 <- "ggplot(mtcars, aes(x = mpg, y = hp)) + geom_point()" # Wrong!
 submission_2 <- "ggplot(mtcars, aes(x = hp, y = mpg)) + geom_line()" # Wrong!
 submission_3 <- "ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" # right
-submission_4 <- "mtcars %>% ggplot(aes(y = mpg, x = hp)) + geom_point" # also right
-submission_5 <- "mtcars %>% ggplot() + geom_point(aes(x = hp, y = mpg))" # also right
-submission_6 <- "mtcars %>% ggplot(aes(x = hp)) + geom_point(aes(y=mpg))" # odd, but right
+submission_4 <- "ggplot(mtcars) + geom_point(aes(y = mpg, x = hp))" # also right
+submission_5 <- c(
+"my_cars <- mtcars",
+"ggplot(my_cars, aes(y = mpg, x = hp)) + geom_point()")
+submission_6 <- c(
+"my_cars <- mtcars %>% select(mpg, hp)",
+"ggplot(my_cars, aes(y = mpg, x = hp)) + geom_point()")
 ```
 
-Submission 1 has the roles of the variables `mpg` and `hp` reversed from the problem statement. Submission 2 uses `geom_line()` instead of the required `geom_point()`. Submissions 3 through 6 will all create the specified plot, but each is arranged in a different way.
+Submission 1 has the roles of the variables `mpg` and `hp` reversed from the problem statement. Submission 2 uses `geom_line()` instead of the required `geom_point()`. Submissions 3 and 4 will all create the specified plot, but each is arranged in a different way.
 
 Here are some tests. Remember, the second argument is the message to return if the test *fails*.
 ```{r}
-test_1 <- fcall("ggplot(mapping = aes(x = hp, y = whatever))", "variable 'hp' goes on the x axis")
-test_2 <- fcall("ggplot(mapping = aes(y = mpg, x = whatever))", "variable 'mpg' goes on the y axis")
+test_1 <- fcall("aes(x = hp, y = whatever)", "variable 'hp' goes on the x axis")
+test_2 <- fcall("aes(y = mpg, x = whatever)", "variable 'mpg' goes on the y axis")
 test_3 <- fcall("geom_point()", "include a 'geom_point()' layer")
 test_4 <- in_statements("mtcars") 
 test_5 <- fcall("ggplot(data = whatever)", "no data handed to ggplot()")
-test_6 <- check_argument("ggplot(data = grab_this)", test = check_class("data.frame"))
-test_7 <- check_argument("ggplot(data = grab_this)", check_data_frame(mtcars))
+test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
+test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
+test_8 <- check_argument("ggplot(data = grab_this)", 
+                         match_data_frame(mtcars, diag = TRUE))
+test_9 <- check_argument("ggplot(data = grab_this)",
+                         match_data_frame(
+                           mtcars %>% select(hp, mpg, carb), 
+                           diag = TRUE))
 ```
 
-We'll chain these five tests together and see the results for the different submissions.
+We'll chain these seven tests together and see the results for the different submissions.
 ```{r}
 capture.code(submission_1) %>% 
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
   show_results
 capture.code(submission_2) %>%
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+  show_results
+capture.code(submission_3) %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
+  show_results
+capture.code(submission_4) %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
   show_results
 ```
 
-YOU WERE GOING TO DO THIS FOR THE REMAINING SUBMISSIONS.
+These examples show passes and fails when checking the value of an argument to a function.
 
-BUT ... Ran into problema 
-
-- `capture.code(submission_3) %>% test_3` doesn't work.
-- also, `test_6` doesn't work.
-
-DEBUG
-
-```r
-capture.code(submission_3) %>%
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% 
+```{r}
+capture.code(submission_5) %>%
+  test_5 %>% test_7 %>%
   show_results
-%>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
+capture.code(submission_6) %>%
+  test_5 %>% test_7 %>%
   show_results
+capture.code(submission_6) %>%
+  test_5 %>% test_8 %>%
+  show_results
+capture.code(submission_6) %>%
+  test_5 %>% test_9 %>%
+  show_results
+
+```
+  
+
+## Checking values
+
+Each command produces a value. You have access to these, both named and unnamed. 
+
+For instance, this command does some arithmetic and creates a `ggplot` object.
+
+```{r}
+submission_1 <- "
+3 + 5
+ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" 
+```
+
+A simple test for this is:
+```{r}
+test_1 <- in_values(class = "ggplot")
+capture.code(submission_1) %>%
+  test_1 %>%
+  show_results
+```
+
+But if we were looking for a `lattice` graphics object, the submission fails:
+```{r}
+test_2 <- in_values(class = "lattice")
+capture.code(submission_1) %>%
+  test_2 %>%
+  show_results
+```
+
+If either would suffice ...
+```{r}
+test_3 <- either(test_1, test_2)
+capture.code(submission_1) %>%
+  test_3 %>%
+  show_results
+```
+
+Suppose that we want to check that a number near 8 is created ...
+```{r}
+test_4 <- in_values(number = c(7.9, 8.1))
+capture.code(submission_1) %>% test_4 %>%
+  show_results
+```
+
+## Checking the value itself
+
+
+A sequence of odd numbers from 11 to 31 (inclusive) using the colon operator.
+
+```{r}
+submission_1 <- capture.code("seq(11, 31, by = 2)") # right value, but not what was asked
+submission_2 <- capture.code("11 + 2*(0:10)") # right
+submission_3 <- capture.code("11 + 2*(1:11)") # uses colon, but wrong result
+
+```
+
+```{r}
+test_1 <- fcall("whatever : whatever", "you didn't use the colon operator")
+test_2 <- check_value(match_vector(seq(11, 31, by = 2), diag = TRUE))
+
+submission_1 %>% test_1 %>% test_2 %>% show_results
+submission_2 %>% test_1 %>% test_2 %>% show_results
+submission_3 %>% test_1 %>% test_2 %>% show_results
+```
+
+
+
+Suppose we ask the student to construct a somewhat complicated object that we want to run some checks on. For instance, "Construct a model of `mpg` versus `hp` using `wt` as a covariate."
+
+```{r}
+submission_1 <- capture.code("lm(mpg ~ hp, data = mtcars)")  # wrong
+submission_2 <- capture.code("lm(mpg ~ hp + wt, data = mtcars)") # right
+submission_3 <- capture.code("lm(mpg ~ wt, data = mtcars)") # wrong
+```
+
+```{r}
+test_1 <- fcall("lm(data = mtcars)", "use lm() on mtcars data")
+test_2 <- check_value(function(x) {'wt' %in% names(coef(x))}, 
+                      "what about the covariate wt?")
+test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))}, 
+                      'include both hp and the covariate as explanatory variables')
+test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt))
+```
+
+```{r}
+submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+submission_1 %>% test_1 %>% test_4 %>% show_results
+submission_3 %>% test_1 %>% test_4 %>% show_results
 ```

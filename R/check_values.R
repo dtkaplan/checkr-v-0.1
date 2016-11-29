@@ -6,9 +6,13 @@
 # range is a numerical range
 
 #' @export
-check_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, diag = FALSE) {
-  message <- if(diag) {
-    sprintf("should be %s", x)
+match_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, diag = FALSE) {
+  message <- sprintf("should be %s", x)
+  if(diag) {
+    if ( ! is.null(range) && length(range) == 2)
+      message <- sprintf("should be in range %s to %s", range[1], range[2])
+    if ( ! is.null(tol))
+      message <- sprintf("should be %s plus or minus %s", x, tol)
   } else {
     sprintf("has wrong numerical value")
   }
@@ -23,7 +27,58 @@ check_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, diag = FALSE) {
 }
 
 #' @export
-check_class <- function(x, diag = FALSE) {
+
+match_vector <- function(x, same_order = TRUE, diag = FALSE) {
+  f <- function(val) {
+    if ( ! is.vector(val)) {
+      return(paste("should be a vector", ifelse(diag, capture.output(x), "")))
+    }
+    if (same_order) {
+      if (length(val) == length(x) && all(x == val)) return("")
+
+      if (diag) return(sprintf("doesn't match %s", capture.output(x)))
+      else return("isn't an exact match")
+
+    }
+    missing <- val[ ! val %in% x]
+    excess <- x[ ! x %in% val]
+
+    if (length(val) != length(x)) {
+      if (diag) {
+        return(sprintf("vector should have length %s", nrow(x)))
+      } else {
+        return(sprintf("vector has wrong length"))
+      }
+    } else {
+      if (length(excess) > 0) res <- paste("has excess elements",
+                                           ifelse(diag, capture.output(excess), "" ))
+      if (missing(excess) > 0) res <- paste(res, ifelse(nchar(res) > 0, "and", ""),
+                                     "is missing elements",
+                                     ifelse(diag, capture.output(excess), "" ))
+    }
+    return(res)
+
+  }
+  f
+}
+
+# @param x a list or vector with names
+#' @export
+#'
+match_names <- function(x, diag = FALSE) {
+  message <- if(diag) sprintf("should have names %s", capture.output(names(x)))
+             else "doesn't match required names"
+  f <- function(val) {
+    result <- all(names(val) %in% names(x)) && all(names(x) %in% names(val))
+
+    if (result) return("")
+    else return(message)
+  }
+  f
+}
+
+#' @export
+match_class <- function(x, diag = FALSE) {
   message <- if(diag) {
     sprintf("should have class %s", x)
   } else {
@@ -37,7 +92,40 @@ check_class <- function(x, diag = FALSE) {
 }
 
 #' @export
-check_data_frame <- function(df, names_contain = TRUE, names_match = FALSE,
+match_formula <- function(answer) {
+  f <- function(student) {
+    res <- f_same_response(student, answer)
+    if (nchar(res) != 0) return(res)
+    res <- f_same_explanatory(student, answer)
+    if (nchar(res) != 0) return(res)
+
+    return("")
+  }
+  f
+}
+
+#' @export
+is_in_formula <- function(student, answer) {
+  res <- ""
+  if (length(answer) > 2) res <- f_same_response(student, answer)
+  if (nchar(res) != 0) return(res)
+
+  res <- f_same_explanatory(student, answer)
+  missing <- attr(res, "missing")
+  if (length(missing) > 0)
+    return(paste("formula missing", paste0("'", missing, ", ", collapse = "")))
+  else return("")
+}
+
+# @param names_contain if \code{TRUE} (default), all the names in df must be in the
+# data frame being checked
+# @parm names_match if \code{TRUE}, all the names in the data frame being checked must be
+# in the reference df. default: \code{FALSE}
+# @param nrow if \code{TRUE}, the number of rows must be the same
+# @param classes if \code{TRUE} the matching variables must be of the same class
+# @param diag if \code{TRUE} give a more diagnostic message about mis-matches.
+#' @export
+match_data_frame <- function(df, names_contain = TRUE, names_match = FALSE,
                              nrow = FALSE, classes = FALSE, diag = FALSE) {
   connector <- function(m) ifelse(nchar(m) > 0, "and ", "")
   f <- function(val) {
@@ -47,6 +135,7 @@ check_data_frame <- function(df, names_contain = TRUE, names_match = FALSE,
       missing <- nm[ ! nm %in% names(val)]
       if (length(missing) > 0) {
         message <- paste0(connector(message), "missing variables",
+                          ifelse(diag, " ", ""),
                          ifelse(diag, paste0("'", missing, "'", collapse = ", " ), ""))
       }
     }
@@ -84,7 +173,7 @@ check_data_frame <- function(df, names_contain = TRUE, names_match = FALSE,
         message <- paste0(message, connector(message), to_add)
       }
     }
-    return(paste0(ifelse(nchar(message) > 0, "Data frame ", ""),
+    return(paste0(ifelse(nchar(message) > 0, "data frame ", ""),
                   message, ifelse(nchar(message) > 0,  ".", "")))
   }
   f

@@ -7,7 +7,8 @@
 check_value(test, message = NULL, mistake = FALSE)
 }
 \arguments{
-\item{test}{a function taking one value as an argument. The test to run to evaluate the captured value}
+\item{test}{a function taking one value as an argument. The test to run to evaluate the captured value. Should
+return \code{""} if passing, non-empty message string if not}
 
 \item{message}{the message to give if the test fails}
 

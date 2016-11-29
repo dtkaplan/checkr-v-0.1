@@ -20,7 +20,7 @@ test_that("data frame variable name comparison works", {
   data(CPS85, package = "mosaicData")
   small <- CPS85 %>% head %>% select(wage, age)
   expect_equal("", check_data_frame(small)(CPS85))
-  expect_equal("Data frame missing variables.", check_data_frame(CPS85)(small))
+  expect_equal("data frame missing variables.", check_data_frame(CPS85)(small))
   # show the names of the missing variables
   expect_true(grepl("'exper', 'union', 'sector'", check_data_frame(CPS85, diag = TRUE)(small)))
 
@@ -46,3 +46,4 @@ test_that("data frame class comparison works", {
                check_data_frame(small, classes = TRUE, diag = TRUE)(CPS85))
 
 })
+

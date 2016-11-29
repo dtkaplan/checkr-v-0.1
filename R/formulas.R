@@ -1,18 +1,6 @@
 #' checks on formula's
-#'
 
-A <- wage ~ age * sex + sector*educ
-B <- wage ~ educ * sector + sex * age
 
-#' @export
-compare_model_formulas <- function(student, answer) {
-  res <- f_same_response(student, answer)
-  if (nchar(res) != 0) return(res)
-  res <- f_same_explanatory(student, answer)
-  if (nchar(res) != 0) return(res)
-
-  return("")
-}
 
 # check that the formula includes specified terms
 # (there may be additional ones)

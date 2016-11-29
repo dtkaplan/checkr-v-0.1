@@ -14,7 +14,8 @@
 # # check_value()
 
 #' @param capture a capture object
-#' @param test a function taking one value as an argument. The test to run to evaluate the captured value
+#' @param test a function taking one value as an argument. The test to run to evaluate the captured value. Should
+#' return \code{""} if passing, non-empty message string if not
 #' @param message the message to give if the test fails
 #' @export
 check_value <- function(test, message = NULL, mistake = FALSE) {
@@ -32,7 +33,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
     }
     value <- capture$returns[[capture$line]]
     result <- test(value)
-    if ((mistake && result) || !result) {
+    if ((mistake && result != "") || result == "") {
       # either the mistaken pattern was found, so the test should fail
       # or the pattern was not found when it should have been (mistake == TRUE) and
       # so the test fails
@@ -71,12 +72,18 @@ check_argument <- function(arg_spec, test) {
   message <- sprintf("couldn't find match to %s", arg_spec)
   the_fun <- expanded[[1]]
   f <- function(capture) {
+    if ( ! capture$passed) return(capture) # short circuit the test
+    if ( ! capture$line %in% capture$valid_lines)
+      stop("Test designer should specify a previous test that finds the line to examine.")
     all_calls <- get_functions_in_line(capture$expressions, line = capture$line)
     inds = which(all_calls$fun_names == the_fun)
     for (j in inds) {
       call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
       result <- corresponding_arguments(call_to_check, expanded)
-      message <- test(result)
+      for (i in seq_along(result$grabbed)) {
+        message <- test(eval(result$grabbed[[i]], envir = capture$names[[capture$line]]))
+        if(message == "") break # it passed, so no need to check others
+      }
       if(message == "") {
         # see if <result> passes the test.
         # If so, we're done
@@ -137,6 +144,7 @@ corresponding_arguments <- function(one, reference) {
       result <- as.list(the_call)[-1]
       names(result) <- 1:length(result)
     } else {
+      if (is.list(the_call)) the_call <- as.call(the_call)
       expanded <- match.call(the_fun, the_call)
       result <- as.list(expanded)[-1]
     }

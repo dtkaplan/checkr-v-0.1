@@ -96,16 +96,17 @@ in_factory <- function(where) {
       mode <- "class"
       what <- class
     }
-    if (is.null(message))
+    if (is.null(message)) {
       message <-
         sprintf("couldn't find match to %s'%s'",
                 ifelse(mode == "number", "number ",
                        ifelse(mode == "class", "class ",
                        ifelse(mode == "regex", "regex ", ""))),
                 as.character(what))
+    }
 
-        find_content(where = where, mode = mode, what = what,
-                     message = message, regex = regex, number = number, class = class, ...)
+    find_content(where = where, mode = mode, what = what,
+                 message = message, regex = regex, number = number, class = class, ...)
   }
   f
 }

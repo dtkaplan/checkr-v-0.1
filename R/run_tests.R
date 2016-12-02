@@ -14,7 +14,12 @@ run_tests <- function(label=NULL,
   # while debugging
   if(debug) {
     save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
-    saveRDS(list(label = label, user_code = user_code, check_code = check_code, envir = envir_result, evaluate_result = evaluate_result),
+    saveRDS(list(label = label,
+                 user_code = user_code,
+                 solution_code = solution_code,
+                 check_code = check_code,
+                 envir = envir_result,
+                 evaluate_result = evaluate_result),
           file = save_file_name)
   }
   # the tests

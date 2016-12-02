@@ -18,7 +18,68 @@ library(checkr)
 knitr::opts_chunk$set(exercise.checker = checkr::run_tests)
 ```
 
+As part of developing the `checkr` user interface, I'm implementing a variety R-related exercises. The point is to see whether concise, transparent, and useful checks can be written, and figure out what new facilities are needed to support such checks.
+
+The exercises in this document are derived from <http://r-exercises.com>. In some cases, I've broken them into simpler parts.
+
 [[Note in draft]]: Idea for example exercises. See <http://r-exercises.com/2016/11/28/data-frame-exercises-vol-2/>
+
+## First bunch
+
+a. Create a vector named `Id` that has contents `1 1 1 2 2 2 3 3 3 4 4 4`. Use the `rep()` function to do this.
+```{r bunch-1-a, exercise = TRUE, echo = FALSE}
+
+```
+
+```{r bunch-1-a-solution, echo = FALSE}
+Id <- rep(1:4, each = 3)
+```
+
+```{r bunch-1-a-hint-1, echo = FALSE}
+1:4
+```
+
+```{r bunch-1-a-hint-2, echo = FALSE}
+rep(1:4, ___ = 3)
+```
+
+```{r bunch-1-a-check, echo = FALSE}
+test_1 <- fcall("rep()", "remember to use the `rep()` function!")
+test_2 <- fcall("whatever <- whatever", "give the result a name.")
+test_3 <- in_names('Id', "give the result the name `Id`.")
+# I'd like to use a test like this
+test_4 <- fcall("rep(whatever, each = whatever)", "use the `each` argument to `rep()")
+# but rep is a primitive, so I can't. Instead:
+test_4 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
+test_5 <- fcall("rep(1:4, whatever)", "note that the sequence 1, 2, 3, 4 is repeated 3 times in the output.")
+test_6 <- check_value(match_vector(rep(1:4, each = 3, diag = TRUE)), "the output value is not correct")
+USER_CODE %>% test_1 %>% test_2 %>% test_3 %>% test_5 %>% test_4 %>% test_6
+```
+
+
+b. Create a vector named `Letter` that contains `"a" "b" "c" "a" "b" "c" "a" "b" "c" "a" "b" "c"`
+
+
+c. More stuff
+
+```{r}
+Id <- rep(1:4, each = 3)
+x <- seq(1, 43, along.with=Id)
+y <- seq(-20,0, along.with=Id)
+Letter <- rep(c("a", "b", "c"), 4)
+df <- data.frame(Id, Letter, x, y)
+```
+
+Consider two vectors:
+```{r}
+x <- seq(1, 43, along.with=Id)
+y <- seq(-20,0, along.with=Id)
+```
+Create a data.frame `df` that has this value. :
+```{r}
+df
+```
+
 
 
 
@@ -35,9 +96,8 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-test_0 <- fcall("NULL + NULL", "use addition (+)")
-test_1 <- fcall("2 + NULL", "first argument should be two ")
-test_2 <- fcall("NULL + 2", "second argument should also be two")
-test_3 <- fcall("2 + 2", "remember to add two plus two")
-USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
+test_0 <- fcall("whatever + whatever", "use addition (+)")
+test_1 <- fcall("2 + whatever", "first argument should be two ")
+test_2 <- fcall("whatever + 2", "second argument should also be two")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 
 ```

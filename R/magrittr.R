@@ -8,7 +8,7 @@ my_test <- "foo <- mtcars %>% select(hp, mpg, carb) %>% filter(mpg > 15)"
 #' @export
 expand_chain <- function(chain_string) {
   components <- unlist(strsplit(chain_string, "%>%", fixed = TRUE))
-  if (length(components) == 1) return(chain_string)
+  if (length(components) <= 1) return(chain_string)
 
   # is there an assignment in the first component? Grab the variable name
   assigned_to <- stringr::str_match(components[1], "^( *[a-zA-Z0-9._]*) *<-")[2]

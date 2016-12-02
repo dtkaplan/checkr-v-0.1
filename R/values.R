@@ -33,7 +33,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
     }
     value <- capture$returns[[capture$line]]
     result <- test(value)
-    if ((mistake && result != "") || result == "") {
+    if ((mistake && result == "") || result != "") {
       # either the mistaken pattern was found, so the test should fail
       # or the pattern was not found when it should have been (mistake == TRUE) and
       # so the test fails
@@ -145,7 +145,7 @@ corresponding_arguments <- function(one, reference) {
     the_fun <- get_function_from_call(the_call)
     if (is.primitive(the_fun)) {
       result <- as.list(the_call)[-1]
-      names(result) <- 1:length(result)
+      if(length(result) > 0) names(result) <- 1:length(result)
     } else {
       if (is.list(the_call)) the_call <- as.call(the_call)
       expanded <- match.call(the_fun, the_call)
@@ -160,6 +160,7 @@ corresponding_arguments <- function(one, reference) {
   grabbed <- list()
   mismatch <- character(0)
   missing <- character(0)
+
   for (nm in names(args_ref)) {
     if ( ! nm %in% names(args_one)) {
       # keep track of which arguments didn't match
@@ -171,14 +172,19 @@ corresponding_arguments <- function(one, reference) {
       grabbed[[nm]] <- args_one[[nm]]
     } else {
       # check to see if the values match
-      if (is.call(args_ref[[nm]])) {
+      if (is.call(args_ref[[nm]]) && is.call(args_one[[nm]])) {
         # function call, so recurse
         result <- corresponding_arguments(args_one[[nm]], args_ref[[nm]])
         grabbed <- c(grabbed, result$grabbed)
         missing <- c(missing, result$missing)
         mismatch <- c(mismatch, result$mismatch)
-      } else if (args_ref[[nm]] != args_one[[nm]]) {
-        mismatch[length(mismatch) + 1] <- nm
+      } else if (is.name(args_ref[[nm]]) && is.name(args_one[[nm]])){
+        if (identical(args_ref[[nm]], args_one[[nm]])) NULL
+      } else {
+        if (is.call(args_ref[[nm]])) args_ref[[nm]] <- eval(args_ref[[nm]])
+        if (is.call(args_one[[nm]])) args_one[[nm]] <- eval(args_one[[nm]])
+        if (! identical(args_ref[[nm]], args_one[[nm]]))
+          mismatch[length(mismatch) + 1] <- nm
       }
     }
   }

@@ -1,0 +1,43 @@
+---
+title: "Examples of Code-Checking using tutor and checkr"
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(tutor)
+library(ggplot2)
+library(checkr)
+
+# A simple checker function
+
+# to put the info in a file
+# knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
+
+# to process it in the Rmd document
+knitr::opts_chunk$set(exercise.checker = checkr::run_tests)
+```
+
+[[Note in draft]]: Idea for example exercises. See <http://r-exercises.com/2016/11/28/data-frame-exercises-vol-2/>
+
+
+
+## Example 1
+
+Modify the code to add two and two:
+
+```{r, example_0, exercise = TRUE}
+1 + 3
+```
+
+```{r example_0-solution}
+2 + 2
+```
+
+```{r example_0-check}
+test_0 <- fcall("NULL + NULL", "use addition (+)")
+test_1 <- fcall("2 + NULL", "first argument should be two ")
+test_2 <- fcall("NULL + 2", "second argument should also be two")
+test_3 <- fcall("2 + 2", "remember to add two plus two")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
+```

@@ -44,20 +44,52 @@ rep(1:4, ___ = 3)
 ```
 
 ```{r bunch-1-a-check, echo = FALSE}
+# Simple test to see if it was done the way we wanted
+test_0 <- fcall("c(1,1,1,2,2)", "Use `rep()` for this exercise, not `c()`", mistake = TRUE)
 test_1 <- fcall("rep()", "remember to use the `rep()` function!")
 test_2 <- fcall("whatever <- whatever", "give the result a name.")
 test_3 <- in_names('Id', "give the result the name `Id`.")
-# I'd like to use a test like this
-test_4 <- fcall("rep(whatever, each = whatever)", "use the `each` argument to `rep()")
-# but rep is a primitive, so I can't. Instead:
 test_4 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
-test_5 <- fcall("rep(1:4, whatever)", "note that the sequence 1, 2, 3, 4 is repeated 3 times in the output.")
-test_6 <- check_value(match_vector(rep(1:4, each = 3, diag = TRUE)), "the output value is not correct")
-USER_CODE %>% test_1 %>% test_2 %>% test_3 %>% test_5 %>% test_4 %>% test_6
+test_all <- fcall("rep(eval(1:4), each = 3)", message = 
+                  "some hints: use `rep()` with 1:4 as an input", 
+                  diag = TRUE)
+test_result <- check_value(match_vector(rep(1:4, each = 3), diag = TRUE), "the output value is not correct")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_all %>% test_result
 ```
 
 
+
 b. Create a vector named `Letter` that contains `"a" "b" "c" "a" "b" "c" "a" "b" "c" "a" "b" "c"`
+
+```{r bunch-1-b, exercise = TRUE, echo = FALSE}
+
+```
+
+```{r bunch-1-b-solution, echo = FALSE}
+Letter <- rep(c("a","b","c"), each = 4)
+```
+
+```{r bunch-1-b-hint-1, echo = FALSE}
+c("a", "b", "c")
+```
+
+```{r bunch-1-b-hint-2, echo = FALSE}
+rep(___, each = 3)
+```
+
+```{r bunch-1-b-check, echo = FALSE}
+# Simple test to see if it was done the way we wanted
+test_0 <- fcall("rep()", "Use `rep()` for this exercise")
+test_1 <- fcall("whatever <- whatever", "give the result a name.")
+test_2 <- in_names('Letter', "give the result the name `Letter`.")
+test_3 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
+
+test_4 <- fcall("rep(eval(letters[1:3]), each = 4)", message = 
+                  "some hints: use `rep()` with the character vector 'a', 'b', 'c' as an input", 
+                  diag = TRUE)
+test_result <- check_value(match_vector(rep(letters[1:3], each = 4)), "the output value is not correct")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_result
+```
 
 
 c. More stuff

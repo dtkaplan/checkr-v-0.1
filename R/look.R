@@ -47,17 +47,14 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
           success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode %in% c("match", "regex") ) {
-        if (any(grepl(what, content, fixed = mode == "match"))) {
+        if ((mode == "match" && any(what == content)) ||
+            (mode != "match" && grepl(what, content))) {
           success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode == "number") {
         if (is.numeric(content) &&
             content >= min(what) &&
             content <= max(what)) {
-          success_flag <- TRUE; found_in_line <- k; break
-        }
-      } else if (mode == "names") {
-        if (any(grepl(what, content, fixed = mode == "match"))) {
           success_flag <- TRUE; found_in_line <- k; break
         }
       }
@@ -127,6 +124,7 @@ in_values <- in_factory("returns")
 # and whatever args are to be matched.
 #' @export
 fcall <- function(fun_spec, message = NULL, mistake = FALSE, diag = FALSE) {
+  fun_spec <- gsub("_{3,10}", "whatever", fun_spec) # accept ___ as equivalent to <whatever>
   if (is.null(message)) {
     message <-
       if (mistake) sprintf("should not be calling %s", fun_spec)

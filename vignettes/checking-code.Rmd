@@ -14,6 +14,8 @@ library(ggplot2)
 library(dplyr)
 library(checkr)
 ```
+[[NOTE in draft: Remember to explain `eval()` used as part of the function-call pattern, e.g. `"rep(eval(1:4))"` as a reference pattern will match `"rep(c(1,2,3,4))"` as a submission.]]
+
 
 In tutorial systems such as <DataCamp.com> or the `tutor` package in R, problems are posed that call for the student to enter code to solve a stated problem. This package provides a system for checking whether that code has done what's required and, if not, where the problem might fall.
 

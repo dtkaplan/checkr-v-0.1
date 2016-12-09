@@ -36,6 +36,12 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   success_message <- ifelse(mistake, message, "")
   fail_message <- ifelse(mistake, "", message)
   f <- function(capture) {
+    capture$created_by <-
+      if (where == "names") sprintf("that creates an object named '%s'.", what)
+      else if (where == "returns") sprintf("that returns an object like '%s'.", what)
+      else if (where %in% c("statements", "commands")) sprintf("that contains a command like '%s'.", what)
+      else "this is a meaningless created_by message. Shouldn't be happening."
+
     if ( ! capture$pass) return(capture) # short circuit if non-passing input
     success_flag <- FALSE
     found_in_line <- NA
@@ -133,6 +139,7 @@ fcall <- function(fun_spec, message = NULL, mistake = FALSE, diag = FALSE) {
   reference_call <- (parse(text = fun_spec))[[1]]
   the_fun <- reference_call[[1]]
   f <- function(capture) {
+    capture$created_by <- sprintf("a statement like '%s'", fun_spec)
     if ( ! capture$passed) return(capture) # short circuit test
     failed <- FALSE
     for (j in capture$valid_lines) {

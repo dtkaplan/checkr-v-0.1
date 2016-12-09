@@ -59,12 +59,28 @@ capture.code <- function(code_text = NULL) {
   # Taking it out
   #  statements <- gsub("%>% (+[a-zA-z._]*\\()", "%>% \\1\\.,", statements)
 
-  list(returns = R,
-       names = environments,
-       statements = statements,
-       expressions = commands,
-       valid_lines = 1:length(R),
-       passed = TRUE,
-       line = 0,
-       message = "")
+  res <-
+    list(returns = R,
+         names = environments,
+         statements = statements,
+         expressions = commands,
+         valid_lines = 1:length(R),
+         passed = TRUE,
+         line = 0,
+         message = "",
+         created_by = "capturing code")
+  class(res) <- "capture"
+
+  res
+}
+
+#' @export
+is.capture <- function(x) inherits(x, "capture")
+
+get_line_value <- function(cap) {
+  if (! is.capture(cap)) stop("Not a capture object")
+  res <- cap$returns[[cap$line]]
+  if (is.null(res)) res <- "no such command found"
+
+  res
 }

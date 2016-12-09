@@ -58,34 +58,34 @@ test_9 <- check_argument("ggplot(data = grab_this)",
                            mtcars %>% select(hp, mpg, carb), 
                            diag = TRUE))
 
-## ------------------------------------------------------------------------
-capture.code(submission_1) %>% 
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
-  show_results
-capture.code(submission_2) %>%
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-  show_results
-capture.code(submission_3) %>% 
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
-  show_results
-capture.code(submission_4) %>%
-  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-  show_results
+## ----eval = FALSE--------------------------------------------------------
+#  capture.code(submission_1) %>%
+#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+#    show_results
+#  capture.code(submission_2) %>%
+#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+#    show_results
+#  capture.code(submission_3) %>%
+#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+#    show_results
+#  capture.code(submission_4) %>%
+#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+#    show_results
 
-## ------------------------------------------------------------------------
-capture.code(submission_5) %>%
-  test_5 %>% test_7 %>%
-  show_results
-capture.code(submission_6) %>%
-  test_5 %>% test_7 %>%
-  show_results
-capture.code(submission_6) %>%
-  test_5 %>% test_8 %>%
-  show_results
-capture.code(submission_6) %>%
-  test_5 %>% test_9 %>%
-  show_results
-
+## ----eval = FALSE--------------------------------------------------------
+#  capture.code(submission_5) %>%
+#    test_5 %>% test_7 %>%
+#    show_results
+#  capture.code(submission_6) %>%
+#    test_5 %>% test_7 %>%
+#    show_results
+#  capture.code(submission_6) %>%
+#    test_5 %>% test_8 %>%
+#    show_results
+#  capture.code(submission_6) %>%
+#    test_5 %>% test_9 %>%
+#    show_results
+#  
 
 ## ------------------------------------------------------------------------
 submission_1 <- "
@@ -142,17 +142,26 @@ test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))},
                       'include both hp and the covariate as explanatory variables')
 test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt))
 
-## ------------------------------------------------------------------------
-submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
-submission_1 %>% test_1 %>% test_4 %>% show_results
-submission_3 %>% test_1 %>% test_4 %>% show_results
+## ----eval = FALSE--------------------------------------------------------
+#  submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+#  submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+#  submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+#  submission_1 %>% test_1 %>% test_4 %>% show_results
+#  submission_3 %>% test_1 %>% test_4 %>% show_results
 
 ## ----eval = FALSE--------------------------------------------------------
-#  
-#  submission_1 <- capture.code(expand_magrittr("mtcars %>% filter(mpg > 15)"))
+#  submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
 #  test_1 <- fcall("filter()", "should call filter()")
 #  test_2 <- check_argument("mpg > grab_this", match_number(15))
-#  submission_1 %>% test_1 %>% test_2
+#  test_2A <- check_argument("mpg > grab_this", match_number(16))
+#  test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, diag = TRUE))
+#  submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
+#  submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
+#  
+
+## ----eval = FALSE--------------------------------------------------------
+#  submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
+#  test_4 <- fcall("group_by()")
+#  test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
+#  submission_2 %>% test_4 %>% test_5
 

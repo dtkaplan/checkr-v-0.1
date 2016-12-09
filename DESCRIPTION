@@ -11,6 +11,6 @@ Depends: dplyr, magrittr, testthat
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests: testthat, magrittr,
-    knitr, stringr,
+    knitr, stringr, compare,
     rmarkdown
 VignetteBuilder: knitr

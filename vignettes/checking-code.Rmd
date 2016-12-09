@@ -136,7 +136,9 @@ test_9 <- check_argument("ggplot(data = grab_this)",
 ```
 
 We'll chain these seven tests together and see the results for the different submissions.
-```{r}
+
+FIX THESE STATEMENTS
+```{r eval = FALSE}
 capture.code(submission_1) %>% 
   test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
   show_results
@@ -153,7 +155,7 @@ capture.code(submission_4) %>%
 
 These examples show passes and fails when checking the value of an argument to a function.
 
-```{r}
+```{r eval = FALSE}
 capture.code(submission_5) %>%
   test_5 %>% test_7 %>%
   show_results
@@ -253,7 +255,7 @@ test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))},
 test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt))
 ```
 
-```{r}
+```{r eval = FALSE}
 submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 submission_2 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
@@ -276,7 +278,7 @@ select(..tmp1.., mpg) -> foobar
 This allows tests to be constructed as if each step in the chain were a separate command; the test statements can be constructed in the ordinary way. Do remember that the first argument to `dplyr` data verbs is `.data =`.
 
 
-```{r}
+```{r eval = FALSE}
 submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
 test_1 <- fcall("filter()", "should call filter()")
 test_2 <- check_argument("mpg > grab_this", match_number(15))

@@ -170,7 +170,7 @@ corresponding_arguments <- function(one, reference) {
     if (is.call(args_ref[[nm]]) && args_ref[[nm]][[1]] == as.name("eval"))
       args_ref[[nm]] <- eval(args_ref[[nm]])
     if (all(args_ref[[nm]] == as.name("whatever"))) next # we're not concerned about the value
-    if (all(args_ref[[nm]][1] == as.name("grab_this"))) {
+    if (all(args_ref[[nm]] == as.name("grab_this"))) {
       grabbed[[nm]] <- args_one[[nm]]
     } else {
       # check to see if the values match

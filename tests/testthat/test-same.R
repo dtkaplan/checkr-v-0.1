@@ -7,8 +7,8 @@ test_that("in_both() works", {
   env1 <- list(a = 1, b = 2)
   env2 <- list(a = 11, b = 22)
   env3 <- list(b = 22, c = 33)
-  expect_true(checkr:::in_both('a', env1, env2)$pass)
-  expect_false(checkr:::in_both('a', env1, env3)$pass)
+  expect_true(checkr:::in_both('a', env1, env2)$passed)
+  expect_false(checkr:::in_both('a', env1, env3)$passed)
 })
 
 
@@ -47,7 +47,7 @@ test_that("comparing vectors works", {
   expect_equal("", checkr:::compare_vectors(1:3, 3:1, same_order = FALSE))
 })
 
-test_that("same_ family works", {
+test_that("same_() family works", {
   # For testing, create by hand the environments that would be created by
   # match_values()
   S <- list(a = 1:5, b = (1:5)^2)
@@ -56,7 +56,7 @@ test_that("same_ family works", {
   test2 <- same_num(a^2)
   test3 <- same_num(exp(d), hint = TRUE)
   expect_true(is.function(test))
-  expect_true(test1(S, R)$pass)
-  expect_true(test2(S, R)$pass)
-  expect_false(test3(S, R)$pass)
+  expect_true(test1(S, R)$passed)
+  expect_true(test2(S, R)$passed)
+  expect_false(test3(S, R)$passed)
 })

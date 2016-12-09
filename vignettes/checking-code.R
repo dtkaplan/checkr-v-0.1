@@ -15,7 +15,7 @@ test_1 <- fcall("whatever + whatever", "need to use addition (+)")
 test_2 <- fcall("2 + whatever", "first argument should be 2")
 test_3 <- fcall("whatever + 2", "second argument should be 2")
 
-## ------------------------------------------------------------------------
+## ----echo = FALSE--------------------------------------------------------
 show_results <- function(test_output) {
   if (test_output$passed) return("Passed!")
   else return(paste("Sorry, but", test_output$message))
@@ -44,6 +44,7 @@ submission_6 <- c(
 "ggplot(my_cars, aes(y = mpg, x = hp)) + geom_point()")
 
 ## ------------------------------------------------------------------------
+library(ggplot2)
 test_1 <- fcall("aes(x = hp, y = whatever)", "variable 'hp' goes on the x axis")
 test_2 <- fcall("aes(y = mpg, x = whatever)", "variable 'mpg' goes on the y axis")
 test_3 <- fcall("geom_point()", "include a 'geom_point()' layer")
@@ -58,34 +59,34 @@ test_9 <- check_argument("ggplot(data = grab_this)",
                            mtcars %>% select(hp, mpg, carb), 
                            diag = TRUE))
 
-## ----eval = FALSE--------------------------------------------------------
-#  capture.code(submission_1) %>%
-#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-#    show_results
-#  capture.code(submission_2) %>%
-#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-#    show_results
-#  capture.code(submission_3) %>%
-#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-#    show_results
-#  capture.code(submission_4) %>%
-#    test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
-#    show_results
+## ------------------------------------------------------------------------
+capture.code(submission_1) %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
+  show_results
+capture.code(submission_2) %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+  show_results
+capture.code(submission_3) %>% 
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>% 
+  show_results
+capture.code(submission_4) %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 %>%
+  show_results
 
-## ----eval = FALSE--------------------------------------------------------
-#  capture.code(submission_5) %>%
-#    test_5 %>% test_7 %>%
-#    show_results
-#  capture.code(submission_6) %>%
-#    test_5 %>% test_7 %>%
-#    show_results
-#  capture.code(submission_6) %>%
-#    test_5 %>% test_8 %>%
-#    show_results
-#  capture.code(submission_6) %>%
-#    test_5 %>% test_9 %>%
-#    show_results
-#  
+## ------------------------------------------------------------------------
+capture.code(submission_5) %>%
+  test_5 %>% test_7 %>%
+  show_results
+capture.code(submission_6) %>%
+  test_5 %>% test_7 %>%
+  show_results
+capture.code(submission_6) %>%
+  test_5 %>% test_8 %>%
+  show_results
+capture.code(submission_6) %>%
+  test_5 %>% test_9 %>%
+  show_results
+
 
 ## ------------------------------------------------------------------------
 submission_1 <- "
@@ -148,6 +149,30 @@ test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt)
 #  submission_3 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 #  submission_1 %>% test_1 %>% test_4 %>% show_results
 #  submission_3 %>% test_1 %>% test_4 %>% show_results
+
+## ------------------------------------------------------------------------
+USER_CODE <- capture.code("2 + 3")
+SOLUTION_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLUTION_CODE,
+             res = in_statements(regex="2 *\\+"),
+             same_num(res)) %>% 
+  show_results
+
+## ------------------------------------------------------------------------
+USER_CODE <- capture.code("2 + -6")
+SOLUTION_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLUTION_CODE,
+             res = in_statements(regex="2 *\\+"),
+             same_num(abs(res))) %>% 
+  show_results
+
+## ----eval = FALSE--------------------------------------------------------
+#  USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
+#  SOLUTION_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
+#  match_values(USER_CODE, SOLUTION_CODE,
+#               res = in_names("mod"),
+#               same_vec(coef(res))) %>%
+#    show_results
 
 ## ----eval = FALSE--------------------------------------------------------
 #  submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")

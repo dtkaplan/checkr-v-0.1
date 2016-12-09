@@ -7,8 +7,8 @@
 #' @export
 match_values <- function(student = NULL, solution = NULL, ...) {
   statements <- lazyeval::lazy_dots(...)
+  R <- new_result()
   if (is.null(names(statements))) stop("Must name some objects for comparison")
-  message = ""
 
   submitted_vals <- list() # The values of the objects created in the submitted code
   official_vals <- list() # The values of the objects created in the solution code
@@ -27,8 +27,9 @@ match_values <- function(student = NULL, solution = NULL, ...) {
       if (is.capture(tmp)) {
         if (!tmp$passed) {
           # Couldn't find the item specified by the locator test
-          message <- paste0(message, "Couldn't find a command ", tmp$created_by)
-          return(message) # we're done if we can't find an item
+          R$message <- paste0(R$message, "Couldn't find a command ", tmp$created_by)
+          R$passed <- FALSE
+          return(R) # we're done if we can't find an item
         }
         tmp <- get_line_value(tmp)
       }
@@ -41,7 +42,7 @@ match_values <- function(student = NULL, solution = NULL, ...) {
       else to_do
       if (is.capture(tmp)) {
         # throw an error if the solution does not pass the locator test
-        if(!tmp$passed) stop("Nothing in solution", tmp$created_by)
+        if(!tmp$passed) stop("Nothing in solution ", tmp$created_by)
         tmp <- get_line_value(tmp)
       }
 
@@ -54,20 +55,23 @@ match_values <- function(student = NULL, solution = NULL, ...) {
       #  function on them with the specified arguments.
       test <- statements[[k]]
       this_test <- eval(test$expr)
-      res <- do.call(this_test, list(submitted_vals, official_vals))
-      # res should be a "test_result" object
-      if (! inherits(res, "test_result"))
+      thisR <- do.call(this_test, list(submitted_vals, official_vals))
+      # R should be a "test_result" object
+      if (! inherits(thisR, "test_result"))
         stop("Internal error: should have created a test_result object")
-      if (res$stop) return(message) # immediate stop
-      if (res$suffice && res$pass) return("") # immediate success
-      if (!res$pass) {message <- paste0(message, ". ",
-                                        paste0("'", all.vars(test$expr), "'",collapse = ', '),
-                                        " ", res$message, ".")}
+      if (thisR$stop && !thisR$passed) {
+        return(thisR)
+      }
+      if (thisR$suffice && thisR$passed) return(thisR) # immediate success
+      if (!thisR$passed) {R$message <-
+        paste0(R$message, ". ",
+               paste0("'", all.vars(test$expr), "'",collapse = ', '),
+               " ", thisR$message, ".")
+      }
     }
   }
 
-  # Make this return the message from the composite set of tests.
-  message
+  return(thisR)
 }
 
 

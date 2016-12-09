@@ -53,8 +53,7 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
           success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode %in% c("match", "regex") ) {
-        if ((mode == "match" && any(what == content)) ||
-            (mode != "match" && grepl(what, content))) {
+        if (grepl(what, content, fixed = mode == "match")){
           success_flag <- TRUE; found_in_line <- k; break
         }
       } else if (mode == "number") {

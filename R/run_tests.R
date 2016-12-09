@@ -24,22 +24,24 @@ run_tests <- function(label=NULL,
   }
   # the tests
   USER_CODE <- capture.code(user_code)
+  SOLUTION_CODE <- capture.code(solution_code)
   test_envir <- new.env()
   assign("USER_CODE", USER_CODE, envir = test_envir)
+  assign("SOLUTION_CODE", SOLUTION_CODE, envir = test_envir)
   commands <- parse(text = paste(check_code, collapse = "\n"))
   # run each of the check statements in turn
   # if the result is a capture object, see if passed is true. If not
   # signal the error right then.
   for (k in 1:length(commands)){
     R <- eval(commands[k], envir = test_envir)
-    if ( ! is.null(names(R)) && all(c("passed", "line", "message") %in% names(R))) {
+    if ( is.test_result(R) || is.capture(R)) {
       if (R$passed) next
       else {
         # failed this test
         return(feedback(paste("Sorry, but", R$message), correct = FALSE, type = "info", location = "prepend"))
 
       }
-
+      stop("Statement returned neither a test result or a capture.")
     }
   }
 

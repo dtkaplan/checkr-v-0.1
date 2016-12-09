@@ -11,24 +11,30 @@
 #' are also allowed, e.g. \code{sqrt(b)}
 #' @param ... additional parameters to describe the match
 #' @export
-same_ <- function(compare_fun, name, hint = FALSE, ...) {
+same_ <- function(compare_fun, objname, hint = FALSE, ...) {
   if (!is.function(compare_fun)) stop("arg 'compare_fun' must be a function.")
-  name <- substitute(name) # for dealing with expressions
+  # name <- substitute(name) # for dealing with expressions
   Ldots <- lazyeval::lazy_dots(...)
   f <- function(submitted, reference) {
-    res <- in_both(name, submitted, reference)
-    if (!res$pass) return(res)
+    res <- in_both(objname, submitted, reference)
+    if (!res$passed) return(res)
 
-    S <- eval(name, envir = submitted)
-    R <- eval(name, envir = reference)
-    if (S == "no such command found") message <- "no corresponding command found"
+    S <- try(eval(objname, envir = submitted), silent = TRUE)
+    if (inherits(S, "try-error")) S <- "nothing for you"
+    R <- eval(objname, envir = reference)
+    if (any(S == "no such command found")) message <- "no corresponding command found"
     else message <- compare_fun(S, R, hint = hint, ...)
     if (nchar(message)) {
       res$message <- message
-      res$pass <- FALSE
+      res$passed <- FALSE
     }
     res
   }
+}
+
+#' @export
+same_vec <- function(name, hint = FALSE, ...) {
+  same_(compare_vectors, substitute(name), hint = hint, ...)
 }
 
 
@@ -38,18 +44,20 @@ same_num <- function(name, hint = FALSE, ...) {
   Ldots <- lazyeval::lazy_dots(...)
   f <- function(submitted, reference) {
     res <- in_both(name, submitted, reference)
-    if (!res$pass) return(res)
+    if (!res$passed) return(res)
 
-    S <- eval(name, envir = submitted)
+    S <- try(eval(name, envir = submitted), silent = TRUE)
+    if (inherits(S, "try-error")) S <- "nothing for you"
     R <- eval(name, envir = reference)
     if (S == "no such command found") message <- "no corresponding command found"
     else message <- compare_numbers(S, R, ...)
     if (nchar(message)) {
       res$message <- message
-      res$pass <- FALSE
+      res$passed <- FALSE
     }
     res
   }
+  f
 }
 
 
@@ -145,11 +153,14 @@ compare_numbers <- function(S, R, tol = NULL, pm = 1e-8, hint = FALSE) {
 
 # helper function to create a test_result object
 new_result <- function() {
-  res <- list(pass = TRUE, stop = FALSE, message = "", suffice = FALSE)
+  res <- list(passed = TRUE, stop = FALSE, message = "", suffice = FALSE)
   class(res) <- "test_result"
 
   res
 }
+
+# check if it's a test_result object
+is.test_result <- function(obj) inherits(obj, "test_result")
 
 in_both <- function(name, sub, ref) {
   res <- new_result()

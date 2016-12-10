@@ -336,9 +336,9 @@ submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
 STILL NEED TO HANDLE INTERNAL CHAINS and EXPLICIT "dot" arguments.
 
 This is not working. I think I need a new check_argument_symbol() that won't try to evaluate the symbols.
-```{r eval = FALSE}
+```{r}
 submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
 test_4 <- fcall("group_by()")
 test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
-submission_2 %>% test_4 %>% test_5
+submission_2 %>% test_4 %>% test_5 %>% show_results
 ```

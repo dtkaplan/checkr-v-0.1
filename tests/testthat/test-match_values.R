@@ -13,7 +13,7 @@ test_that("can carry out the match tests", {
                             same_num(a),
                             same_num(b),
                             same_num(d))$passed)
-  expect_true(grepl( "has wrong numerical value",
+  expect_true(grepl( "gives wrong numerical value",
                match_values(USER1_CODE, ANSWER2_CODE,
                             a = in_names("a"),
                             b = in_names("b"),
@@ -29,7 +29,7 @@ test_that("can carry out the match tests", {
                                   same_num(b),
                                   same_num(d)))
 
-  expect_equal("Couldn't find a command that creates an object named 'b'.",
+  expect_equal("I couldn't find a command that creates an object named 'b'.",
                match_values(USER2_CODE, ANSWER1_CODE,
                             a = in_names("a"),
                             b = in_names("b"),

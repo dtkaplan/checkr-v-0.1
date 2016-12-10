@@ -14,7 +14,7 @@ match_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, diag = FALSE) {
     if ( ! is.null(tol))
       message <- sprintf("should be %s plus or minus %s", x, tol)
   } else {
-    sprintf("has wrong numerical value")
+    sprintf("gives wrong numerical value")
   }
 
   f <- function(val) {

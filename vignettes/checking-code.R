@@ -184,9 +184,9 @@ match_values(USER_CODE, SOLUTION_CODE,
 #  submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
 #  
 
-## ----eval = FALSE--------------------------------------------------------
-#  submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
-#  test_4 <- fcall("group_by()")
-#  test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
-#  submission_2 %>% test_4 %>% test_5
+## ------------------------------------------------------------------------
+submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
+test_4 <- fcall("group_by()")
+test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
+submission_2 %>% test_4 %>% test_5 %>% show_results
 

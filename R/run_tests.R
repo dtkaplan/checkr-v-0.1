@@ -1,16 +1,35 @@
-#' Run the tests from info produced by tutor
+#' Interface to tutor
 #'
-#' @param tutor_obj the checking object produced by tutor
-#' You can also use the result of check_info_from_file()
+#' The function that the \code{tutor} document will call when checking
+#' a submission. You can tell \code{tutor} to do this with a statement in the \code{tutor}
+#' document like \code{tutor_options(exercise.checker = checkr::checkr_tutor)}.
+#'
+#' @param label character string containing name of the chunk that's being checked. For \code{run_tests_from_file()}, this
+#' will be used to refer to the saved file.
+#' @param user_code character string with the student's code
+#' @param solution_code character string with the code provided by the question's author.
+#' @param check_code the character string contents of the chunk that specifies the
+#' checks to run on the chunk being checked
+#' @param envir_result the R environment after the student's code has been run
+#' NOTE NOTE NOTE I would like to have the R environment *before* the student code is run. That way,
+#' I can run the solution_code in the same environment seen by the student code.
+#' @param feedback a function (provided by tutor) to convey a feedback message to the student
+#' via the tutor document
+#' @param debug if \code{TRUE}, write the information in the other arguments to a file
+#' \code{"~/Downloads/CheckR/chunk-[chunk-name].rds"}.
+#' Then, the stored information can be put through
+#' the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
+#' reads the RDS file and runs the tests.
+#'
 #' @export
-run_tests <- function(label=NULL,
+checkr_tutor <- function(label=NULL,
                              user_code = NULL,
                              solution_code = NULL,
                              check_code = NULL,
                              envir_result = NULL,
                              evaluate_result = NULL, ...,
                              feedback = tutor::feedback,
-                             debug = TRUE) {
+                             debug = FALSE) {
   # while debugging
   if(debug) {
     save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
@@ -51,7 +70,7 @@ run_tests <- function(label=NULL,
 #' @export
 run_tests_from_file <- function(label) {
   raw <- check_info_from_file(label)
-  with(raw, run_tests(label = label,
+  with(raw, checkr_tutor(label = label,
                       user_code = user_code,
                       solution_code = solution_code,
                       check_code = check_code,

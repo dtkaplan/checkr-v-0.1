@@ -4,21 +4,32 @@
 \alias{same_}
 \title{Compare pairs of values}
 \usage{
-same_(compare_fun, name, hint = FALSE, ...)
+same_(compare_fun, objname, hint = FALSE, ...)
 }
 \arguments{
-\item{compare_fun}{function to compare two objects, e.g. compare_numbers, compare_classes}
+\item{compare_fun}{the function to compare two objects, e.g. compare_numbers, compare_classes}
+
+\item{hint}{Set to \code{TRUE} to provide more diagnostic messages to the student.}
+
+\item{...}{additional parameters to describe the match}
 
 \item{name}{the name of the object. Should be an unquoted name (e.g. \code{b}),
 not a character string (e.g., not \code{"b"}). Expressions
 are also allowed, e.g. \code{sqrt(b)}}
-
-\item{...}{additional parameters to describe the match}
+}
+\value{
+a list of with class \code{"test_result"}. See \code{new_test_result()}.
 }
 \description{
 Or, more precisely, create functions that will compare the values
 of identically named objects in two environments or lists. Typically,
 one of the environments will be from the submitted answers, the other will
 be from the official solution.
+}
+\details{
+\code{same_()} is a general template for constructing comparison functions
+
+\code{same_num()} compares numerical vectors, providing a tolerance for numerical
+disagreement, \code{same_vec()} compares vectors for exact equality.
 }
 

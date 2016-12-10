@@ -1,5 +1,10 @@
 #' supervisory function for matching output values
 #'
+#' @details the elements in \code{...} have two forms. Named elements are set to statements
+#' that identify a line in the code. The returned value of that line will be given the name.
+#' Unnamed elements consist of comparison tests (see \code{same_()}) that operate on the
+#' objects given names in previous elements of the list.
+#'
 #' @param capture the evaluated capture object from the submitted code
 #' @param solution the evaluated capture object from the solution code
 #' @param ... lists of statements giving names to the objects to be matched
@@ -7,7 +12,7 @@
 #' @export
 match_values <- function(student = NULL, solution = NULL, ...) {
   statements <- lazyeval::lazy_dots(...)
-  R <- new_result()
+  R <- new_test_result()
   if (is.null(names(statements))) stop("Must name some objects for comparison")
 
   submitted_vals <- list() # The values of the objects created in the submitted code
@@ -27,13 +32,17 @@ match_values <- function(student = NULL, solution = NULL, ...) {
       if (is.capture(tmp)) {
         if (!tmp$passed) {
           # Couldn't find the item specified by the locator test
-          R$message <- paste0(R$message, "Couldn't find a command ", tmp$created_by)
+          R$message <- paste0(R$message, "I couldn't find a command ", tmp$created_by)
           R$passed <- FALSE
           return(R) # we're done if we can't find an item
         }
-        tmp <- get_line_value(tmp)
+        line_val <- get_line_value(tmp)
+      } else if (is.test_result(tmp)) {
+        line_val <- tmp$value
+      } else {
+        line_val <- tmp
       }
-      submitted_vals[[nm]] <- tmp
+      submitted_vals[[nm]] <- line_val
 
       # find corresponding value in <official_vals>
       to_do <- eval(statements[[nm]]$expr, envir = official_vals)
@@ -43,10 +52,14 @@ match_values <- function(student = NULL, solution = NULL, ...) {
       if (is.capture(tmp)) {
         # throw an error if the solution does not pass the locator test
         if(!tmp$passed) stop("Nothing in solution ", tmp$created_by)
-        tmp <- get_line_value(tmp)
+        line_val <- get_line_value(tmp)
+      } else if (is.test_result(tmp)) {
+        line_val <- tmp$value
+      } else {
+        line_val <- tmp
       }
 
-      official_vals[[nm]] <- tmp
+      official_vals[[nm]] <- line_val
     } else { # run the comparison tests specified
 
       # What will the comparison tests look like?

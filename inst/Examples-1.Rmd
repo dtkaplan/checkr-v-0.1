@@ -15,7 +15,7 @@ library(checkr)
 # knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
 
 # to process it in the Rmd document
-knitr::opts_chunk$set(exercise.checker = checkr::run_tests)
+knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
 ```
 
 As part of developing the `checkr` user interface, I'm implementing a variety R-related exercises. The point is to see whether concise, transparent, and useful checks can be written, and figure out what new facilities are needed to support such checks.
@@ -50,17 +50,17 @@ test_1 <- fcall("rep()", "remember to use the `rep()` function!")
 test_2 <- fcall("whatever <- whatever", "give the result a name.")
 test_3 <- in_names('Id', "give the result the name `Id`.")
 test_4 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
+test_5 <- check_argument("rep(whatever, each = grab_this)", match_number(3))
 test_all <- fcall("rep(eval(1:4), each = 3)", message = 
                   "some hints: use `rep()` with 1:4 as an input", 
                   diag = TRUE)
 test_result <- check_value(match_vector(rep(1:4, each = 3), diag = TRUE), "the output value is not correct")
-USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_all %>% test_result
+USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_all %>% test_result
 ```
 
 
 
 b. Create a vector named `Letter` that contains `"a" "b" "c" "a" "b" "c" "a" "b" "c" "a" "b" "c"`
-
 ```{r bunch-1-b, exercise = TRUE, echo = FALSE}
 
 ```
@@ -83,8 +83,8 @@ test_0 <- fcall("rep()", "Use `rep()` for this exercise")
 test_1 <- fcall("whatever <- whatever", "give the result a name.")
 test_2 <- in_names('Letter', "give the result the name `Letter`.")
 test_3 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
-
-test_4 <- fcall("rep(eval(letters[1:3]), each = 4)", message = 
+test_4 <- check_argument("rep(whatever, each = grab_this)", match_number(4))
+test_5 <- fcall("rep(eval(letters[1:3]), each = 4)", message = 
                   "some hints: use `rep()` with the character vector 'a', 'b', 'c' as an input", 
                   diag = TRUE)
 test_result <- check_value(match_vector(rep(letters[1:3], each = 4)), "the output value is not correct")
@@ -132,8 +132,13 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-test_0 <- fcall("whatever + whatever", "use addition (+)")
-test_1 <- fcall("2 + whatever", "first argument should be two ")
-test_2 <- fcall("whatever + 2", "second argument should also be two")
-USER_CODE %>% test_0 %>% test_1 %>% test_2 
+match_values(USER_CODE, SOLUTION_CODE,
+             res = in_statements(regex="+"),
+             b = fcall("whatever + grabthis", "Second argument to +"),
+             same_num(res))
+
+# test_0 <- fcall("whatever + whatever", "use addition (+)")
+# test_1 <- fcall("2 + whatever", "first argument should be two ")
+# test_2 <- fcall("whatever + 2", "second argument should also be two")
+# USER_CODE %>% test_0 %>% test_1 %>% test_2 
 ```

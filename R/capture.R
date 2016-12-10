@@ -1,6 +1,6 @@
 #' evaluate R statements, capturing code, created vars, and printed output
 #'
-#' Each expression in the code is evaluated in it's own environment, with the
+#' @details Each expression in the code is evaluated in it's own environment, with the
 #' previous expression's environment as the parent. That way, you can examine
 #' what's changed after each statement.
 #'
@@ -76,6 +76,8 @@ capture.code <- function(code_text = NULL) {
 
 #' @export
 is.capture <- function(x) inherits(x, "capture")
+
+# helper function to get the value produced by a line of submitted code
 
 get_line_value <- function(cap) {
   if (! is.capture(cap)) stop("Not a capture object")

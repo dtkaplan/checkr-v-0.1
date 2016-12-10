@@ -106,6 +106,42 @@ check_argument <- function(arg_spec, test) {
   f
 }
 
+# Like check_argument(), but just grabs the value of the argument.
+#' @export
+grab_argument <- function(arg_spec) {
+  expanded <- as.list(parse(text = arg_spec)[[1]])
+  message <- sprintf("couldn't find match to %s", arg_spec)
+  the_fun <- expanded[[1]]
+  R <- new_test_result()
+  f <- function(capture) {
+    if ( ! capture$passed) {
+      R$passed <- FALSE
+      R$message <- message
+      R$has_value <- FALSE
+      return(R)
+    } # short circuit the test
+    if ( ! capture$line %in% capture$valid_lines)
+      stop("Test designer should specify a previous test that finds the line to examine.")
+    all_calls <- get_functions_in_line(capture$expressions, line = capture$line)
+    inds = which(all_calls$fun_names == the_fun)
+    for (j in inds) {
+      call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
+      result <- corresponding_arguments(call_to_check, expanded)
+      if (length(result$grabbed) ) {
+        R$value <- eval(result$grabbed[[1]], envir = capture$names[[capture$line]])
+        R$has_value <- TRUE
+        return(R)
+      }
+    }
+
+    R
+  }
+  f
+}
+
+
+
+
 
 get_function_from_call <- function(call) {
   res <- call[[1]]

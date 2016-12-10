@@ -20,11 +20,13 @@ list have the same number of components, which need to be accessed with \code{[[
 individual commands
 }
 \description{
+evaluate R statements, capturing code, created vars, and printed output
+}
+\details{
 Each expression in the code is evaluated in it's own environment, with the
 previous expression's environment as the parent. That way, you can examine
 what's changed after each statement.
-}
-\details{
+
 Searching for objects in the last environment will move as needed to the
 parent environments, and so will give the most recent value of each object.
 }

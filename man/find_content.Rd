@@ -2,8 +2,7 @@
 % Please edit documentation in R/look.R
 \name{find_content}
 \alias{find_content}
-\title{Look for the line, if any, containing the sought for object. Just the
-first such line is reported.}
+\title{look for matches in the code}
 \usage{
 find_content(where = c("returns", "names", "statements", "commands"), what,
   mode = c("class", "number", "match", "regex"),
@@ -32,7 +31,9 @@ test was passed; \code{line} the line number where the item was found; \code{cod
 the same as the input.
 }
 \description{
-Look for the line, if any, containing the sought for object. Just the
-first such line is reported.
+Just the first such line is reported.
+}
+\details{
+Look for the line, if any, containing the sought-for object.
 }
 

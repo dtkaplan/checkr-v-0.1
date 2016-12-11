@@ -30,7 +30,7 @@ same_ <- function(compare_fun, objname, hint = FALSE, ...) {
     S <- try(eval(objname, envir = submitted), silent = TRUE)
     if (inherits(S, "try-error")) S <- "nothing for you"
     R <- eval(objname, envir = reference)
-    if (any(S == "no such command found")) message <- "no corresponding command found"
+    if (length(S) == 1 && S == "no such command found") message <- "no corresponding command found"
     else message <- compare_fun(S, R, hint = hint, ...)
     if (nchar(message)) {
       res$message <- message
@@ -57,8 +57,8 @@ same_num <- function(name, hint = FALSE, ...) {
     S <- try(eval(name, envir = submitted), silent = TRUE)
     if (inherits(S, "try-error")) S <- "nothing for you"
     R <- eval(name, envir = reference)
-    if (S == "no such command found") message <- "no corresponding command found"
-    else message <- compare_numbers(S, R, ...)
+    if (length(S) == 1 && S == "no such command found") message <- "no corresponding command found"
+    else message <- compare_numbers(S, R, hint = hint, ...)
     if (nchar(message)) {
       res$message <- message
       res$passed <- FALSE

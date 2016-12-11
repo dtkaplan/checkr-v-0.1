@@ -22,9 +22,33 @@ match_values <- function(student = NULL, solution = NULL, ...) {
     # calculate the statement in the context of those already calculated
     nm <- names(statements)[k]
     if (nm != "") { # We're creating a named object. Calculate it's value
-      # find corresponding value in <submitted_vals> by evaluating
-      # the locator test
+
+      # find corresponding value in <official_vals>
+      # to_do will hold the locator function used to identify
+      # a line in the capture object.
+      to_do <- eval(statements[[nm]]$expr, envir = official_vals)
+      # Now evaluate that locator object on the solution code
+      tmp <-
+        if (is.function(to_do)) do.call(to_do, list(solution))
+      else to_do
+      if (is.capture(tmp)) {
+        # throw an error if the solution does not pass the locator test
+        if(!tmp$passed) stop("Nothing in solution ", tmp$created_by)
+        line_val <- get_line_value(tmp)
+      } else if (is.test_result(tmp)) {
+        line_val <- tmp$value
+      } else {
+        line_val <- tmp
+      }
+      official_vals[[nm]] <- line_val
+
+      # find corresponding value in <submitted_vals>
+      # this MUST come second to make use of information found
+      # previously in searching "official" code
+
+      # to_do will hold the locator function
       to_do <- eval(statements[[nm]]$expr, envir = submitted_vals)
+      # now evaluate that locator function
       tmp <-
         if (is.function(to_do)) do.call(to_do, list(student))
       else to_do
@@ -43,23 +67,6 @@ match_values <- function(student = NULL, solution = NULL, ...) {
         line_val <- tmp
       }
       submitted_vals[[nm]] <- line_val
-
-      # find corresponding value in <official_vals>
-      to_do <- eval(statements[[nm]]$expr, envir = official_vals)
-      tmp <-
-        if (is.function(to_do)) do.call(to_do, list(solution))
-      else to_do
-      if (is.capture(tmp)) {
-        # throw an error if the solution does not pass the locator test
-        if(!tmp$passed) stop("Nothing in solution ", tmp$created_by)
-        line_val <- get_line_value(tmp)
-      } else if (is.test_result(tmp)) {
-        line_val <- tmp$value
-      } else {
-        line_val <- tmp
-      }
-
-      official_vals[[nm]] <- line_val
     } else { # run the comparison tests specified
 
       # What will the comparison tests look like?

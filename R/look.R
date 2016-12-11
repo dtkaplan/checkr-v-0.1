@@ -1,5 +1,8 @@
-#' Look for the line, if any, containing the sought for object. Just the
-#' first such line is reported.
+#' Look for the line, if any, containing the sought-for object.
+#'
+#' @title look for matches in the code
+#'
+#' @description Just the first such line is reported.
 #'
 #' @param where character string specifying whether to look at names of objects
 #' assigned names, objects
@@ -24,6 +27,18 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   # search among the results for a match
   where <- match.arg(where)
   mode <- match.arg(mode)
+  # If looking for an exact match, parse the "what" in order
+  # to be able to compare it to the captured code, which will have been parsed
+  if (mode == "match") {
+    tmp <- try(as.character(parse(text = what)), silent = TRUE)
+    if (inherits(tmp, "try-error")) {
+      tmp <- what
+      stop(sprintf("String '%s' for matching is not parsable", what))
+    } else {
+      what <- tmp
+    }
+
+  }
   pre_process <- ifelse(where == "names",
                         ls,
                         ifelse(where %in% c("match", "regex"),
@@ -114,11 +129,101 @@ in_factory <- function(where) {
 }
 #' @export
 in_names <- in_factory("names")
+
+
+# If the argument to <in_statements()> is a fixed string, it must be parsable.
+# Why? because comparison will be done to the parsed version of the lines.
 #' @export
 in_statements <- in_factory("statements")
 #' @export
 in_values <- in_factory("returns")
+#' @export
+final_ <- function(...) {
+  simple <- function(capture) {
+    capture$created_by <- "last result from code"
+    capture$line <- max(capture$valid_lines)
 
+    capture
+  }
+  dots <- lazyeval::lazy_dots(...)
+  if (length(dots) == 0) return(simple)
+}
+
+# search for a value in the solution code. Then, when called again
+# on the student code, look for a value similar to this one. So long as there is some
+# value in the student code, no matter how different from the solution code's value,
+# a value will be returned.
+# @param what either an object name or an identifying character string from the code generating
+# the object
+#' @export
+closest_to <- function(what) {
+  what <- substitute(what)
+  if (is.character(what)) {
+    # Look for a literal string in the captured code. <what> must be parsable so that
+    # it can be matched to the captured code, which has been parsed.
+    tmp <- try(as.character(parse(text = what)), silent = TRUE)
+    if (inherits(tmp, "try-error"))
+      stop(sprintf("Argument to closest_to(), '%s', is not a complete parsable statement.", what))
+  }
+  solution_value = NULL # used when student code is evaluated
+  f <- function(capture) {
+
+    if (is.null(solution_value)) {
+      # perform the match and extract the value
+      capture <-
+        if(is.name(what)) {
+          in_names(as.character(what))(capture)
+        } else {
+          in_statements(as.character(what))(capture)
+        }
+      solution_value <<- capture$returns[[capture$line]] # store the result
+    } else {
+      # find the closest matching in the capture presented
+      capture$line <- find_the_closest_one(capture, solution_value)
+    }
+    capture
+  }
+  f
+}
+
+# find the closest returns in a capture to the given value
+find_the_closest_one <- function(capture, val) {
+  if ((!"returns" %in% names(capture)) || (length(capture$returns) == 0))
+      return(NULL)
+  best_score <- -Inf
+  best_i <- 1
+  for (k in seq_along(capture$returns)) {
+    score <- 0
+    X <- capture$returns[[k]]
+    # class
+    if (inherits(X, class(val))) score <- score + 5
+    if (is.list(X) == is.list(val) ||
+        is.vector(X) == is.vector(val) ||
+        is.matrix(X) == is.matrix(val)) {
+      score <- score + 2
+      if (class(X[[1]]) == class(val[[1]])) score <- score + 2
+      if (isTRUE(all.equal(X[[1]], val[[1]]))) score <- score + 3
+    }
+    # named elements
+    obj_names <- names(val)
+    if (length(obj_names) > 0) {
+      score <- score + sum(names(X) %in% obj_names)
+    }
+    # same length result
+    obj_length <- length(val)
+    diff_lengths <- obj_length - length(X)
+    if (diff_lengths == 0) score <- score + 3
+
+    if (score > best_score) {
+      best_score <- score
+      best_i <- k
+    }
+  }
+
+  best_i
+}
+
+#'
 # a functional form for testing functions and arguments
 # with this, you can set up the test beforehand and pass the code to it later.
 

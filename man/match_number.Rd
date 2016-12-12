@@ -4,7 +4,34 @@
 \alias{match_number}
 \title{Check values of objects}
 \usage{
-match_number(x, tol = NULL, pm = 1e-08, range = NULL, diag = FALSE)
+match_number(x, tol = NULL, pm = 1e-08, range = NULL, hint = FALSE)
+}
+\arguments{
+\item{x}{the reference value for the object to be tested}
+
+\item{tol}{specify the matching range by the ratio of the discrepancy to x}
+
+\item{pm}{specify the matching range with a plus-or-minus amount}
+
+\item{range}{specify the matching range by two numbers
+#' @param names_contain if \code{TRUE} (default), all the names in df must be in the
+data frame being checked}
+
+\item{hint}{if \code{TRUE}, attempt to give a more diagnostic explanation
+of mistakes}
+
+\item{names_match}{if \code{TRUE}, all the names in the data frame being checked must be
+in the reference x. default: \code{FALSE}}
+
+\item{nrow}{if \code{TRUE}, the number of rows must be the same}
+
+\item{classes}{if \code{TRUE} the matching variables must be of the same class}
+
+\item{hint}{if \code{TRUE} give a more diagnostic message about mis-matches.}
+}
+\value{
+a function which, when applied to the object to be tested, carries out the matching
+test and returns an failure message. (\code{""} means the test passed.)
 }
 \description{
 Check values of objects

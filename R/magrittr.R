@@ -1,11 +1,7 @@
 #' Expand a Magrittr chain so arguments resolve correctly
 #'
-#' @export
-#'
-my_test <- "foo <- mtcars %>% select(hp, mpg, carb) %>% filter(mpg > 15)"
+#' @param chain_string a text string containing a Magrittr chain
 
-
-#' @export
 expand_chain <- function(chain_string) {
   components <- unlist(strsplit(chain_string, "%>%", fixed = TRUE))
   if (length(components) <= 1) return(chain_string)
@@ -38,7 +34,7 @@ insert_magrittr_input <- function(command, input_name) {
 
 }
 
-# FOLLOWING FUNCTION needs to be updated to integrae with expand_chain().
+# FOLLOWING FUNCTION needs to be updated to integrate with expand_chain().
 
 # is there a . argument to the function
 # the_args is the as.list() version of the function call

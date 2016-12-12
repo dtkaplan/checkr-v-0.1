@@ -10,6 +10,8 @@ then(capture)
 \item{capture}{A set of expressions of the sort returned by capture.code()}
 }
 \description{
-glue to hold the test statements together
+These operate on the output of a locator test.
+\code{then} restricts the subsequent tests to the lines after the one identified
+\code{previously} restricts the subsequent tests to the lines before the one identified
 }
 

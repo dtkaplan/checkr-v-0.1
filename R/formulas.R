@@ -4,14 +4,12 @@
 
 # check that the formula includes specified terms
 # (there may be additional ones)
-#' @export
 f_has_terms <- function(student, term_formula) {
   res <- f_same_explanatory(student, term_formula)
 
   attr(res, "missing")
 }
 
-#' @export
 f_same_response <- function(student, answer) {
   stext <- deparse(student)
   if (length(answer) == 3) {
@@ -53,7 +51,7 @@ term_matches <- function(one, many) {
 
   integer(0) # return no match found
 }
-#' @export
+
 f_same_explanatory <- function(student, answer) {
   # General tests on the explanatory side of the formula
   stext <- deparse(student) # the student's formula as written

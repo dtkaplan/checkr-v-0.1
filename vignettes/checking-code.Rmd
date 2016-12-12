@@ -17,17 +17,24 @@ library(checkr)
 [[NOTE in draft: Remember to explain `eval()` used as part of the function-call pattern, e.g. `"rep(eval(1:4))"` as a reference pattern will match `"rep(c(1,2,3,4))"` as a submission.]]
  
 
-In tutorial systems such as <DataCamp.com> or the `tutor` package in R, problems are posed that call for the student to enter code to solve a stated problem. This package provides a system for checking whether that code has done what's required and, if not, where the problem might fall.
+In tutorial systems such as <DataCamp.com> or the `tutor` package in R, problems are posed that call for the student to write an answer in R code. This package provides a system for checking whether that R code has done what's required and, if not, where the problem might fall.
 
 ## A trivial example: 2 + 2
 
-To illustrate, consider this trivial problem: Write the code to add two and two. Of course, we expect the student to submit `2 + 2` as the response. But they might have
+To illustrate, consider this trivial problem: 
+
+> Write the code to add two and two. 
+
+Of course, we expect the student to submit `2 + 2` as the response. But they might have
 
 * submitted nothing
 * submitted something like `3 + 1`
 * submitted something like `2 / 2`
 
-This package allows you to write test statements that will examine the student's submission to make sure the code was of the submitted form.
+This package allows you to write test statements that
+
+1. allow the values produced by the code to be tested against a specified solution and 
+2. examine the student's submission to make sure the code was of the submitted form.
 
 A tutorial system will typically collect the student code submissions as text, and may evaluate the code in order to verify that it runs.  Here are a few different possible submissions for the `2 + 2` problem:
 
@@ -48,7 +55,50 @@ test_2 <- fcall("2 + whatever", "first argument should be 2")
 test_3 <- fcall("whatever + 2", "second argument should be 2")
 ```
 
-To use the tests, we need to provide as input the student submission and collect as output the result of the test.  A tutorial system will have provide a way of doing this. For this vignette, which runs outside of any tutorial system, we'll use `capture.code()` to pass the text submission to the test. Similarly, to display the results we'll have a simple function `show_results()`. In a `tutor` documents, the results would be displayed by `tutor` itself; no need for `show_results`.
+In a tutor document, the R/Markdown to set up the problem would look like this:
+
+    1. Write a statement to calculate two plus two.
+    
+    ```{r, example-0, exercise = TRUE}
+    # your code goes here
+    ```
+
+To tell `tutor` to use the `checkr` tests, the `setup` chunk at the beginning of the Rmd file should set the `exercise.checker` chunk option to be the `run_tests()` function from the `checkr` package.
+
+    ```{r setup, include=FALSE}
+    library(tutor)
+    library(checkr)
+
+    knitr::opts_chunk$set(exercise.checker =     checkr::checkr_tutor)
+    ```
+
+When the student presses the "submit" button in the `tutor` code window, the student's code is sent off for checking.  You place the test statements in the problem's `-check` chunk, like this:
+
+    ``{r example-0-check, echo=FALSE}
+    test_1 <- fcall("whatever + whatever",  
+                "need to use addition (+)")
+    test_2 <- fcall("2 + whatever", 
+                "first argument should be 2")
+    test_3 <- fcall("whatever + 2", 
+                "second argument should be 2")
+    USER_CODE %>% test_1 %>% test_2 %>% test_3
+    ```
+
+The `tutor` system will call `checkr_tutor()` with information about the various chunks relating to the problem. In turn, `run_tests()` will evaluate the code in the `-check` chunk. The `USER_CODE` object is created by `run_tests()` to provide access to the code submitted by the user.
+
+The tests here are called "locator tests." All three of `test_1`, `test_2` and `test_3` here are constructed by the `fcall()` function in `checkr`. The `fcall()` function takes as it's first argument a pattern to look for in the submitted code. The second argument is a message to give if the pattern is *not* found; this is called the "failure message." 
+
+The tests are called in the order implied by the `%>%` pipes. Whichever test in that sequence fails first will set the message returned to the `tutor` system for display to the student. If no test fails, the `tutor` is told that the student's code passes.
+
+In designing the tests for the "two plus two" problem, I decided that the first thing I want to check for is that the `+` function is being used, but without regard to the value of the two arguments. The second test imposes an additional restriction: the first argument to `+` should be 2. Similarly for the third test.
+
+Within a tutor document, these tests would be activated when the student presses the submit button. For this static vignette, it's inconvenient to run the tests in the interactive way. I want to be able to comment on the results of the test. So, just for the purposes of this vignette, I'll replace the `tutor` system with two functions: 
+
+1. `capture.code()` simulates what `tutor` does with the student's submitted code to hand it off to `checkr`.
+2. `show_results()` prints the failure message. An empty failure message, `""`, means the tests were passed.
+
+You should **not** use either of these functions in an active `tutor` Rmd document.
+
 ```{r echo = FALSE}
 show_results <- function(test_output) {
   if (test_output$passed) return("Passed!")
@@ -58,24 +108,68 @@ show_results <- function(test_output) {
 
 Now to run the various tests on the different submissions:
 ```{r}
-capture.code(submission_1) %>% test_1 %>% show_results
-capture.code(submission_2) %>% test_1 %>% show_results
+capture.code(submission_1) %>% 
+  test_1 %>% 
+  show_results
+capture.code(submission_2) %>% 
+  test_1 %>% 
+  show_results
 ```
 
-Submission 1 passed, as expected. Submission 2 failed and the failure message indicates what's wrong with the code.
+Submission 1 passed, as expected. Submission 2 failed. The failure message indicates what's wrong with the code.
 
 You may be surprised to see that submission 3, which is wrong, nonetheless passes the test
 ```{r}
-capture.code(submission_3) %>% test_1 %>% show_results
+capture.code(submission_3) %>% 
+  test_1 %>% 
+  show_results
 ```
 This is because `test_1` has been set up to check that the right function is being used, and not to check the arguments. For checking the arguments, `test_2` and `test_3` can be used.
 
 
-Tests can be strung together in a sequence. Whatever test in the sequence is first to fail will produce the output of the whole string. For example:
+In actual use, tests can be strung together in a sequence. Whatever test in the sequence is first to fail will produce the output of the whole string. For example:
 ```{r}
-capture.code(submission_3) %>% test_1 %>% test_2 %>% test_3 %>% show_results
+capture.code(submission_3) %>% 
+  test_1 %>% test_2 %>% test_3 %>% 
+  show_results
 ```
-`test_1` was passed, but `test_2`, which checks to see that the first argument is `2`, failed. `test_3` was not even run, because `test_2` already failed.
+`test_1` was passed, but `test_2`, which checks to see that the first argument is `2`, failed. `test_3` was not even run, because `test_2` already failed. 
+
+The importance of this for test writers is that you can customize the failure message for late tests in the sequence with the knowledge that the earlier tests have passed. 
+
+For instance, the failure message for `test_2` is ""first argument should be 2." The message doesn't have to concern whether the `+` function was used. Because `test_2` follows `test_1` in the sequence, we know that `+` was used in the student's submission.
+
+## Matching values
+
+The R statements in the student's submission, presumably, produce values. These might be assigned a name with `<-` or they might be unnamed. Each complete statement produces a value.
+
+The tests shown above for the "two plus two" problem don't actually require that the value produced be 4. For example, the following submission, `2 + 2 + 2` does not produce a value of 4. Nonetheless, it passes the tests:
+```{r}
+capture.code("2 + 2 + 2") %>% 
+  test_1 %>% test_2 %>% test_3 %>% 
+  show_results
+```
+It's tempting to apply a test that says, "and nothing more."  I've rejected this strategy for the present, noting that sometimes valid statement (e.g. `I(2 + 2)`) will have more than the test writer expected. Instead, you can test the values of the results produced by the student code.
+
+```{r}
+# these values are provided by tutor
+USER_CODE   <- capture.code("2 + 2 + 2")
+SOLN_CODE   <- capture.code("2 + 2")
+
+# the -check chunk contents would look like
+match_values(USER_CODE, SOLN_CODE,
+             res = final_(),
+             same_num(res)) %>%
+  show_results()
+```
+The `match_values()` function from `checkr` compares the values produced by the student's code and the values produced by code provided by the test writer in a `-solution` chunk. `USER_CODE` and `SOLN_CODE` convey the contents of the submission and solution chunks, respectively. 
+
+The next argument to `match_values()` uses a function `final_()`, which looks for the *last* value produced by the student and by the solution code. In this example, there's only one value, but in general there may be multiple values produced by submitted code. Whatever that last value be, and regardless of whether the student's or solution code assigned a name to the value, the argument name will be assigned to that value for future reference.
+
+The final argument to `match_values()` refers to the name `ref` created in the previous argument. The `same_num()` function compares the `ref` value in the student and the solution code. 
+
+Later, we'll show examples using `match_values()` that can deal with more complicated structure in the student and solution code. For instance, you can have as many reference-named values and comparison tests as you like, but that's hardly needed in this simple example.
+
 
 ## Framework for testing
 
@@ -129,11 +223,11 @@ test_5 <- fcall("ggplot(data = whatever)", "no data handed to ggplot()")
 test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
 test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
 test_8 <- check_argument("ggplot(data = grab_this)", 
-                         match_data_frame(mtcars, diag = TRUE))
+                         match_data_frame(mtcars, hint = TRUE))
 test_9 <- check_argument("ggplot(data = grab_this)",
                          match_data_frame(
                            mtcars %>% select(hp, mpg, carb), 
-                           diag = TRUE))
+                           hint = TRUE))
 ```
 
 We'll chain these seven tests together and see the results for the different submissions.
@@ -229,7 +323,7 @@ submission_3 <- capture.code("11 + 2*(1:11)") # uses colon, but wrong result
 
 ```{r}
 test_1 <- fcall("whatever : whatever", "you didn't use the colon operator")
-test_2 <- check_value(match_vector(seq(11, 31, by = 2), diag = TRUE))
+test_2 <- check_value(match_vector(seq(11, 31, by = 2), hint = TRUE))
 
 submission_1 %>% test_1 %>% test_2 %>% show_results
 submission_2 %>% test_1 %>% test_2 %>% show_results
@@ -269,11 +363,11 @@ IN DRAFT. TALK ABOUT `closest_to("what")`, which finds the value in the user cod
 
 Often, perhaps most of the time, the question author will provide an example solution. The `match_values()` function lets you compare the values generated by the solution to the values generated by the user's code.
 
-To illustrate, let's construct by hand the `USER_CODE` and `SOLUTION_CODE` contents that get produced from the question chunks in a `tutor` document.
+To illustrate, let's construct by hand the `USER_CODE` and `SOLN_CODE` contents that get produced from the question chunks in a `tutor` document.
 ```{r}
 USER_CODE <- capture.code("2 + 3")
-SOLUTION_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLUTION_CODE,
+SOLN_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(res)) %>% 
   show_results
@@ -290,8 +384,8 @@ You can compute elements from the named values. For instance, here we compare no
 
 ```{r}
 USER_CODE <- capture.code("2 + -6")
-SOLUTION_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLUTION_CODE,
+SOLN_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(abs(res))) %>% 
   show_results
@@ -300,8 +394,8 @@ match_values(USER_CODE, SOLUTION_CODE,
 The point of having such transformations -- e.g. `abs()` in the above example -- is to enable the test writer to compare complex objects like models using simple comparisons. For instance, suppose the user is asked to construct a model based on `mtcars`:
 ```{r eval = FALSE}
 USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
-SOLUTION_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
-match_values(USER_CODE, SOLUTION_CODE,
+SOLN_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
+match_values(USER_CODE, SOLN_CODE,
              res = in_names("mod"),
              same_vec(coef(res))) %>% 
   show_results
@@ -329,7 +423,7 @@ submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
 test_1 <- fcall("filter()", "should call filter()")
 test_2 <- check_argument("mpg > grab_this", match_number(15))
 test_2A <- check_argument("mpg > grab_this", match_number(16))
-test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, diag = TRUE))
+test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, hint = TRUE))
 submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
 

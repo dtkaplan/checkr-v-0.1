@@ -190,6 +190,7 @@ new_test_result <- function() {
 }
 
 # check if it's a test_result object
+#' @export
 is.test_result <- function(obj) inherits(obj, "test_result")
 
 in_both <- function(name, sub, ref) {

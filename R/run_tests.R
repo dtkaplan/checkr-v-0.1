@@ -43,10 +43,10 @@ checkr_tutor <- function(label=NULL,
   }
   # the tests
   USER_CODE <- capture.code(user_code)
-  SOLUTION_CODE <- capture.code(solution_code)
+  SOLN_CODE <- capture.code(solution_code)
   test_envir <- new.env()
   assign("USER_CODE", USER_CODE, envir = test_envir)
-  assign("SOLUTION_CODE", SOLUTION_CODE, envir = test_envir)
+  assign("SOLN_CODE", SOLN_CODE, envir = test_envir)
   commands <- parse(text = paste(check_code, collapse = "\n"))
   # run each of the check statements in turn
   # if the result is a capture object, see if passed is true. If not

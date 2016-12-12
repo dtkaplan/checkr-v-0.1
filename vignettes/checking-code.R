@@ -22,14 +22,38 @@ show_results <- function(test_output) {
 }
 
 ## ------------------------------------------------------------------------
-capture.code(submission_1) %>% test_1 %>% show_results
-capture.code(submission_2) %>% test_1 %>% show_results
+capture.code(submission_1) %>% 
+  test_1 %>% 
+  show_results
+capture.code(submission_2) %>% 
+  test_1 %>% 
+  show_results
 
 ## ------------------------------------------------------------------------
-capture.code(submission_3) %>% test_1 %>% show_results
+capture.code(submission_3) %>% 
+  test_1 %>% 
+  show_results
 
 ## ------------------------------------------------------------------------
-capture.code(submission_3) %>% test_1 %>% test_2 %>% test_3 %>% show_results
+capture.code(submission_3) %>% 
+  test_1 %>% test_2 %>% test_3 %>% 
+  show_results
+
+## ------------------------------------------------------------------------
+capture.code("2 + 2 + 2") %>% 
+  test_1 %>% test_2 %>% test_3 %>% 
+  show_results
+
+## ------------------------------------------------------------------------
+# these values are provided by tutor
+USER_CODE   <- capture.code("2 + 2 + 2")
+SOLN_CODE   <- capture.code("2 + 2")
+
+# the -check chunk contents would look like
+match_values(USER_CODE, SOLN_CODE,
+             res = final_(),
+             same_num(res)) %>%
+  show_results()
 
 ## ------------------------------------------------------------------------
 submission_1 <- "ggplot(mtcars, aes(x = mpg, y = hp)) + geom_point()" # Wrong!
@@ -53,11 +77,11 @@ test_5 <- fcall("ggplot(data = whatever)", "no data handed to ggplot()")
 test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
 test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
 test_8 <- check_argument("ggplot(data = grab_this)", 
-                         match_data_frame(mtcars, diag = TRUE))
+                         match_data_frame(mtcars, hint = TRUE))
 test_9 <- check_argument("ggplot(data = grab_this)",
                          match_data_frame(
                            mtcars %>% select(hp, mpg, carb), 
-                           diag = TRUE))
+                           hint = TRUE))
 
 ## ------------------------------------------------------------------------
 capture.code(submission_1) %>% 
@@ -124,7 +148,7 @@ submission_3 <- capture.code("11 + 2*(1:11)") # uses colon, but wrong result
 
 ## ------------------------------------------------------------------------
 test_1 <- fcall("whatever : whatever", "you didn't use the colon operator")
-test_2 <- check_value(match_vector(seq(11, 31, by = 2), diag = TRUE))
+test_2 <- check_value(match_vector(seq(11, 31, by = 2), hint = TRUE))
 
 submission_1 %>% test_1 %>% test_2 %>% show_results
 submission_2 %>% test_1 %>% test_2 %>% show_results
@@ -152,24 +176,24 @@ test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt)
 
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("2 + 3")
-SOLUTION_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLUTION_CODE,
+SOLN_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(res)) %>% 
   show_results
 
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("2 + -6")
-SOLUTION_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLUTION_CODE,
+SOLN_CODE <- capture.code("2 + 2")
+match_values(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(abs(res))) %>% 
   show_results
 
 ## ----eval = FALSE--------------------------------------------------------
 #  USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
-#  SOLUTION_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
-#  match_values(USER_CODE, SOLUTION_CODE,
+#  SOLN_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
+#  match_values(USER_CODE, SOLN_CODE,
 #               res = in_names("mod"),
 #               same_vec(coef(res))) %>%
 #    show_results
@@ -179,7 +203,7 @@ match_values(USER_CODE, SOLUTION_CODE,
 #  test_1 <- fcall("filter()", "should call filter()")
 #  test_2 <- check_argument("mpg > grab_this", match_number(15))
 #  test_2A <- check_argument("mpg > grab_this", match_number(16))
-#  test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, diag = TRUE))
+#  test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, hint = TRUE))
 #  submission_1 %>% test_1 %>% test_2 %>% test_3 %>% show_results
 #  submission_1 %>% test_1 %>% test_2A %>% test_3 %>% show_results
 #  

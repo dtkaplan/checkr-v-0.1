@@ -76,6 +76,7 @@ capture.code <- function(code_text = NULL) {
 
 # helper function to identify capture objects
 
+#' @export
 is.capture <- function(x) inherits(x, "capture")
 
 # helper function to get the value produced by a line of submitted code

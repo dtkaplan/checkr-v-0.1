@@ -15,7 +15,7 @@ library(checkr)
 # knitr::opts_chunk$set(exercise.checker = checkr::check_info_to_file)
 
 # to process it in the Rmd document
-knitr::opts_chunk$set(exercise.checker = checkr::run_tests)
+knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
 ```
 
 ## Example 1
@@ -31,11 +31,14 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-test_0 <- fcall("NULL + NULL", "use addition (+)")
-test_1 <- fcall("2 + NULL", "first argument should be two ")
-test_2 <- fcall("NULL + 2", "second argument should also be two")
+test_0 <- fcall("whatever + whatever", "use addition (+)")
+test_1 <- fcall("2 + whatever", "first argument should be two ")
+test_2 <- fcall("whatever + 2", "second argument should also be two")
 test_3 <- fcall("2 + 2", "remember to add two plus two")
 USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
+match_values(USER_CODE, SOLN_CODE,
+             res = final_(),
+             same_num(res))
 ```
 
 ## Example 2

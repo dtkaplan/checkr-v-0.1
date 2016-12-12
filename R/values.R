@@ -61,53 +61,8 @@ get_match_ind <- function(what, nms, strict = TRUE) {
   }
 }
 
-# @param arg_spec character string describing what we want to match, e.g. "sin(grab_this)"
-# @param test is a function that takes the concordance produced by <arg_spec>
-# and returns a message saying what's wrong. If that message is "", the test passes.
-# Works on a single line
-
-#' @export
-check_argument <- function(arg_spec, test) {
-  expanded <- as.list(parse(text = arg_spec)[[1]])
-  message <- sprintf("couldn't find match to %s", arg_spec)
-  the_fun <- expanded[[1]]
-  f <- function(capture) {
-    if ( ! capture$passed) return(capture) # short circuit the test
-    if ( ! capture$line %in% capture$valid_lines)
-      stop("Test designer should specify a previous test that finds the line to examine.")
-    all_calls <- get_functions_in_line(capture$expressions, line = capture$line)
-    inds = which(all_calls$fun_names == the_fun)
-    for (j in inds) {
-      call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
-      result <- corresponding_arguments(call_to_check, expanded)
-      for (i in seq_along(result$grabbed)) {
-        message <- test(eval(result$grabbed[[i]], envir = capture$names[[capture$line]]))
-        if(message == "") break # it passed, so no need to check others
-      }
-      if(message == "") {
-        # see if <result> passes the test.
-        # If so, we're done
-        # In not, try the next match
-        capture$passed <- TRUE
-        capture$message <- message
-        return(capture)
-      }
-    }
-    # None of the matches passed the test
-    capture$passed <- FALSE
-    capture$line <- NA
-    capture$message <- paste("in function call",
-                             sprintf("%s", as.character(the_fun)),
-                             "the argument",
-                             message)
-
-    capture
-  }
-  f
-}
 
 # Like check_argument(), but just grabs the value of the argument.
-#' @export
 grab_argument <- function(arg_spec) {
   expanded <- as.list(parse(text = arg_spec)[[1]])
   message <- sprintf("couldn't find match to %s", arg_spec)
@@ -150,29 +105,9 @@ get_function_from_call <- function(call) {
   res
 }
 
-# @param value -- a simple value that can be tested by equality
-# @param test -- a function that carries out the test,
-# e.g. check_number(), check_class(), check_data_frame()
-# @param which -- the name or index of the grabbed element to check. Defaults to the first,
-# which is appropriate if there is just one argument being grabbed.
-# @param diag if TRUE, give a more diagnostic version of the source of any error
 
-#' @export
-arg_is <- function(value, which = 1, diag = FALSE, test = NULL) {
-  message <- if (diag) sprintf("argument %s should have value %s.", which, as.character(value))
-  else sprintf("argument %s has wrong value.", which)
-  function(concordance) {
-    if (is.null(test) ) {
-      if (concordance$grabbed[[which]] == value) return("")
-      else return(message)
-    } else {
-      return(test(concordance$grabbed[[which]]))
-    }
-  }
-}
 
 # create a correpondance between the arguments in two function calls
-#' @export
 corresponding_arguments <- function(one, reference) {
   get_arg_list <- function(the_call) {
     # expand the call so that all arguments have their
@@ -217,7 +152,8 @@ corresponding_arguments <- function(one, reference) {
         missing <- c(missing, result$missing)
         mismatch <- c(mismatch, result$mismatch)
       } else if (is.name(args_ref[[nm]]) && is.name(args_one[[nm]])){
-        if (identical(args_ref[[nm]], args_one[[nm]])) NULL
+        if (! identical(args_ref[[nm]], args_one[[nm]]))
+          mismatch[length(mismatch) + 1] <- nm
       } else {
         if (is.call(args_ref[[nm]])) args_ref[[nm]] <- eval(args_ref[[nm]])
         if (is.call(args_one[[nm]])) args_one[[nm]] <- eval(args_one[[nm]])
@@ -229,11 +165,8 @@ corresponding_arguments <- function(one, reference) {
   return(list(grabbed = grabbed, missing = missing, mismatch = mismatch))
 }
 
+# flags for argument grabbing
 #' @export
-grab_this <- function() {
-  # an empty function to be used as a signal to grab the argument in this place
-  NULL
-}
-
+grab_this <- as.name("grab_this")
 #' @export
-whatever <- as.name("whatever") # just a flag for argument matching
+whatever <- as.name("whatever")

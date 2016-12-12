@@ -1,12 +1,12 @@
 context("Compare object values to a standard ")
 
 test_that("numerical comparison works", {
-  expect_true("" == check_number(5)(5))
-  expect_false("" == check_number(6, pm = 0.5)(5))
-  expect_true("" == check_number(6, pm = 1.1)(5))
-  expect_true("" == check_number(6, tol = 0.5)(5))
-  expect_equal("gives wrong numerical value", check_number(6, tol = 0.01)(5))
-  expect_equal("should be 6", check_number(6, tol = 0.01, diag = TRUE)(5))
+  expect_true("" == match_number(5)(5))
+  expect_false("" == match_number(6, pm = 0.5)(5))
+  expect_true("" == match_number(6, pm = 1.1)(5))
+  expect_true("" == match_number(6, tol = 0.5)(5))
+  expect_equal("gives wrong numerical value", match_number(6, tol = 0.01)(5))
+  expect_equal("should be 6", match_number(6, tol = 0.01, diag = TRUE)(5))
 })
 
 test_that("class comparison works", {

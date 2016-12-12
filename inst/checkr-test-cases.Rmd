@@ -77,8 +77,8 @@ y <- cos(x)
 
 ```{r example-misc-check}
 test_1 <- in_names("x", "couldn't find assignment to x")
-check_x <- check_value(check_number(7))
-check_wrong <- check_value(check_number(7), "7 isn't what you wanted", mistake = TRUE)
+check_x <- check_value(match_number(7))
+check_wrong <- check_value(match_number(7), "7 isn't what you wanted", mistake = TRUE)
 USER_CODE %>% test_1 %>% check_x 
 USER_CODE %>% test_1 %>% check_wrong
 test_2 <- in_statements("<-")
@@ -86,8 +86,8 @@ test_3 <- in_values(50, number = TRUE)
 test_2 <- fcall("cos()", "didn't see the cos() function")
 test_3 <- fcall("x^2", "you didn't square x")
 test_4 <- fcall("x^2 + 1", "you should have added 1 to x^2")
-test_5 <- check_number(cos(7), "is the input to cos() right?")
-test_6 <- check_number(50, "value should have been 50")
+test_5 <- match_number(cos(7), "is the input to cos() right?")
+test_6 <- match_number(50, "value should have been 50")
 USER_CODE %>% test_1 -> xvalue
 xvalue %>% check_value(test = function(x) {x = 7}, "should have been 7")
 USER_CODE %>% test_2 %>% get_value %>% test_5

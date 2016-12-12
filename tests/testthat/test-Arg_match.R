@@ -57,10 +57,10 @@ test_that("Looking for functions and arguments works", {
   })
 
 test_that("Looking for mistakes works", {
-  test_1 <- fcall("lm(hp ~ mpg)", mistake = TRUE, "Response should be 'mpg'.")
+  test_1 <- fcall("lm(hp ~ mpg, data = whatever)", mistake = TRUE, "Response should be 'mpg'.")
   one <- example_1 %>% test_1
-  expect_true(one$passed)
-  test_2 <- fcall("lm(mpg ~ hp)", mistake = TRUE,
+  expect_true(one$passed) # the mistake wasn't in the submitted code
+  test_2 <- fcall("lm(mpg ~ hp, data = whatever)", mistake = TRUE,
                   "Well, ... not really a mistake, but just for testing purposes.")
   two <- example_1 %>% test_2
   expect_false(two$passed)

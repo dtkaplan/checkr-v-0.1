@@ -1,17 +1,31 @@
-#' Compare pairs of values
+#' Compare submitted code values to solution code values
 #'
 #' Or, more precisely, create functions that will compare the values
 #' of identically named objects in two environments or lists. Typically,
 #' one of the environments will be from the submitted answers, the other will
 #' be from the official solution.
 #'
-#' @return a list of with class \code{"test_result"}. See \code{new_test_result()}.
-#'
-#' @details \code{same_()} is a general template for constructing comparison functions
-#'
-#' \code{same_num()} compares numerical vectors, providing a tolerance for numerical
+#' #' \code{same_num()} compares numerical vectors, providing a tolerance for numerical
 #' disagreement, \code{same_vec()} compares vectors for exact equality.
 #'
+#' \code{same_} lets the test writer apply her own comparison function. The others are for
+#' convenience for common operations use
+#' built in comparison functions.
+#'
+#'
+#' @return a list of with class \code{"test_result"}. See \code{new_test_result()}.
+#'
+#' @details There is a distinction between these \code{same_()} functions and comparison
+#' functions. A comparison function is an ordinary function that takes three required arguments. \code{S} and
+#' \code{R} are the objects to be compared. \code{hint} is a boolean flag whether to make
+#' the failure message more diagnostic than the default. Comparison functions return \code{""} to
+#' indicate a pass, and a string of non-zero length to indicate a failure (and hopefully provide
+#' some guidance to the student.)
+#'
+#' In contrast, the \code{same_()} functions apply comparison functions to the corresponding
+#' values from the submitted code and the solution (or reference) code.
+#'
+
 #' @param compare_fun the function to compare two objects, e.g. compare_numbers, compare_classes
 #' @param name the name of the object. Should be an unquoted name (e.g. \code{b}),
 #' not a character string (e.g., not \code{"b"}). Expressions
@@ -176,7 +190,6 @@ new_test_result <- function() {
 }
 
 # check if it's a test_result object
-#' @export
 is.test_result <- function(obj) inherits(obj, "test_result")
 
 in_both <- function(name, sub, ref) {
@@ -194,16 +207,3 @@ in_both <- function(name, sub, ref) {
 
   res # return the test object
 }
-
-
-# modifiers on pass objects
-#' @export
-needs <- function(pass) {
-  if (!pass$pass) pass$stop <- TRUE
-  pass
-}
-#' @export
-suffices <- function(pass) {
-  pass$suffices <- TRUE
-}
-

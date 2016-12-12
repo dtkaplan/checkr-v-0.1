@@ -1,22 +1,24 @@
 #' Checking values of objects created or displayed by the code
 #'
-#' These functions capture the object itself. If there is no such object, a character
-#' string with the message is returned. That message will have a 'no_match' attribute
+#' \code{check_value} applies a test to the value produced by a line of code. The tests
+#' themselves are "match functions" such as \code{match_number}, \code{match_vector}, \code{match_names},
+#' \code{match_formula}, \code{match_data.frame} that do the comparison.
 #'
+#'
+#' @details These functions capture the object itself. If there is no such object, a character
+#' string with the message is returned. That message will have a 'no_match' attribute
 #' If the test passes, the value is returned in the "value" attribute of the capture object
 #'
-# #' @param capture the code object
-# #' @param what the object name, class(es), function/argument string, or text to match
-# #' @param strict whether the matching name or text can be approximate
-# #' (e.g. capitalization, dots, underscores, ...)
-#
-# # The user interface: identify a line in a capture, then pass the resulting capture to
-# # check_value()
+#'
 
-#' @param capture a capture object
+#' @return a function that will take a capture object as input and return
+#' a capture object as output. The value of the line (identified by previous locator tests)
+#' will be compared to the reference value given when constructing the test.
 #' @param test a function taking one value as an argument. The test to run to evaluate the captured value. Should
 #' return \code{""} if passing, non-empty message string if not
 #' @param message the message to give if the test fails
+#' @param mistake if \code{TRUE}, the specified test is one that should NOT be seen in
+#' the code.
 #' @export
 check_value <- function(test, message = NULL, mistake = FALSE) {
   test_text <- deparse(substitute(test))

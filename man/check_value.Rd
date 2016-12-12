@@ -12,13 +12,22 @@ return \code{""} if passing, non-empty message string if not}
 
 \item{message}{the message to give if the test fails}
 
-\item{capture}{a capture object}
+\item{mistake}{if \code{TRUE}, the specified test is one that should NOT be seen in
+the code.}
+}
+\value{
+a function that will take a capture object as input and return
+a capture object as output. The value of the line (identified by previous locator tests)
+will be compared to the reference value given when constructing the test.
 }
 \description{
-These functions capture the object itself. If there is no such object, a character
-string with the message is returned. That message will have a 'no_match' attribute
+\code{check_value} applies a test to the value produced by a line of code. The tests
+themselves are "match functions" such as \code{match_number}, \code{match_vector}, \code{match_names},
+\code{match_formula}, \code{match_data.frame} that do the comparison.
 }
 \details{
+These functions capture the object itself. If there is no such object, a character
+string with the message is returned. That message will have a 'no_match' attribute
 If the test passes, the value is returned in the "value" attribute of the capture object
 }
 

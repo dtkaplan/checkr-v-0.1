@@ -2,7 +2,7 @@
 % Please edit documentation in R/same.R
 \name{same_}
 \alias{same_}
-\title{Compare pairs of values}
+\title{Compare submitted code values to solution code values}
 \usage{
 same_(compare_fun, objname, hint = FALSE, ...)
 }
@@ -27,9 +27,21 @@ one of the environments will be from the submitted answers, the other will
 be from the official solution.
 }
 \details{
-\code{same_()} is a general template for constructing comparison functions
-
-\code{same_num()} compares numerical vectors, providing a tolerance for numerical
+#' \code{same_num()} compares numerical vectors, providing a tolerance for numerical
 disagreement, \code{same_vec()} compares vectors for exact equality.
+
+\code{same_} lets the test writer apply her own comparison function. The others are for
+convenience for common operations use
+built in comparison functions.
+
+There is a distinction between these \code{same_()} functions and comparison
+functions. A comparison function is an ordinary function that takes three required arguments. \code{S} and
+\code{R} are the objects to be compared. \code{hint} is a boolean flag whether to make
+the failure message more diagnostic than the default. Comparison functions return \code{""} to
+indicate a pass, and a string of non-zero length to indicate a failure (and hopefully provide
+some guidance to the student.)
+
+In contrast, the \code{same_()} functions apply comparison functions to the corresponding
+values from the submitted code and the solution (or reference) code.
 }
 

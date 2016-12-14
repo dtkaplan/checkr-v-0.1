@@ -1,7 +1,8 @@
 #' checks on formula's
 
 
-
+#' @param student the student's formula
+#' @param term_formula the reference formula
 # check that the formula includes specified terms
 # (there may be additional ones)
 f_has_terms <- function(student, term_formula) {

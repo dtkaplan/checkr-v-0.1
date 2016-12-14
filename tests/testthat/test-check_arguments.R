@@ -25,7 +25,7 @@ test_that("argument alignment works (internal)", {
 test_that("can pull out an argument match from a line", {
   example_1 <- capture.code("x <- 3 + 1
                           y <- x ^ 2")
-  get_x_line <- in_names("x")
+  get_x_line <- assigns_to("x")
   test_3 <- check_argument("grab_this + 1", arg_is(3))
   test_4 <- check_argument("grab_this + 1", arg_is(4))
   test_5 <- check_argument("grab_this + 1", arg_is(4, hint=TRUE))
@@ -35,10 +35,10 @@ test_that("can pull out an argument match from a line", {
   expect_true(three$passed)
   four <- example_1 %>% get_x_line %>% test_4
   expect_false(four$passed)
-  expect_equal(four$message, "in function call + the argument to _____ + 1 has wrong value.")
+  expect_equal(four$message, "in function call _____ + 1 the argument has wrong value.")
   five <- example_1 %>% get_x_line %>% test_5
   expect_false(five$passed)
-  expect_equal(five$message, "in function call + the argument to _____ + 1 should have value 4.")
+  expect_equal(five$message, "in function call _____ + 1 the argument should have value 4.")
   six <- example_1 %>% get_x_line %>% test_6
-  expect_equal(six$message, "should be 4")
+  expect_equal(six$message, "in function call _____ + 1 the argument gives wrong numerical value")
 })

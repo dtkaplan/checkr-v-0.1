@@ -12,7 +12,7 @@
 #' convenience for common operations use
 #' built in comparison functions.
 #'
-#'
+#' @rdname same
 #' @return a list of with class \code{"test_result"}. See \code{new_test_result()}.
 #'
 #' @details There is a distinction between these \code{same_()} functions and comparison
@@ -27,7 +27,7 @@
 #'
 
 #' @param compare_fun the function to compare two objects, e.g. compare_numbers, compare_classes
-#' @param name the name of the object. Should be an unquoted name (e.g. \code{b}),
+#' @param objname the name of the object. Should be an unquoted name (e.g. \code{b}),
 #' not a character string (e.g., not \code{"b"}). Expressions
 #' are also allowed, e.g. \code{sqrt(b)}
 #' @param hint Set to \code{TRUE} to provide more diagnostic messages to the student.
@@ -54,23 +54,24 @@ same_ <- function(compare_fun, objname, hint = FALSE, ...) {
   }
 }
 
+#' @rdname same
 #' @export
-same_vec <- function(name, hint = FALSE, ...) {
-  same_(compare_vectors, substitute(name), hint = hint, ...)
+same_vec <- function(objname, hint = FALSE, ...) {
+  same_(compare_vectors, substitute(objname), hint = hint, ...)
 }
 
-
+#' @rdname same
 #' @export
-same_num <- function(name, hint = FALSE, ...) {
-  name <- substitute(name)
+same_num <- function(objname, hint = FALSE, ...) {
+  objname <- substitute(objname)
   Ldots <- lazyeval::lazy_dots(...)
   f <- function(submitted, reference) {
-    res <- in_both(name, submitted, reference)
+    res <- in_both(objname, submitted, reference)
     if (!res$passed) return(res)
 
-    S <- try(eval(name, envir = submitted), silent = TRUE)
+    S <- try(eval(objname, envir = submitted), silent = TRUE)
     if (inherits(S, "try-error")) S <- "nothing for you"
-    R <- eval(name, envir = reference)
+    R <- eval(objname, envir = reference)
     if (length(S) == 1 && S == "no such command found") message <- "no corresponding command found"
     else message <- compare_numbers(S, R, hint = hint, ...)
     if (nchar(message)) {
@@ -141,7 +142,7 @@ compare_vectors <- function(S, R, same_order = TRUE, hint = FALSE) {
       message <- paste("has excess elements",
                        ifelse(hint, capture.output(excess), "" ))
     if (missing(excess) > 0)
-      message <- paste(message, ifelse(nchar(res) > 0, "and", ""),
+      message <- paste(message, ifelse(nchar(message) > 0, "and", ""),
                        "is missing elements",
                        ifelse(hint, capture.output(missing), "" ))
   }
@@ -167,7 +168,7 @@ compare_numbers <- function(S, R, tol = NULL, pm = 1e-8, hint = FALSE) {
   if ( ! is.null(tol)) {
     # deal with division by zero
     is_same <- ifelse(R == 0, abs(S) < tol, abs(S / R - 1) < tol)
-    if (!all(same)) return(message)
+    if (!all(is_same)) return(message)
   } else if (!all(abs(S - R) < pm)) {
     return(message)
   }
@@ -190,8 +191,10 @@ new_test_result <- function() {
 }
 
 # check if it's a test_result object
+#' @rdname same
+#' @param x the object to be tested
 #' @export
-is.test_result <- function(obj) inherits(obj, "test_result")
+is.test_result <- function(x) inherits(x, "test_result")
 
 in_both <- function(name, sub, ref) {
   res <- new_test_result()
@@ -199,7 +202,7 @@ in_both <- function(name, sub, ref) {
   in_ref <- all(all.vars(name) %in% names(ref))
   if (in_sub && in_ref) return(res)  # success!
 
-  # This message will refer to the object created in match_values(), so
+  # This message will refer to the object created in soln_test(), so
   # probably not useful to the student, but can help the person writing the statements.
   m1 <- ifelse(in_sub, "", sprintf("can't find object '%s' in submitted code", all.vars(name)))
   m2 <- ifelse(in_ref, "", sprintf("no object '%s' in solution code", all.vars(name)))

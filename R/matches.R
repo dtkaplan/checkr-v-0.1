@@ -1,4 +1,10 @@
-#' Check values of objects
+#' Comparison functions
+#'
+#' There are two steps in using a comparison function. First, call the \code{match_} function itself, setting the
+#' argument \code{x} to be the reference value to which you will want the comparison to be made. This
+#' will return a function that will actually carry out the comparison. Second, use that returned function
+#' as the argument to a locator function like \code{check_value()} or \code{check_argument} or \code{in_values()}.
+#'
 #'
 #' @return a function which, when applied to the object to be tested, carries out the matching
 #' test and returns an failure message. (\code{""} means the test passed.)
@@ -8,27 +14,26 @@
 #' @param pm specify the matching range with a plus-or-minus amount
 #' @param tol specify the matching range by the ratio of the discrepancy to x
 #' @param range specify the matching range by two numbers
-#' #' @param names_contain if \code{TRUE} (default), all the names in df must be in the
-#' data frame being checked
+#' @param same_order if \code{TRUE}, insist that the vector elements be in the same order as in the soln.
+#' @param names_contain if \code{TRUE} (default) allow the data frame being checked to contain
+#' additional variable names than those in \code{x}.
 #' @param names_match if \code{TRUE}, all the names in the data frame being checked must be
 #' in the reference x. default: \code{FALSE}
 #' @param nrow if \code{TRUE}, the number of rows must be the same
-#' @param classes if \code{TRUE} the matching variables must be of the same class
-#' @param hint if \code{TRUE} give a more diagnostic message about mis-matches.
-# pm is in absolute numbers
-# tol is how far the ratio is from 1
-# range is a numerical range
+#' @param classes if \code{TRUE} the matching data frame variables must be of the same class
+
+#' @rdname matches
 
 #' @export
 match_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, hint = FALSE) {
-  message <- sprintf("should be %s", x)
   if(hint) {
+    message <- sprintf("should be %s", x)
     if ( ! is.null(range) && length(range) == 2)
       message <- sprintf("should be in range %s to %s", range[1], range[2])
     if ( ! is.null(tol))
       message <- sprintf("should be %s plus or minus %s", x, tol)
   } else {
-    sprintf("gives wrong numerical value")
+    message <- sprintf("gives wrong numerical value")
   }
 
   f <- function(val) {
@@ -40,6 +45,111 @@ match_number <- function(x, tol = NULL, pm = 1e-8, range = NULL, hint = FALSE) {
   f
 }
 
+
+#' @rdname matches
+#' @export
+#'
+match_names <- function(x, hint = FALSE) {
+  message <- if(hint) sprintf("should have names %s", capture.output(names(x)))
+             else "doesn't match required names"
+  f <- function(val) {
+    result <- all(names(val) %in% names(x)) && all(names(x) %in% names(val))
+
+    if (result) return("")
+    else return(message)
+  }
+  f
+}
+
+#' @rdname matches
+#' @export
+match_class <- function(x, hint = FALSE) {
+  message <- if(hint) {
+    sprintf("should have class %s", x)
+  } else {
+    "has wrong class."
+  }
+
+  f <- function(val) {
+    ifelse(inherits(val, x), "", message)
+  }
+  f
+}
+
+
+#' @rdname matches
+#' @export
+match_data_frame <- function(x, names_contain = TRUE, names_match = FALSE,
+                             nrow = FALSE, classes = FALSE, hint = FALSE) {
+  connector <- function(m) ifelse(nchar(m) > 0, "and ", "")
+  f <- function(val) {
+    message <- ""
+    if (names_contain) {
+      nm <- names(x)
+      missing <- nm[ ! nm %in% names(val)]
+      if (length(missing) > 0) {
+        message <- paste0(connector(message), "missing variables",
+                          ifelse(hint, " ", ""),
+                          ifelse(hint, paste0("'", missing, "'", collapse = ", " ), ""))
+      }
+    }
+    if (names_match) {
+      this_test <- length(setdiff(names(val), names(x))) == 0
+      if ( ! this_test) {
+        nm <- names(val)
+        extras <- nm[ ! nm %in% names(x)]
+        message <- paste0(connector(message),
+                          "extra variables ",
+                          ifelse(hint, paste0("'", extras, "'", collapse = ", "), ""))
+      }
+    }
+    if (nrow) {
+      this_test <- nrow(x) == nrow(val)
+      if ( ! this_test) {
+        message <- paste0(message, connector(message),
+                          ifelse(hint, sprintf("has %d rows but needs %d rows", nrow(val), nrow(x)),
+                                 "has wrong number of rows"))
+      }
+    }
+    if (classes) {
+      bad_set <- NULL
+      for (nm in names(x)) {
+        if(class(val[[nm]]) != class(x[[nm]])) bad_set <- c(bad_set, nm)
+      }
+      if (length(bad_set) > 0) {
+        to_add <- if(hint) {
+          paste("variable",
+                paste0("'", bad_set, "'", " should be class ",
+                       lapply(x[bad_set], FUN = class), collapse = ", "))
+        } else {
+          paste0("has wrong class for ", paste0("'", bad_set, "'", collapse = ", "))
+        }
+        message <- paste0(message, connector(message), to_add)
+      }
+    }
+    return(paste0(ifelse(nchar(message) > 0, "data frame ", ""),
+                  message, ifelse(nchar(message) > 0,  ".", "")))
+  }
+  f
+}
+
+
+#' @rdname matches
+#' @export
+match_formula <- function(x) {
+  f <- function(student) {
+    res <- f_same_response(student, x)
+    if (nchar(res) != 0) return(res)
+    res <- f_same_explanatory(student, x)
+    if (nchar(res) != 0) return(res)
+
+    return("")
+  }
+  f
+}
+
+
+#' @rdname matches
 #' @export
 match_vector <- function(x, same_order = TRUE, hint = FALSE) {
   f <- function(val) {
@@ -66,8 +176,8 @@ match_vector <- function(x, same_order = TRUE, hint = FALSE) {
       if (length(excess) > 0) res <- paste("has excess elements",
                                            ifelse(hint, capture.output(excess), "" ))
       if (missing(excess) > 0) res <- paste(res, ifelse(nchar(res) > 0, "and", ""),
-                                     "is missing elements",
-                                     ifelse(hint, capture.output(excess), "" ))
+                                            "is missing elements",
+                                            ifelse(hint, capture.output(excess), "" ))
     }
     return(res)
 
@@ -75,54 +185,12 @@ match_vector <- function(x, same_order = TRUE, hint = FALSE) {
   f
 }
 
-# @param x a list or vector with names
-#' @export
-#'
-match_names <- function(x, hint = FALSE) {
-  message <- if(hint) sprintf("should have names %s", capture.output(names(x)))
-             else "doesn't match required names"
-  f <- function(val) {
-    result <- all(names(val) %in% names(x)) && all(names(x) %in% names(val))
-
-    if (result) return("")
-    else return(message)
-  }
-  f
-}
-
-#' @export
-match_class <- function(x, hint = FALSE) {
-  message <- if(hint) {
-    sprintf("should have class %s", x)
-  } else {
-    "has wrong class."
-  }
-
-  f <- function(val) {
-    ifelse(inherits(val, x), "", message)
-  }
-  f
-}
-
-#' @export
-match_formula <- function(x) {
-  f <- function(student) {
-    res <- f_same_response(student, x)
-    if (nchar(res) != 0) return(res)
-    res <- f_same_explanatory(student, x)
-    if (nchar(res) != 0) return(res)
-
-    return("")
-  }
-  f
-}
 
 # has all the components of the reference formula (and perhaps some others)
-#' @export
 is_in_formula <- function(x){
   f <- function(student) {
     res <- ""
-    if (length(answer) > 2) res <- f_same_response(student, x)
+    if (length(x) > 2) res <- f_same_response(student, x)
     if (nchar(res) != 0) return(res)
 
     res <- f_same_explanatory(student, x)
@@ -134,57 +202,3 @@ is_in_formula <- function(x){
   f
 }
 
-#' @export
-match_data_frame <- function(x, names_contain = TRUE, names_match = FALSE,
-                             nrow = FALSE, classes = FALSE, hint = FALSE) {
-  connector <- function(m) ifelse(nchar(m) > 0, "and ", "")
-  f <- function(val) {
-    message <- ""
-    if (names_contain) {
-      nm <- names(x)
-      missing <- nm[ ! nm %in% names(val)]
-      if (length(missing) > 0) {
-        message <- paste0(connector(message), "missing variables",
-                          ifelse(hint, " ", ""),
-                         ifelse(hint, paste0("'", missing, "'", collapse = ", " ), ""))
-      }
-    }
-    if (names_match) {
-      this_test <- length(setdiff(names(val), names(x))) == 0
-      if ( ! this_test) {
-        nm <- names(val)
-        extras <- nm[ ! nm %in% names(x)]
-        message <- paste0(connector(message),
-                         "extra variables ",
-                         ifelse(hint, paste0("'", extras, "'", collapse = ", "), ""))
-      }
-    }
-    if (nrow) {
-      this_test <- nrow(x) == nrow(val)
-      if ( ! this_test) {
-        message <- paste0(message, connector(message),
-                         ifelse(hint, sprintf("has %d rows but needs %d rows", nrow(val), nrow(x)),
-                                "has wrong number of rows"))
-      }
-    }
-    if (classes) {
-      bad_set <- NULL
-      for (nm in names(x)) {
-        if(class(val[[nm]]) != class(x[[nm]])) bad_set <- c(bad_set, nm)
-      }
-      if (length(bad_set) > 0) {
-        to_add <- if(hint) {
-          paste("variable",
-            paste0("'", bad_set, "'", " should be class ",
-                   lapply(x[bad_set], FUN = class), collapse = ", "))
-        } else {
-          paste0("has wrong class for ", paste0("'", bad_set, "'", collapse = ", "))
-        }
-        message <- paste0(message, connector(message), to_add)
-      }
-    }
-    return(paste0(ifelse(nchar(message) > 0, "data frame ", ""),
-                  message, ifelse(nchar(message) > 0,  ".", "")))
-  }
-  f
-}

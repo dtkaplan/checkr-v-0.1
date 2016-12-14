@@ -49,7 +49,7 @@ test_that("comparing vectors works", {
 
 test_that("same_() family works", {
   # For testing, create by hand the environments that would be created by
-  # match_values()
+  # soln_test()
   S <- list(a = 1:5, b = (1:5)^2)
   R <- c(S, d = 7)
   test1 <- same_num(a)

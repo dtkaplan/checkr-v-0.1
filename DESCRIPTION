@@ -1,16 +1,16 @@
 Package: checkr
 Type: Package
-Title: Facilities for checking a character string containing R code.
+Title: Facilities for checking R submissions in tutorials
 Version: 0.1.0
 Author: Daniel Kaplan
 Maintainer: Daniel Kaplan <kaplan@macalester.edu>
-Description: Interogates R code
-License: What license is it under?
+Description: Packages such as tutor support interactive documents that serve as tutorials in which students can submit R code and get feedback on correctness. This package provides facilities for specifying what tests should be run on the submitted code, and also provides an interface to the tutor system.
+License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: dplyr, magrittr, testthat
+Depends: magrittr
 LazyData: true
 RoxygenNote: 5.0.1
-Suggests: testthat, magrittr,
+Suggests: tutor, testthat, dplyr,
     knitr, stringr, compare,
-    rmarkdown
+    rmarkdown, ggplot2, lazyeval
 VignetteBuilder: knitr

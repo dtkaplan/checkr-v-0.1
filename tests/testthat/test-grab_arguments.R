@@ -2,18 +2,16 @@ context("grab_arguments")
 
 
 
-test_that("multiplication works", {
+test_that("in_statements() works", {
   USER_CODE <- capture.code("1 + 3")
   SOLN_CODE <- capture.code("2 + 2")
   test_1 <- fcall("whatever + whatever")
-  grab_me <- grab_argument("whatever + grab_this")
-  USER_CODE %>% test_1 %>% grab_me -> foo
-
-  # NEED to integrate line-finding into grab_argument.
-
-  # NOT YET FIGURED OUT
-  match_values(USER_CODE, SOLN_CODE,
+  test_2 <- check_argument("whatever + grab_this", match_number(2))
+  one <- USER_CODE %>% test_1 %>% test_2
+  expect_false(one$passed)
+  # check the value, not the argument
+  two <- soln_test(USER_CODE, SOLN_CODE,
                a = in_statements("+"),
-               b = grab_me(in_statements("+")),
-               same_num(b))
+               same_num(a))
+  expect_true(two$passed)
 })

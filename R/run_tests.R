@@ -13,6 +13,9 @@
 #' @param envir_result the R environment after the student's code has been run
 #' NOTE NOTE NOTE I would like to have the R environment *before* the student code is run. That way,
 #' I can run the solution_code in the same environment seen by the student code.
+#' @param evaluate_result the output of evaluate::evaluate from the code input. Tutor provides
+#' this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.
+#' @param ... other arguments (see tutor documentation)
 #' @param feedback a function (provided by tutor) to convey a feedback message to the student
 #' via the tutor document
 #' @param debug if \code{TRUE}, write the information in the other arguments to a file
@@ -20,6 +23,9 @@
 #' Then, the stored information can be put through
 #' the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
 #' reads the RDS file and runs the tests.
+#'
+#' @details The arguments are set by the tutor system. Only \code{debug} isn't
+#' standard.
 #'
 #' @export
 checkr_tutor <- function(label=NULL,
@@ -65,17 +71,4 @@ checkr_tutor <- function(label=NULL,
   }
 
   feedback("Good job!", correct = TRUE, type = "success")
-}
-
-#' @export
-run_tests_from_file <- function(label) {
-  raw <- check_info_from_file(label)
-  with(raw, checkr_tutor(label = label,
-                      user_code = user_code,
-                      solution_code = solution_code,
-                      check_code = check_code,
-                      envir_result = envir_result,
-                      evaluate_result = evaluate_result,
-                      feedback = function(m, ...) m, # just return the feedback message
-                      debug = FALSE))
 }

@@ -2,12 +2,17 @@
 % Please edit documentation in R/capture.R
 \name{capture.code}
 \alias{capture.code}
+\alias{is.capture}
 \title{evaluate R statements, capturing code, created vars, and printed output}
 \usage{
 capture.code(code_text = NULL)
+
+is.capture(x)
 }
 \arguments{
 \item{code_text}{the commands being evaluated as pure text}
+
+\item{x}{the object to be checked}
 }
 \value{
 a list containing 1) the \code{results} of each command (which might not have been

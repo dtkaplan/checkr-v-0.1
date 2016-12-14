@@ -14,17 +14,21 @@
 #' @return a function that will take a capture object as input and return
 #' a capture object as output. The value of the line (identified by previous locator tests)
 #' will be compared to the reference value given when constructing the test.
-#' @param test a function taking one value as an argument. The test to run to evaluate the captured value. Should
-#' return \code{""} if passing, non-empty message string if not
+#' @param test a function taking one value as an argument. The test to
+#' run to evaluate the captured value. Test functions should
+#' return \code{""} if passing, non-empty message string if not.
 #' @param message the message to give if the test fails
 #' @param mistake if \code{TRUE}, the specified test is one that should NOT be seen in
 #' the code.
+#' @seealso \code{\link{check_argument}}
+#'
+#' @rdname values
 #' @export
 check_value <- function(test, message = NULL, mistake = FALSE) {
   test_text <- deparse(substitute(test))
   if (is.null(message))
     message <- ifelse(mistake,
-      sprintf("test '%s' shouldn't pass", text_text),
+      sprintf("test '%s' shouldn't pass", test_text),
       sprintf("test '%s' failed", test_text))
   success_message <- ! mistake # if the mistaken test is passed, the test fails
   f <- function(capture) {
@@ -35,9 +39,10 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
     }
     value <- capture$returns[[capture$line]]
     result <- test(value)
-    if ((mistake && result == "") || result != "") {
+    if ((mistake && result == "") || result != "message") {
       # either the mistaken pattern was found, so the test should fail
-      # or the pattern was not found when it should have been (mistake == TRUE) and
+      # or, if <mistake> is TRUE,
+      # the pattern was not found when it should have been and
       # so the test fails
       capture$passed = FALSE
       capture$message = paste(message, sprintf("for value of line '%s'", capture$statements[capture$line]))
@@ -48,8 +53,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
   f
 }
 
-# THIS NEEDS TO BE FOLDED INTO in_names()
-
+# Do I want to use this in assigns_to()?
 # but doesn't need to be exported
 get_match_ind <- function(what, nms, strict = TRUE) {
   if (strict) {
@@ -168,7 +172,9 @@ corresponding_arguments <- function(one, reference) {
 }
 
 # flags for argument grabbing
+#' @rdname values
 #' @export
 grab_this <- as.name("grab_this")
+#' @rdname values
 #' @export
 whatever <- as.name("whatever")

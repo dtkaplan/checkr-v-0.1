@@ -50,10 +50,38 @@ USER_CODE   <- capture.code("2 + 2 + 2")
 SOLN_CODE   <- capture.code("2 + 2")
 
 # the -check chunk contents would look like
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = final_(),
              same_num(res)) %>%
   show_results()
+
+## ------------------------------------------------------------------------
+USER_CODE <- capture.code("x <- 7 + 3\n sin(x)")
+test_1 <- fcall("sin(whatever)", "you didn't use sin().")
+test_2 <- check_value(match_number(sin(10), "something's wrong with the sin() line."))
+USER_CODE %>%
+  test_1 %>% test_2 %>%
+  show_results
+
+## ------------------------------------------------------------------------
+test_a <- fcall("whatever + whatever", "remember to use +") # regular location test
+test_b <- check_argument("grab_this + whatever", 
+                         match_number(17, tol = 0.1))
+USER_CODE %>%
+  test_a %>% test_b %>%
+  show_results
+
+## ------------------------------------------------------------------------
+USER_CODE <- capture.code("xx <- sin(7)") # wrong in so many ways!
+test_1 <- fcall("sqrt(whatever)", "use the sqrt() function.")
+test_2 <- assigns_to("x")
+test_3 <- check_argument("sqrt(grab_this)", match_number(7))
+
+## ------------------------------------------------------------------------
+USER_CODE %>% test_2 %>% test_1 %>% test_3 %>% show_results
+
+## ------------------------------------------------------------------------
+USER_CODE %>% test_1 %>% test_3 %>% test_2 %>% show_results
 
 ## ------------------------------------------------------------------------
 submission_1 <- "ggplot(mtcars, aes(x = mpg, y = hp)) + geom_point()" # Wrong!
@@ -177,7 +205,7 @@ test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt)
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("2 + 3")
 SOLN_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(res)) %>% 
   show_results
@@ -185,7 +213,7 @@ match_values(USER_CODE, SOLN_CODE,
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("2 + -6")
 SOLN_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(abs(res))) %>% 
   show_results
@@ -193,8 +221,8 @@ match_values(USER_CODE, SOLN_CODE,
 ## ----eval = FALSE--------------------------------------------------------
 #  USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
 #  SOLN_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
-#  match_values(USER_CODE, SOLN_CODE,
-#               res = in_names("mod"),
+#  soln_test(USER_CODE, SOLN_CODE,
+#               res = assigns_to("mod"),
 #               same_vec(coef(res))) %>%
 #    show_results
 

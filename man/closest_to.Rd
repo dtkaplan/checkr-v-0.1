@@ -17,7 +17,7 @@ a function that takes a capture as input and returns a capture as output
 \code{closest_to()} finds a matching line in the solution code. It then uses the
 value of that line (in the solution code) to look for the best-matching
 value in the student code. The function is not to be used stand-alone, but
-rather in the \code{match_values()} function, which calls it once for the solution
+rather in the \code{\link{soln_test}} function, which calls it once for the solution
 code and again for the user code. For the solution code, it returns the matching line
 but for the user code it returns the line whose value matches the most closely the
 value of the line in the solution code. So long as there is some

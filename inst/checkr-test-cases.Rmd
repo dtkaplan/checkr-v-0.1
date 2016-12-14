@@ -36,7 +36,7 @@ test_1 <- fcall("2 + whatever", "first argument should be two ")
 test_2 <- fcall("whatever + 2", "second argument should also be two")
 test_3 <- fcall("2 + 2", "remember to add two plus two")
 USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = final_(),
              same_num(res))
 ```

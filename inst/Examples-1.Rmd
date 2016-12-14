@@ -132,7 +132,7 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="+"),
              b = fcall("whatever + grabthis", "Second argument to +"),
              same_num(res))

@@ -157,39 +157,156 @@ USER_CODE   <- capture.code("2 + 2 + 2")
 SOLN_CODE   <- capture.code("2 + 2")
 
 # the -check chunk contents would look like
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = final_(),
              same_num(res)) %>%
   show_results()
 ```
-The `match_values()` function from `checkr` compares the values produced by the student's code and the values produced by code provided by the test writer in a `-solution` chunk. `USER_CODE` and `SOLN_CODE` convey the contents of the submission and solution chunks, respectively. 
+The `soln_test()` function from `checkr` compares the values produced by the student's code and the values produced by code provided by the test writer in a `-solution` chunk. `USER_CODE` and `SOLN_CODE` convey the contents of the submission and solution chunks, respectively. 
 
-The next argument to `match_values()` uses a function `final_()`, which looks for the *last* value produced by the student and by the solution code. In this example, there's only one value, but in general there may be multiple values produced by submitted code. Whatever that last value be, and regardless of whether the student's or solution code assigned a name to the value, the argument name will be assigned to that value for future reference.
+The next argument to `soln_test()` uses a function `final_()`, which looks for the *last* value produced by the student and by the solution code. In this example, there's only one value, but in general there may be multiple values produced by submitted code. Whatever that last value be, and regardless of whether the student's or solution code assigned a name to the value, the argument name will be assigned to that value for future reference.
 
-The final argument to `match_values()` refers to the name `ref` created in the previous argument. The `same_num()` function compares the `ref` value in the student and the solution code. 
+The final argument to `soln_test()` refers to the name `ref` created in the previous argument. The `same_num()` function compares the `ref` value in the student and the solution code. 
 
-Later, we'll show examples using `match_values()` that can deal with more complicated structure in the student and solution code. For instance, you can have as many reference-named values and comparison tests as you like, but that's hardly needed in this simple example.
+Later, we'll show examples using `soln_test()` that can deal with more complicated structure in the student and solution code. For instance, you can have as many reference-named values and comparison tests as you like, but that's hardly needed in this simple example.
 
 
 ## Framework for testing
 
-Before it can be tested, the student answer must run, even if the answer is not correct.
+Before it can be tested, the student answer must run, even if the answer is not correct. Parsing errors and run-time errors are absorbed by the `tutor` system, so any code with such errors will not be handed over to `checkr` for evaluation.
 
-Each student answer will be broken into command lines. A command line contains a complete R command, even if it appears to be divided into multiple text lines. The command line may include assignment, but does not need to.
+`Checkr` examines code one command line at a time. A command line is a complete piece of R code that generates a value, such as would be given in the console and evaluated when "return" is pressed. Here are some examples of statements:
 
-There are three basic kinds of tests:
+* `x <- 7`
+* `library(ggplot2)`
+* `lm(mpg ~ hp, data = mtcars)`
 
-1. A location test. That there exists some command line that matches the specified criterion. Location tests look through the command lines in a student answer to find the match. Location tests have several forms:
-    - a character string matches 
-    - a specified function (and, optionally, specified arguments) is called
-    - assignment to a name is done by the statement.
-    Failure to find a location means that the overall test fails. But if the test is passed, you can do additional location tests. At the end of the location-test sequence, you can optionally test for a final value of the last-located command, or the argument to a function in that last-located command.
-2. A final value test. The value computed by that located line matches a specified criterion.
-3. An argument test value. An argument to a function invoked on the located line matches a specified argument.
+Note that assignment of a name to a value, e.g. `x <- 7`, is part of the statement. 
 
-Before you can apply tests of a value or an argument, a line must have been previously located. So a location test should always be the first test in every sequence. [[I can't decide whether one-line answers should be able to skip the locator.]]
+At present, `checkr` tests are designed around command lines like the above.
+When `magrittr` pipes are used, all the commands piped together constitute one statement. `checkr` will break such chains into individual statements, each having the contents between successive pipes.
 
-Using `then()` and `previously()` enables you to specify that a given locator test should match the code before or after a previous locator test.
+Note that when curly braces are included in code, a command line is more inclusive than many people would think at first glance. For instance, `for` loops constitute a single a command line. The following chunk has only one command line: 
+
+```r
+for (k in 1:length(vec)) { 
+  x <- cos(vec[k])
+  sum <- sum + x
+}
+```
+
+The same is true for `if` statements, such as:
+
+```r
+if (x > 0) {
+  y <- cos(x)
+} else {
+  z <- sin(x)
+}
+```
+
+Function definition with `function` also involves a single statement:
+
+```r
+funnel <- function(x, width=3) {
+  ifelse(abs(x) > width, abs(x), -width)
+}
+```
+
+In the future, we anticipate providing `checkr` tests that work with such constructions.
+
+
+
+## Solution-matching tests and location tests
+
+There are two basic kinds of `checkr` tests: solution-matching tests and location tests.
+
+1. In a **solution-matching test**, a comparison is made between a solution provided by the problem author and the student's submitted code. Solution-matching tests are contained within the `soln_test()` function. 
+2. In a **location test**, there is no reference to the author's solution. Instead, the test looks for patterns within the student's code. Location tests start with `USER_CODE %>% [one or more tests]`.
+
+A `-check` chunk is composed of one or more test: solution-matching tests can be freely intermixed with location tests.
+
+## Location tests
+
+Location tests specify a pattern that is expected to be in the student code. Each location test either fails or identifies a single command line in the code being examined that matches the specified pattern. Location tests look through the command lines in a student answer to find the match. There are several ways to specify patterns:
+
+- a character string (or regex) matches 
+- a specified function (and, optionally, specified arguments) is called
+- assignment to a name is done by the statement.
+
+Location tests are often specified as sequences of tests, written
+
+    USER_CODE %>% test_1 %>% test_2 ... and so on
+
+The tests are run from left to right. Any test failing causes the test to terminate. The failure message from the whole sequence will be the failure message from the test that failed. If a test passes, the next test in the sequence is applied, and so on. 
+
+Each passing test records the particular command line that matched the pattern. Subsequent tests can be directed to look for matches before, after, or within the command line that matched the previous test. See the location-qualifier functions \code{then}, \code{previously}, and \code{within}. Of course, you need not use a location qualifier, in which case subsequent tests will look at *all* command lines.
+
+There are location tests that allow you to test a value generated by the code. The simplest is \code{check_value}, which looks at the value of the whole command line. A previous locator test should have identified the particular line whose value is to be tested.  For example:
+
+```{r}
+USER_CODE <- capture.code("x <- 7 + 3\n sin(x)")
+test_1 <- fcall("sin(whatever)", "you didn't use sin().")
+test_2 <- check_value(match_number(sin(10), "something's wrong with the sin() line."))
+USER_CODE %>%
+  test_1 %>% test_2 %>%
+  show_results
+```
+  
+Another kind of value-checking location test looks for the value of an argument to a function. The location specifier must include a \code{grab_this} to identify the particular argument to be captured. For instance:
+
+```{r}
+test_a <- fcall("whatever + whatever", "remember to use +") # regular location test
+test_b <- check_argument("grab_this + whatever", 
+                         match_number(17, tol = 0.1))
+USER_CODE %>%
+  test_a %>% test_b %>%
+  show_results
+```
+
+## Example: Testing assignment
+
+Consider a problem like this:
+
+> Assign the name `x` to the results of the calculation $\sqrt{7}$.
+
+There are several things to be checked here:
+
+1. That a name was assigned to an object.
+2. That the name was `x`
+3. That `sqrt()` was called.
+4. That 7 was the argument to `sqrt()`.
+
+It's the author's choice whether to test all these things. Here are some locator test sequences that an author might choose among.
+
+```{r}
+USER_CODE <- capture.code("xx <- sin(7)") # wrong in so many ways!
+test_1 <- fcall("sqrt(whatever)", "use the sqrt() function.")
+test_2 <- assigns_to("x")
+test_3 <- check_argument("sqrt(grab_this)", match_number(7))
+```
+
+Which of these tests should come first? It depends on the points the author wants to emphasize. For example, she might want to know first whether assignment  was used.
+```{r}
+USER_CODE %>% test_2 %>% test_1 %>% test_3 %>% show_results
+```
+Or, the author might want to check first that the `sqrt()` function was used.
+```{r}
+USER_CODE %>% test_1 %>% test_3 %>% test_2 %>% show_results
+```
+
+
+## Creating and debugging tests
+
+Note that in the examples, the location tests are all created and named *before* being used in the `USER_CODE %>% ...` checking line. Each test is implemented as an unevaluated function.
+
+You might **incorrectly** write
+```r
+USER_CODE %>% fcall("whatever + whatever", "remember to use +")
+```
+This is not a check statement. Instead, the statement passes `USER_CODE` to the `fcall()` function. But `fcall()` doesn't take user code as an input. Rather, `fcall()`'s first argument should be the pattern to be matched. The output of `fcall()` is another function. That function *does* take user code as input.
+
+In debugging a single test such as `test_a`, you should call `debug(test_a)`. This "functional programming" style has the potential to be confusing to many users.
 
 ## A richer example
 
@@ -361,31 +478,31 @@ submission_3 %>% test_1 %>% test_4 %>% show_results
 
 IN DRAFT. TALK ABOUT `closest_to("what")`, which finds the value in the user code that's closest to the value in the solution code identified by the <what> string. The <what> string *must* be a parsable command, but does not need to be the whole line of code. Alternatively, you can give `closest_to()` an unquoted name, corresponding to some named object produced by the solution code.
 
-Often, perhaps most of the time, the question author will provide an example solution. The `match_values()` function lets you compare the values generated by the solution to the values generated by the user's code.
+Often, perhaps most of the time, the question author will provide an example solution. The `soln_test()` function lets you compare the values generated by the solution to the values generated by the user's code.
 
 To illustrate, let's construct by hand the `USER_CODE` and `SOLN_CODE` contents that get produced from the question chunks in a `tutor` document.
 ```{r}
 USER_CODE <- capture.code("2 + 3")
 SOLN_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(res)) %>% 
   show_results
 ```
-The first two arguments to `match_values()` are always the user code and the solution code in that order. The following arguments to `match_values()` are either named or unnamed. 
+The first two arguments to `soln_test()` are always the user code and the solution code in that order. The following arguments to `soln_test()` are either named or unnamed. 
 
 Named arguments -- e.g. `res = instatements(regex="2 *\\+")` -- are often set to be locator statements. The name itself will be used to refer to the value for the command found by the locator statement. Alternatively, named arguments can be used to calculate some value from those already located and named.
 
 Unnamed arguments -- e.g. `same_num(res)` -- are a comparison test selected from the `same_()` family of tests provided by `checkr`. 
 
-In operation, `match_values()` extracts out the values from the user code and the solution code for the command that passes the locator statement. The comparison tests are then run to compare the user values and the solution values.
+In operation, `soln_test()` extracts out the values from the user code and the solution code for the command that passes the locator statement. The comparison tests are then run to compare the user values and the solution values.
 
 You can compute elements from the named values. For instance, here we compare not the result itself but the absolute value of the result. Thus, the user code, which does not match the solution code, still passes the `same_num()` test, since the value $-4$ computed by the user passes the test.
 
 ```{r}
 USER_CODE <- capture.code("2 + -6")
 SOLN_CODE <- capture.code("2 + 2")
-match_values(USER_CODE, SOLN_CODE,
+soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="2 *\\+"),
              same_num(abs(res))) %>% 
   show_results
@@ -395,8 +512,8 @@ The point of having such transformations -- e.g. `abs()` in the above example --
 ```{r eval = FALSE}
 USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
 SOLN_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
-match_values(USER_CODE, SOLN_CODE,
-             res = in_names("mod"),
+soln_test(USER_CODE, SOLN_CODE,
+             res = assigns_to("mod"),
              same_vec(coef(res))) %>% 
   show_results
 ```

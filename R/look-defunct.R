@@ -1,58 +1,5 @@
-#' Locator functions
-#'
-#' Look for the line in the code matching the identified text, function call, etc.
-#'
+# Defunct function from look.R
 
-#'
-# These are factories for test functions. Test functions take either a result or the
-# output of capture.output() as inputs. Test functions always return a result.
-# a result has fields <passed>, <message>, <code>, <lines>. The output of capture.code
-#' @rdname look
-
-in_factory <- function(where) {
-  f <- function(what, message = NULL, regex = NULL, number = NULL, class = NULL, mistake = FALSE, ...) {
-    mode = "match"
-    if (!is.null(regex)) {
-      mode <- "regex"
-      what <- regex
-    }
-    if (!is.null(number)) {
-      mode <- "number"
-      what <- number
-    }
-    if (!is.null(class)) {
-      mode <- "class"
-      what <- class
-    }
-    if (is.null(message)) {
-      message <-
-        sprintf("couldn't find match to %s'%s'",
-                ifelse(mode == "number", "number ",
-                       ifelse(mode == "class", "class ",
-                              ifelse(mode == "regex", "regex ", ""))),
-                as.character(what))
-    }
-
-    find_content(where = where, mode = mode, what = what,
-                 message = message, regex = regex, number = number, class = class, ...)
-  }
-  f
-}
-
-# If the argument to <in_statements()> is a fixed string, it must be parsable.
-# Why? because comparison will be done to the parsed version of the lines.
-#' @rdname locator_functions
-#' @export
-final_ <- function(...) {
-  simple <- function(capture) {
-    capture$created_by <- "last result from code"
-    capture$line <- max(capture$valid_lines)
-
-    capture
-  }
-  dots <- lazyeval::lazy_dots(...)
-  if (length(dots) == 0) return(simple)
-}
 
 
 # @param where character string specifying whether to look at names of objects
@@ -104,9 +51,9 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   f <- function(capture) {
     capture$created_by <-
       if (where == "names") sprintf("that creates an object named '%s'.", what)
-      else if (where == "returns") sprintf("that returns an object like '%s'.", what)
-      else if (where %in% c("statements", "commands")) sprintf("that contains a command like '%s'.", what)
-      else "this is a meaningless 'created_by' message. Shouldn't be happening."
+    else if (where == "returns") sprintf("that returns an object like '%s'.", what)
+    else if (where %in% c("statements", "commands")) sprintf("that contains a command like '%s'.", what)
+    else "this is a meaningless 'created_by' message. Shouldn't be happening."
 
     if ( ! capture$pass) return(capture) # short circuit if non-passing input
     success_flag <- FALSE
@@ -149,3 +96,40 @@ find_content <- function(where = c("returns", "names", "statements", "commands")
   f # return the function created
 }
 
+#'
+
+#'
+# These are factories for test functions. Test functions take either a result or the
+# output of capture.output() as inputs. Test functions always return a result.
+# a result has fields <passed>, <message>, <code>, <lines>. The output of capture.code
+#' @rdname look
+
+in_factory <- function(where) {
+  f <- function(what, message = NULL, regex = NULL, number = NULL, class = NULL, mistake = FALSE, ...) {
+    mode = "match"
+    if (!is.null(regex)) {
+      mode <- "regex"
+      what <- regex
+    }
+    if (!is.null(number)) {
+      mode <- "number"
+      what <- number
+    }
+    if (!is.null(class)) {
+      mode <- "class"
+      what <- class
+    }
+    if (is.null(message)) {
+      message <-
+        sprintf("couldn't find match to %s'%s'",
+                ifelse(mode == "number", "number ",
+                       ifelse(mode == "class", "class ",
+                              ifelse(mode == "regex", "regex ", ""))),
+                as.character(what))
+    }
+
+    find_content(where = where, mode = mode, what = what,
+                 message = message, regex = regex, number = number, class = class, ...)
+  }
+  f
+}

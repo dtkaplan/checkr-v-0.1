@@ -2,14 +2,15 @@
 % Please edit documentation in R/modifiers.R
 \name{needs}
 \alias{needs}
+\alias{suffices}
 \title{modifiers on pass objects}
 \usage{
 needs(pass)
+
+suffices(pass)
 }
 \arguments{
-\item{pass}{a pass object}
-
-\item{capture}{a capture object}
+\item{pass}{a pass or capture object}
 }
 \value{
 the modified pass object

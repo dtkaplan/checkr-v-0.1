@@ -8,6 +8,7 @@
 #' parent environments, and so will give the most recent value of each object.
 #'
 #' @param code_text the commands being evaluated as pure text
+#' @param x the object to be checked
 #' @return a list containing 1) the \code{results} of each command (which might not have been
 #' saved in an object in the statement itself), 2) a list \code{envlist}
 #' holding the environments created for each command, 3) the statements themselves as
@@ -17,9 +18,14 @@
 #' list have the same number of components, which need to be accessed with \code{[[]]} to get
 #' individual commands
 #'
+# @importFrom lazyeval lazy_dots
+#' @importFrom stats terms.formula
+#' @importFrom utils capture.output
+#'
 #' @examples
 #' capture.code("x <- 2 + 2\n#then square it\ny <- x^2")
 #' capture.code("for (k in 1:2) {\n x <- k\nsqrt(7)}")
+#' @rdname capture
 #' @export
 capture.code <- function(code_text = NULL) {
   # Get the code from its file or text form
@@ -76,6 +82,7 @@ capture.code <- function(code_text = NULL) {
 
 # helper function to identify capture objects
 
+#' @rdname capture
 #' @export
 is.capture <- function(x) inherits(x, "capture")
 

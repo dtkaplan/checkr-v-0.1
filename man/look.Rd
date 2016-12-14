@@ -9,7 +9,4 @@ in_factory(where)
 \description{
 Look for the line in the code matching the identified text, function call, etc.
 }
-\details{
-# These are factories for test functions. Test functions take either a result or the
-}
 

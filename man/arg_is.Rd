@@ -4,10 +4,12 @@
 \alias{arg_is}
 \title{Simple interface to argument checking}
 \usage{
-arg_is(value, hint = FALSE, test = NULL)
+arg_is(value = NULL, hint = FALSE, test = NULL)
 }
 \arguments{
-\item{value}{-- a simple value that can be tested by equality}
+\item{value}{-- a simple value that can be tested by equality. If \code{test} is also specified,
+the value will be used only in a hint, in which case it should be set to something meaningful
+as a hint.}
 
 \item{hint}{if TRUE, give a more diagnostic version of the source of any error}
 

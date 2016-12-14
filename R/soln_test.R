@@ -1,16 +1,17 @@
-#' supervisory function for matching output values
+#' supervisory function testing whether student code matches a given solution
+#'
 #'
 #' @details the elements in \code{...} have two forms. Named elements are set to statements
 #' that identify a line in the code. The returned value of that line will be given the name.
 #' Unnamed elements consist of comparison tests (see \code{same_()}) that operate on the
 #' objects given names in previous elements of the list.
 #'
-#' @param capture the evaluated capture object from the submitted code
+#' @param student the evaluated capture object from the submitted code
 #' @param solution the evaluated capture object from the solution code
 #' @param ... lists of statements giving names to the objects to be matched
 #' and the requirements framed on the objects created in \code{assigns}
 #' @export
-match_values <- function(student = NULL, solution = NULL, ...) {
+soln_test <- function(student = NULL, solution = NULL, ...) {
   statements <- lazyeval::lazy_dots(...)
   R <- new_test_result()
   if (is.null(names(statements))) stop("Must name some objects for comparison")

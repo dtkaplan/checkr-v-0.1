@@ -23,6 +23,11 @@ checks to run on the chunk being checked}
 NOTE NOTE NOTE I would like to have the R environment *before* the student code is run. That way,
 I can run the solution_code in the same environment seen by the student code.}
 
+\item{evaluate_result}{the output of evaluate::evaluate from the code input. Tutor provides
+this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.}
+
+\item{...}{other arguments (see tutor documentation)}
+
 \item{feedback}{a function (provided by tutor) to convey a feedback message to the student
 via the tutor document}
 
@@ -36,5 +41,9 @@ reads the RDS file and runs the tests.}
 The function that the \code{tutor} document will call when checking
 a submission. You can tell \code{tutor} to do this with a statement in the \code{tutor}
 document like \code{tutor_options(exercise.checker = checkr::checkr_tutor)}.
+}
+\details{
+The arguments are set by the tutor system. Only \code{debug} isn't
+standard.
 }
 

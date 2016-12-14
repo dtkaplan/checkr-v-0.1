@@ -8,17 +8,17 @@ example_1 <- capture.code(
 )
 
 test_that("simple checks work", {
-  test_1 <- in_names("x", "Did you define x?")
+  test_1 <- assigns_to("x", message = "Did you define x?")
   one <- example_1 %>% test_1
   expect_true(one$passed)
-  test_2 <- in_names("bogus", "no object named 'bogus' found")
+  test_2 <- assigns_to("bogus", message = "no object named 'bogus' found")
   two <- example_1 %>% test_2
   expect_false(two$passed)
   expect_equal(two$message, "no object named 'bogus' found")
-  test_3 <- in_names("bogus")
+  test_3 <- assigns_to("bogus")
   three <- example_1 %>% test_3
   expect_false(three$passed)
-  expect_equal(three$message, "couldn't find match to 'bogus'")
+  expect_equal(three$message, "didn't see the assignment the problem asked you to make")
   test_4 <- in_values(4, number = TRUE)
   four <- example_1 %>% test_4
   expect_true(four$passed)
@@ -29,10 +29,10 @@ test_that("simple checks work", {
 })
 
 test_that("checks go in the right sequence", {
-  test_0 <- in_names("x", "Did you define x?")
-  test_1 <- in_names("y", "Did you define y?")
-  test_2 <- in_names("x", "You need x before y")
-  test_3 <- in_names("bogus", "need to define 'bogus' before 'y'")
+  test_0 <- assigns_to("x", message = "Did you define x?")
+  test_1 <- assigns_to("y", message = "Did you define y?")
+  test_2 <- assigns_to("x", message = "You need x before y")
+  test_3 <- assigns_to("bogus", message = "need to define 'bogus' before 'y'")
   one <- example_1 %>% test_0 %>% test_2 %>% then %>% test_1
   expect_true(one$passed)
   three <- example_1 %>% test_1 %>% previously %>% test_2
@@ -40,20 +40,15 @@ test_that("checks go in the right sequence", {
   four <- example_1 %>% test_1 %>% previously %>% test_3
   expect_false(four$passed)
   expect_equal(four$message, "need to define 'bogus' before 'y'")
-  test_5 <- in_names("z", "Did you define z?")
+  test_5 <- assigns_to("z", "Did you define z?")
   five <- example_1 %>% test_5
   expect_false(five$passed)
   expect_equal(five$message, "Did you define z?")
 t})
 
-test_that("Negative statements work.", {
-  test_1 <- in_names("z", "should not be a z variable", mistake = TRUE)
-  one <- example_1 %>% test_1
-  expect_false(one$passed)
-})
 
 test_that("Function tests work", {
-  test_1 <- in_names("x", "where's x?")
+  test_1 <- assigns_to("x", message = "where's x?")
   test_2 <- fcall("x^2", "you didn't square x")
   one <- example_1 %>% test_1 %>% then %>% test_2
   expect_true(one$passed)
@@ -67,12 +62,12 @@ test_that("Function tests work", {
 })
 
 test_that("The either() function works", {
-  test_1 <- in_names("z", "z not found")
-  test_2 <- in_names("x", "x not found")
-  test_3 <- in_names("w", "w not found")
+  test_1 <- assigns_to("z", "z not found")
+  test_2 <- assigns_to("x", "x not found")
+  test_3 <- assigns_to("w", "w not found")
   test_4 <- either(test_1, test_2)
   test_5 <- either(test_1, test_3) # should be wrong
-  test_6 <- in_names("y2", "y2 not found")
+  test_6 <- assigns_to("y2", "y2 not found")
   test_7 <- either(test_1, test_6, test_3) # should be wrong
   test_8 <- either(test_1, test_6, test_2, test_3) # should be true
   one <- example_1 %>% test_4

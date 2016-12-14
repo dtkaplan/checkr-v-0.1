@@ -7,16 +7,19 @@
 check_argument(arg_spec, test)
 }
 \arguments{
-\item{arg_spec}{character string describing what we want to match, e.g. "sin(grab_this)"}
+\item{arg_spec}{character string describing what we want to match, e.g. \code{"sin(grab_this)"}. There must always be a
+\code{grab_this} in \code{arg_spec}.}
 
 \item{test}{is a function that takes the concordance produced by <arg_spec>
 and returns a message saying what's wrong. If that message is "", the test passes.
-Works on a single line}
+Works on a single line, that identified by the previous locator test.}
 }
 \value{
 a capture object
+#' @seealso \code{\link{check_value}}
 }
 \description{
-Apply a test to the value of an argument
+When previous locator tests have identified a matching line, this function can be used
+to check an argument to a function in that line.
 }
 

@@ -6,6 +6,11 @@
 \usage{
 f_has_terms(student, term_formula)
 }
+\arguments{
+\item{student}{the student's formula}
+
+\item{term_formula}{the reference formula}
+}
 \description{
 checks on formula's
 }

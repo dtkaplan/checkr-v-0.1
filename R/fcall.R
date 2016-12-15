@@ -13,7 +13,7 @@
 #' are presumed to be instructions to \code{fcall} rather than bona fide variable or function
 #' names.
 #'
-#' @seealso \code{\link{check_argument()}}
+#' @seealso \code{\link{check_argument}}
 
 
 #' @param fun_spec character string describing the function to look for
@@ -32,6 +32,7 @@
 #' a capture argument noting the line that matches (if any).
 #'
 #' @examples
+#' require(magrittr)
 #' USER_CODE <- capture.code("(1:4)^2") # student submission, say
 #' test_1 <- fcall("whatever ^ 2")
 #' USER_CODE %>% test_1 %>% .$passed

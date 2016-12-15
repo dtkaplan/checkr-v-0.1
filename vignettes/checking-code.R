@@ -2,6 +2,7 @@
 library(ggplot2)
 library(dplyr)
 library(checkr)
+library(magrittr)
 
 ## ------------------------------------------------------------------------
 # three possible submissions to the problem

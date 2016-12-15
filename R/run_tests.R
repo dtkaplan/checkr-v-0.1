@@ -35,7 +35,7 @@ checkr_tutor <- function(label=NULL,
                              envir_result = NULL,
                              evaluate_result = NULL, ...,
                              feedback = tutor::feedback,
-                             debug = FALSE) {
+                             debug = TRUE) {
   # while debugging
   if(debug) {
     save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
@@ -49,7 +49,9 @@ checkr_tutor <- function(label=NULL,
   }
   # the tests
   USER_CODE <- capture.code(user_code)
-  SOLN_CODE <- capture.code(solution_code)
+  SOLN_CODE <-
+    if (is.null(solution_code)) ""
+    else capture.code(solution_code)
   test_envir <- new.env()
   assign("USER_CODE", USER_CODE, envir = test_envir)
   assign("SOLN_CODE", SOLN_CODE, envir = test_envir)

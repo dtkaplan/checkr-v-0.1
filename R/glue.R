@@ -9,7 +9,7 @@
 #' \itemize{
 #' \item \code{USER_CODE \%>\% test_1 \%>\% then \%>\% test_2}
 #' \item \code{USER_CODE \%>\% test_1 \%>\% previously \%>\% test_2}
-#' \item \code{USER_CODE \%>\% test_1 \%>\% within \%>\% test_2}
+#' \item \code{USER_CODE \%>\% test_1 \%>\% inside \%>\% test_2}
 #' }
 #'
 #' The \code{then} qualifier means that \code{test_2} will look at only the lines in the code
@@ -19,7 +19,7 @@
 #' The \code{previously} qualifier means that \code{test_2} will examine only the lines that
 #' preceed the line located by \code{test_1}. (Again, there is an optional \code{inclusive} argument.)
 #'
-#' The \code{within} qualifier directs \code{test_2} to examine only the single line identified
+#' The \code{inside} qualifier directs \code{test_2} to examine only the single line identified
 #' by \code{test_1}.
 #'
 #' @param inclusive if \code{TRUE} then include the previously matched line in the set of
@@ -51,7 +51,7 @@ previously <- function(capture, inclusive = FALSE) {
 
 #' @rdname location_qualifiers
 #' @export
-within <- function(capture) {
+inside <- function(capture) {
   capture$valid_lines <- capture$line
 
   capture

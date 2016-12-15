@@ -19,9 +19,13 @@ soln_test <- function(student = NULL, solution = NULL, ...) {
   submitted_vals <- list() # The values of the objects created in the submitted code
   official_vals <- list() # The values of the objects created in the solution code
   where_from <- list() # The tests to look for the object
+
+  assigned_names <- names(statements)
+  if (sum(assigned_names == "") == 0) stop("Must specify comparison statements.")
+  if (sum(assigned_names != "") == 0) stop("Must specify named location tests.")
   for (k in 1:length(statements)) {
     # calculate the statement in the context of those already calculated
-    nm <- names(statements)[k]
+    nm <- assigned_names[k]
     if (nm != "") { # We're creating a named object. Calculate it's value
 
       # find corresponding value in <official_vals>

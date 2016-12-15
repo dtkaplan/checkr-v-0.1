@@ -37,6 +37,12 @@ No arguments need be given. Last is last!
 \code{in_statements} looks for character matches to the code
 
 \code{in_values} looks for a match to the values produced by the code
+
+\code{similar_names} takes a character string containing an R expression.
+It looks for the statement in the submitted code that has a set of names
+that most closely matches those in the character string. It never fails, always
+returning a capture object pointing to some statement. However, the heuristic
+used for comparison is just a heuristic!
 }
 \seealso{
 other locator functions \code{\link{assigns_to}}, \code{\link{fcall}}

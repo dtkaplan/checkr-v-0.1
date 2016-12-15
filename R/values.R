@@ -30,16 +30,15 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
     message <- ifelse(mistake,
       sprintf("test '%s' shouldn't pass", test_text),
       sprintf("test '%s' failed", test_text))
-  success_message <- ! mistake # if the mistaken test is passed, the test fails
   f <- function(capture) {
     if ( ! capture$pass) return(capture) # non-passing input given, so don't do test
 
     if (is.na(capture$line) || (! capture$line %in% capture$valid_lines)) {
-      stop("Using check_value() without a valid capture$line. Give a preliminary test to identify the line who's value is sought.")
+      stop("Using check_value() without a valid capture$line. Give a previous test to identify the line who's value is sought.")
     }
     value <- capture$returns[[capture$line]]
     result <- test(value)
-    if ((mistake && result == "") || result != "message") {
+    if ((mistake && result == "") || result != "") {
       # either the mistaken pattern was found, so the test should fail
       # or, if <mistake> is TRUE,
       # the pattern was not found when it should have been and

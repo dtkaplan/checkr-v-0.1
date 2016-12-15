@@ -7,6 +7,12 @@
 #'
 #' \code{in_values} looks for a match to the values produced by the code
 #'
+#' \code{similar_names} takes a character string containing an R expression.
+#' It looks for the statement in the submitted code that has a set of names
+#' that most closely matches those in the character string. It never fails, always
+#' returning a capture object pointing to some statement. However, the heuristic
+#' used for comparison is just a heuristic!
+#'
 #' @param x the target that you are looking for in the values.
 #' Specify the match in terms of a comparison function
 #' @param pattern character string containing the pattern to search for in the statements

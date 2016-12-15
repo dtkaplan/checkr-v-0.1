@@ -7,10 +7,11 @@ Maintainer: Daniel Kaplan <kaplan@macalester.edu>
 Description: Packages such as tutor support interactive documents that serve as tutorials in which students can submit R code and get feedback on correctness. This package provides facilities for specifying what tests should be run on the submitted code, and also provides an interface to the tutor system.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: 
+Depends: R (>= 3.1.0)
+Imports: magrittr
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests: tutor, testthat, dplyr,
     knitr, stringr, compare,
-    rmarkdown, ggplot2, lazyeval, magrittr
+    rmarkdown, ggplot2, lazyeval
 VignetteBuilder: knitr

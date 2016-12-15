@@ -17,33 +17,31 @@ test_that("class comparison works", {
 })
 
 test_that("data frame variable name comparison works", {
-  data(CPS85, package = "mosaicData")
-  small <- CPS85 %>% head %>% select(wage, age)
-  expect_equal("", match_data_frame(small)(CPS85))
-  expect_equal("data frame missing variables.", match_data_frame(CPS85)(small))
+  small <- mtcars %>% head %>% select(hp, mpg)
+  expect_equal("", match_data_frame(small)(mtcars))
+  expect_equal("data frame missing variables.", match_data_frame(mtcars)(small))
   # show the names of the missing variables
-  expect_true(grepl("'exper', 'union', 'sector'", match_data_frame(CPS85, hint = TRUE)(small)))
+  expect_true(grepl("'cyl', 'disp', 'drat'", match_data_frame(mtcars, hint = TRUE)(small)))
 
 })
 
 test_that("data frame nrow comparison works",{
-  data(CPS85, package = "mosaicData")
-  small <- CPS85 %>% head %>% select(wage, age)
-  expect_equal("", match_data_frame(CPS85, nrow = TRUE)(CPS85))
-  expect_equal("data frame has wrong number of rows.", match_data_frame(small, nrow = TRUE)(CPS85))
-  expect_equal("data frame has 534 rows but needs 6 rows.",
-               match_data_frame(small, nrow = TRUE, hint = TRUE)(CPS85))
+  small <- mtcars %>% head %>% select(hp, mpg)
+  expect_equal("", match_data_frame(mtcars, nrow = TRUE)(mtcars))
+  expect_equal("data frame has wrong number of rows.", match_data_frame(small, nrow = TRUE)(mtcars))
+  expect_equal("data frame has 32 rows but needs 6 rows.",
+               match_data_frame(small, nrow = TRUE, hint = TRUE)(mtcars))
 })
 
 test_that("data frame class comparison works", {
-  data(CPS85, package = "mosaicData")
-  small <- CPS85 %>% head %>% select(wage, age)
-  expect_equal("", match_data_frame(small, classes = TRUE)(CPS85))
-  small$wage <- as.character(small$wage)
-  expect_equal("data frame has wrong class for 'wage'.",
-               match_data_frame(small, classes = TRUE)(CPS85))
-  expect_equal("data frame variable 'wage' should be class character.",
-               match_data_frame(small, classes = TRUE, hint = TRUE)(CPS85))
+  mtcars$name <- row.names(mtcars)
+  small <- mtcars %>% head %>% select(hp, mpg, name)
+  expect_equal("", match_data_frame(small, classes = TRUE)(mtcars))
+  small$hp <- as.character(small$hp)
+  expect_equal("data frame has wrong class for 'hp'.",
+               match_data_frame(small, classes = TRUE)(mtcars))
+  expect_equal("data frame variable 'hp' should be class character.",
+               match_data_frame(small, classes = TRUE, hint = TRUE)(mtcars))
 
 })
 

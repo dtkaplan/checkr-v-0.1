@@ -10,4 +10,10 @@ The `checkr` package supports a framework for the authors of tutorials to specif
 
 [DataCamp.com](DataCamp.com) provides its own excellent checking system, called [checkwhat](https://github.com/datacamp/testwhat) with a substantially different framework than `checkr`. DataCamp allows instructors to create and deploy free tutorials on the DataCamp servers. The DataCamp system is much more mature than `checkr` and has a very large base of users. 
 
-Please see the checkr [vignette](vignettes/checking-code.html) for more details about on using `checkr`.
+You can install the latest version of this package from GitHub
+
+```r
+devtools::install_github("dtkaplan/checkr")
+```
+
+See the package vignette for details and examples about using `checkr`.

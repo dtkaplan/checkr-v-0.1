@@ -13,36 +13,3 @@
 #' @param message a failure message
 #' @param hint if \code{TRUE} give a more diagnostic failure message
 #'
-#' @rdname locator_functions
-#' @export
-#'
-in_values <- function(x, message = NULL, hint = FALSE) {
-  if (is.function(x)) {
-    test <- x
-  } else {
-    # simple comparison to the value
-    # construct a function that tests for this
-    test <- function(val) {
-      isTRUE(all.equal(val, x))
-    }
-  }
-  f <- function(capture) {
-    if (!capture$passed) return(capture) # short circuit the test if a previous test failed
-
-    for (k in capture$valid_lines) {
-      res <- test(capture$returns[[k]], message = message, hint = hint)
-      if (nchar(res) == 0) { # we found a match
-        capture$line <- k
-        return(capture)
-      }
-    }
-
-    # if we get here, there was no match
-    capture$passed <- FALSE
-    capture$message <- res
-    capture$line <- NA
-
-    capture
-  }
-  f
-}

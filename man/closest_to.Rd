@@ -21,5 +21,7 @@ rather in the \code{\link{soln_test}} function, which calls it once for the solu
 code and again for the user code. For the solution code, it returns the matching line
 but for the user code it returns the line whose value matches the most closely the
 value of the line in the solution code. So long as there is some
+value in the student code, no matter how different from the solution code's value,
+a value will be returned.
 }
 

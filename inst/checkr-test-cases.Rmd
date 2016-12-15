@@ -79,7 +79,7 @@ y <- cos(x)
 ```
 
 ```{r example-misc-check}
-test_1 <- in_names("x", "couldn't find assignment to x")
+test_1 <- assigns_to("x", "couldn't find assignment to x")
 check_x <- check_value(match_number(7))
 check_wrong <- check_value(match_number(7), "7 isn't what you wanted", mistake = TRUE)
 USER_CODE %>% test_1 %>% check_x 

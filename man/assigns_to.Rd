@@ -9,6 +9,8 @@ assigns_to(name = NULL, message = NULL, hint = FALSE, regex = NULL)
 \arguments{
 \item{name}{a character string or unquoted bare name that should be the name assigned to the result of a code line.}
 
+\item{message}{character string with the failure message}
+
 \item{hint}{if \code{TRUE}, failure message should show the name to the student}
 
 \item{regex}{a regex that defines the match}

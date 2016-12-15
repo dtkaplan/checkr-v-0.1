@@ -48,7 +48,7 @@ rep(1:4, ___ = 3)
 test_0 <- fcall("c(1,1,1,2,2)", "Use `rep()` for this exercise, not `c()`", mistake = TRUE)
 test_1 <- fcall("rep()", "remember to use the `rep()` function!")
 test_2 <- fcall("whatever <- whatever", "give the result a name.")
-test_3 <- in_names('Id', "give the result the name `Id`.")
+test_3 <- assigns_to('Id', "give the result the name `Id`.")
 test_4 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
 test_5 <- check_argument("rep(whatever, each = grab_this)", match_number(3))
 test_all <- fcall("rep(eval(1:4), each = 3)", message = 
@@ -81,7 +81,7 @@ rep(___, each = 3)
 # Simple test to see if it was done the way we wanted
 test_0 <- fcall("rep()", "Use `rep()` for this exercise")
 test_1 <- fcall("whatever <- whatever", "give the result a name.")
-test_2 <- in_names('Letter', "give the result the name `Letter`.")
+test_2 <- assigns_to('Letter', "give the result the name `Letter`.")
 test_3 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
 test_4 <- check_argument("rep(whatever, each = grab_this)", match_number(4))
 test_5 <- fcall("rep(eval(letters[1:3]), each = 4)", message = 
@@ -111,7 +111,7 @@ df <- data.frame(Id, Letter, xx, y)
 ```
 
 ```{r bunch-1-c-check, echo = FALSE}
-test_1 <- in_names("df", "The data frame should be called 'df'")
+test_1 <- assigns_to("df", "The data frame should be called 'df'")
 test_2 <- check_value(
   match_data_frame(df, names_match = TRUE, nrow = TRUE, classes = TRUE), 
                    paste("the result should look like \n", paste(capture.output(print(df)), collapse = "\n") ))

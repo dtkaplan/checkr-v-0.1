@@ -146,16 +146,16 @@ submission_1 <- "
 ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" 
 
 ## ------------------------------------------------------------------------
-test_1 <- in_values(class = "ggplot")
+test_1 <- in_values(match_class("ggplot"))
 capture.code(submission_1) %>%
   test_1 %>%
   show_results
 
-## ------------------------------------------------------------------------
-test_2 <- in_values(class = "lattice")
-capture.code(submission_1) %>%
-  test_2 %>%
-  show_results
+## ----eval = FALSE--------------------------------------------------------
+#  test_2 <- in_values(match_class("lattice"))
+#  capture.code(submission_1) %>%
+#    test_2 %>%
+#    show_results
 
 ## ------------------------------------------------------------------------
 test_3 <- either(test_1, test_2)
@@ -164,7 +164,7 @@ capture.code(submission_1) %>%
   show_results
 
 ## ------------------------------------------------------------------------
-test_4 <- in_values(number = c(7.9, 8.1))
+test_4 <- in_values(match_number(8, range = c(7.9, 8.1)))
 capture.code(submission_1) %>% test_4 %>%
   show_results
 
@@ -206,7 +206,7 @@ test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt)
 USER_CODE <- capture.code("2 + 3")
 SOLN_CODE <- capture.code("2 + 2")
 soln_test(USER_CODE, SOLN_CODE,
-             res = in_statements(regex="2 *\\+"),
+             res = in_statements("2 *\\+", regex = TRUE),
              same_num(res)) %>% 
   show_results
 
@@ -214,7 +214,7 @@ soln_test(USER_CODE, SOLN_CODE,
 USER_CODE <- capture.code("2 + -6")
 SOLN_CODE <- capture.code("2 + 2")
 soln_test(USER_CODE, SOLN_CODE,
-             res = in_statements(regex="2 *\\+"),
+             res = in_statements("2 *\\+", regex = TRUE),
              same_num(abs(res))) %>% 
   show_results
 

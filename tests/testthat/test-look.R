@@ -19,24 +19,30 @@ test_that("final_() works", {
                            same_num(sort(val)))$passed)
 })
 
-testthat("find_the_closest_one() works", {
+test_that("find_the_closest_one() works", {
   USER_CODE_1 <- capture.code("7 + 3\n 1:10\n diag(4)\n lm(hp ~ mpg, data = mtcars)")
-  expect_equal(10, checkr:::find_the_closest_one(USER_CODE_1, 5))
-  expect_equal(1:10, checkr:::find_the_closest_one(USER_CODE_1, 1:3))
-  expect_equal(diag(4), checkr:::find_the_closest_one(USER_CODE_1, matrix(1:4, nrow = 2)))
-  expect_equal("lm",
-               class(checkr:::find_the_closest_one(
+  # find_the_closest_one() returns a line value
+  expect_equal(1, checkr:::find_the_closest_one(USER_CODE_1, 5))
+  expect_equal(2, checkr:::find_the_closest_one(USER_CODE_1, 1:3))
+
+  expect_equal(3, checkr:::find_the_closest_one(USER_CODE_1, matrix(1:4, nrow = 2)))
+  expect_equal(4, checkr:::find_the_closest_one(
                  USER_CODE_1,
-                 glm(hp > 3 ~ cyl, data = mtcars, family = 'binomial'))))
+                 glm(hp > 3 ~ cyl, data = mtcars, family = 'binomial')))
     })
 
-testthat("closest_to() works", {
+test_that("closest_to() works", {
   USER_CODE_1 <- capture.code("7 + 3\n 1:10\n diag(4)\n lm(hp ~ mpg, data = mtcars)")
   SOLN_CODE_1 <- capture.code("1:9\n 15\n glm(hp>10 ~ mpg, data = mtcars)")
-  one <- closest_to(":9")
-  expect_equal(1, one(SOLN_CODE_1)$line)
+  one <- closest_to("1:9")
+  a <- SOLN_CODE_1 %>% one
+  expect_equal(1, a$line)
+  # renew value so that we're seeing which line comes up
+  one <- closest_to("1:9")
+
   expect_equal(2, one(USER_CODE_1)$line)
-  two <- closest_to("lm(hp > 10 ~ mpg") # MUST be a parsable statement
+  expect_error(closest_to("lm(hp > 10 ~ mpg"))  # MUST be a parsable statement
+  two <- closest_to("lm(hp > 10 ~ mpg)")
   expect_equal(3, two(SOLN_CODE_1)$line)
   expect_equal(4, two(USER_CODE_1)$line)
 })

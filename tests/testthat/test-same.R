@@ -1,7 +1,5 @@
 context("same")
 
-## TODO: Rename context
-## TODO: Add more tests
 
 test_that("in_both() works", {
   env1 <- list(a = 1, b = 2)
@@ -55,7 +53,7 @@ test_that("same_() family works", {
   test1 <- same_num(a)
   test2 <- same_num(a^2)
   test3 <- same_num(exp(d), hint = TRUE)
-  expect_true(is.function(test))
+  expect_true(is.function(test1))
   expect_true(test1(S, R)$passed)
   expect_true(test2(S, R)$passed)
   expect_false(test3(S, R)$passed)

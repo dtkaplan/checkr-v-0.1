@@ -9,6 +9,7 @@
 #' failure message will refer to \code{name} (if \code{hint = TRUE}).
 #'
 #' @param name a character string or unquoted bare name that should be the name assigned to the result of a code line.
+#' @param message character string with the failure message
 #' @param hint if \code{TRUE}, failure message should show the name to the student
 #' @param regex a regex that defines the match
 #' @export

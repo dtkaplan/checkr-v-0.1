@@ -197,9 +197,10 @@ new_test_result <- function() {
 is.test_result <- function(x) inherits(x, "test_result")
 
 in_both <- function(name, sub, ref) {
+  if (is.name(name) || is.call(name) || is.expression(name)) name <- as.character(all.vars(name))
   res <- new_test_result()
-  in_sub <- all(all.vars(name) %in% names(sub))
-  in_ref <- all(all.vars(name) %in% names(ref))
+  in_sub <- all(name %in% names(sub))
+  in_ref <- all(name %in% names(ref))
   if (in_sub && in_ref) return(res)  # success!
 
   # This message will refer to the object created in soln_test(), so
@@ -208,6 +209,7 @@ in_both <- function(name, sub, ref) {
   m2 <- ifelse(in_ref, "", sprintf("no object '%s' in solution code", all.vars(name)))
   link <- ifelse(nchar(m1) && nchar(m2), " and ", "")
   res$message <- paste0(m1, link, m2)
+  res$passed <- FALSE
 
   res # return the test object
 }

@@ -13,17 +13,18 @@
 
 #' @export
 check_argument <- function(arg_spec, test) {
-  expanded <- as.list(parse(text = arg_spec)[[1]])
-  message <- sprintf("couldn't find match to %s", arg_spec)
-  the_fun <- expanded[[1]]
   f <- function(capture) {
+    expanded <- as.list(parse(text = arg_spec)[[1]])
+    message <- sprintf("couldn't find match to %s", arg_spec)
+    the_fun <- expanded[[1]]
     if ( ! capture$passed) return(capture) # short circuit the test
     if ( ! capture$line %in% capture$valid_lines)
       stop("Test designer should specify a previous test that finds the line to examine.")
     all_calls <- get_functions_in_line(capture$expressions, line = capture$line)
     inds = which(all_calls$fun_names == the_fun)
     for (j in inds) {
-      call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
+      # call_to_check <- as.call(parse(text = as.character(all_calls$args[[j]])))
+      call_to_check <- as.call(all_calls$args[[j]])
       result <- corresponding_arguments(call_to_check, expanded)
       for (i in seq_along(result$grabbed)) {
         message <- test(eval(result$grabbed[[i]], envir = capture$names[[capture$line]]))

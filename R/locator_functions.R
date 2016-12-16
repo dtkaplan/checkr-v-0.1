@@ -31,8 +31,8 @@ final_ <- function(...) {
 
     capture
   }
-  dots <- lazyeval::lazy_dots(...)
-  if (length(dots) == 0) return(simple)
+
+  simple
 }
 
 #' @rdname locator_functions

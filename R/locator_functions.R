@@ -63,7 +63,7 @@ has_constants <- function(..., message=NULL, mistake = FALSE) {
     capture$created_by <- sprintf("looking for constants %s",
                                   paste0("'", unlist(constants), "'", collapse = ", "))
     for (k in capture$valid_lines) {
-      token_df <- tokenize_string(capture$statements[[k]])
+      token_df <- sourcetools::tokenize_string(capture$statements[[k]])
       strings <- token_df$value[token_df$type == 'string']
       strings <- gsub("^[\"']", "", strings) # kill leading quote
       strings <- gsub("[\"']$", "", strings) # kill trailing quote

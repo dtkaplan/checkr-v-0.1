@@ -21,6 +21,7 @@
 # @importFrom lazyeval lazy_dots
 #' @importFrom stats terms.formula
 #' @importFrom utils capture.output
+#' @importFrom sourcetools tokenize_string
 #' @import magrittr
 #'
 #' @examples

@@ -253,6 +253,8 @@ The location tests currently provided by `checkr` are:
 * `similar_names("sqrt(abs(x))")` looks for a statement that has similar names (function names, variables) to those contained in the statement provided as an argument
 * `final()` identifies the final statement. No argument necessary
 * `fcall("cos(x + whatever)")` looks for a statement containing a function call that matches the one provided as an argument. 
+* `has_names(sqrt(3 * x + y))` will look for a statement that contains function and object names matching those in the argument. Note that the argument is unquoted.
+* `has_constants(3, "skippidee")` looks for a statement with numbers and character strings matching those given in the arguments. You can include as many constants as you like.
 
 Each passing test records the particular command line that matched the pattern. Subsequent tests can be directed to look for matches before, after, or within the command line that matched the previous test. See the location-qualifier functions \code{then}, \code{previously}, and \code{inside}. Of course, you need not use a location qualifier, in which case subsequent tests will look at *all* command lines.
 

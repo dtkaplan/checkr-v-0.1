@@ -2,12 +2,18 @@
 % Please edit documentation in R/locator_functions.R
 \name{final_}
 \alias{final_}
+\alias{has_constants}
+\alias{has_names}
 \alias{in_statements}
 \alias{in_values}
 \alias{similar_names}
 \title{Locator functions}
 \usage{
 final_(...)
+
+has_constants(..., message = NULL, mistake = FALSE)
+
+has_names(pattern, message = NULL, mistake = FALSE)
 
 in_statements(pattern, message = NULL, regex = FALSE, mistake = FALSE)
 
@@ -18,13 +24,13 @@ in_values(x, message = NULL)
 \arguments{
 \item{...}{placeholder for future possible arguments}
 
-\item{pattern}{character string containing the pattern to search for in the statements}
-
 \item{message}{character string giving the failure message}
 
-\item{regex}{if \code{TRUE} treat the pattern as a regex}
-
 \item{mistake}{if \code{TRUE}, the test fails if the pattern is located}
+
+\item{pattern}{character string containing the pattern to search for in the statements}
+
+\item{regex}{if \code{TRUE} treat the pattern as a regex}
 
 \item{x}{the target that you are looking for in the values.
 Specify the match in terms of a comparison function}
@@ -38,11 +44,24 @@ No arguments need be given. Last is last!
 
 \code{in_values} looks for a match to the values produced by the code
 
+\code{has_names} looks for variables and functions in the expression that match all of those
+given in \code{pattern}. The \code{pattern} should be an unquoted expression. A good
+trick if you just want a set of names, e.g. \code{fred}, \code{betty}, \code{sarah}, is to
+set pattern to a kind of function call: \code{fred(betty, sarah)}.
+
+\code{has_constants} looks for numbers and character strings in an expression. (These are different from function names
+and object names.)
+
 \code{similar_names} takes a character string containing an R expression.
 It looks for the statement in the submitted code that has a set of names
 that most closely matches those in the character string. It never fails, always
 returning a capture object pointing to some statement. However, the heuristic
 used for comparison is just a heuristic!
+}
+\examples{
+U <- capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
+test_1 <- has_constants(37, 14)
+
 }
 \seealso{
 other locator functions \code{\link{assigns_to}}, \code{\link{fcall}}

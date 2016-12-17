@@ -46,3 +46,28 @@ test_that("closest_to() works", {
   expect_equal(3, two(SOLN_CODE_1)$line)
   expect_equal(4, two(USER_CODE_1)$line)
 })
+
+test_that("has_constants() works", {
+  U <- capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
+  test_1 <- has_constants(37, 14)
+  test_2 <- has_constants("yes", "no way")
+  test_3 <- has_constants(14, "no way", "yes", 37)
+  one <- U %>% test_1 %>% test_2 %>% test_3
+  expect_true(one$passed)
+  U2 <- capture.code("ifelse(sin(73 + 14) > .5, 'yes', 'nope')")
+  expect_false(U2 %>% test_1 %>% .$passed)
+  expect_false(U2 %>% test_2 %>% .$passed)
+  expect_false(U2 %>% test_1 %>% test_3 %>% .$passed)
+  expect_false(U2 %>% test_3 %>% .$passed)
+})
+
+test_that("has_names() works", {
+  U <-  capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
+  test_1 <- checkr::has_names(ifelse(3 > sin(6), 2, 3))
+  test_2 <- checkr::has_names(sin(x))
+  test_3 <- checkr::has_names(sin(3))
+  expect_true(U %>% test_1 %>% .$passed)
+  expect_false(U %>% test_2 %>% .$passed)
+  expect_true(U %>% test_3 %>% .$passed)
+
+})

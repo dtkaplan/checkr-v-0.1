@@ -12,6 +12,6 @@ Imports: magrittr
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests: tutor, testthat, dplyr,
-    knitr, stringr, compare,
+    knitr, stringr, compare, sourcetools,
     rmarkdown, ggplot2, lazyeval
 VignetteBuilder: knitr

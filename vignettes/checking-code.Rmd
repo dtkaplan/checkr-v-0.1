@@ -163,7 +163,7 @@ SOLN_CODE   <- capture.code("2 + 2")
 
 # the -check chunk contents would look like
 soln_test(USER_CODE, SOLN_CODE,
-             res = final_(),
+             res = final_,
              same_num(res)) %>%
   show_results()
 ```

@@ -26,18 +26,18 @@ assigns_to <- function(name= NULL, message = NULL, hint = FALSE, regex = NULL) {
     result <- FALSE
     found_some_assignment <- FALSE
     for (k in capture$valid_lines) {
-      obj_names <- ls(capture$names[[k]])
+      obj_names <- ls(capture$names[[k]], all.names = TRUE)
       if (length(obj_names) > 0) found_some_assignment <- TRUE
       if (is.null(regex)) {
         if (name %in% obj_names) {
           result <- TRUE
-          line <- capture$valid_lines[k]
+          line <- k
           break # found it!
         }
       } else {
         if(any(grepl(regex, obj_names))) {
           result <- TRUE
-          line <- capture$valid_lines[k]
+          line <- k
           break # found it!
         }
       }

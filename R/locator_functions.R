@@ -1,8 +1,5 @@
 #' Locator functions
 #'
-#' \code{final_} finds the last command line in the code
-#' No arguments need be given. Last is last!
-#'
 #' \code{in_statements} looks for character matches to the code
 #'
 #' \code{in_values} looks for a match to the values produced by the code
@@ -34,19 +31,6 @@
 #' U <- capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
 #' test_1 <- has_constants(37, 14)
 #'
-#' @rdname locator_functions
-#' @export
-final_ <- function(...) {
-  simple <- function(capture) {
-    capture$created_by <- "last result from code"
-    capture$line <- max(capture$valid_lines)
-
-    capture
-  }
-
-  simple
-}
-
 #' @rdname locator_functions
 #' @export
 has_constants <- function(..., message=NULL, mistake = FALSE) {

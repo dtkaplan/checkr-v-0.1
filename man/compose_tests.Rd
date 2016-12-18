@@ -18,6 +18,12 @@ branch_test(condition, yes, no)
 \item{test_2}{another locator test}
 
 \item{...}{optionally, more locator tests}
+
+\item{condition}{a test to determine which of \code{yes} or \code{no}}
+
+\item{yes}{the test to run if \code{condition} passes}
+
+\item{no}{the test to run if \code{condition} fails}
 }
 \description{
 These functions combine multiple tests into a single test.

@@ -39,7 +39,7 @@ test_2 <- fcall("whatever + 2", "second argument should also be two")
 test_3 <- fcall("2 + 2", "remember to add two plus two")
 USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
 soln_test(USER_CODE, SOLN_CODE,
-             res = final_(),
+             res = final_,
              same_num(res))
 ```
 
@@ -124,7 +124,7 @@ test_6 <- fcall("mean(hp)", "calculate the mean horsepower")
 USER_CODE %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6
 
 soln_test(USER_CODE, SOLN_CODE,
-          a = final_(),
+          a = final_,
           same_num(nrow(a)),
           same_num(length(a)))
 

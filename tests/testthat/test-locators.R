@@ -6,16 +6,16 @@ test_that("final_() works", {
   SOLN_CODE_2 <- capture.code("10:1")
   SOLN_CODE_3 <- capture.code("b <- 1:10")
   expect_true(soln_test(USER_CODE_1, SOLN_CODE_1,
-               val = final_(),
+               val = final_,
                same_num(sort(val)))$passed)
   expect_true(soln_test(USER_CODE_1, SOLN_CODE_2,
-                           val = final_(),
+                           val = final_,
                            same_num(sort(val)))$passed)
   expect_false(soln_test(USER_CODE_1, SOLN_CODE_2,
-                           val = final_(),
+                           val = final_,
                            same_num(val, hint = TRUE))$passed)
   expect_true(soln_test(USER_CODE_1, SOLN_CODE_3,
-                           val = final_(),
+                           val = final_,
                            same_num(sort(val)))$passed)
 })
 

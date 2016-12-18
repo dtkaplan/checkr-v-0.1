@@ -70,6 +70,9 @@ all_tests <- function(...) {
   f
 }
 
+#' @param condition a test to determine which of \code{yes} or \code{no}
+#' @param yes the test to run if \code{condition} passes
+#' @param no the test to run if \code{condition} fails
 #' @rdname compose_tests
 #' @aliases branch_test
 #' @export

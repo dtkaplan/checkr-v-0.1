@@ -45,6 +45,19 @@ then <- function(capture, inclusive = FALSE) {
   capture
 }
 
+#' \code{final_} finds the last command line in the code
+#' No arguments need be given. Last is last!
+#' @rdname location_qualifiers
+#' @export
+final_ <- function(capture) {
+  capture$created_by <- "last result from code"
+  capture$line <- max(capture$valid_lines)
+
+  capture
+}
+
+
+
 #' @rdname location_qualifiers
 #' @export
 previously <- function(capture, inclusive = FALSE) {

@@ -159,7 +159,7 @@ capture.code(submission_1) %>%
 #    show_results
 
 ## ------------------------------------------------------------------------
-test_3 <- either(test_1, test_2)
+test_3 <- any_test(test_1, test_2)
 capture.code(submission_1) %>%
   test_3 %>%
   show_results

@@ -1,13 +1,12 @@
 context("Glue among tests")
 
-
-example_1 <- capture.code(
-" x <- 2
-  y <- x^2
-  lm(mpg ~ hp, data = mtcars)"
-)
-
 test_that("simple checks work", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
   test_1 <- assigns_to("x", message = "Did you define x?")
   one <- example_1 %>% test_1
   expect_true(one$passed)
@@ -29,6 +28,12 @@ test_that("simple checks work", {
 })
 
 test_that("checks go in the right sequence", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
   test_0 <- assigns_to("x", message = "Did you define x?")
   test_1 <- assigns_to("y", message = "Did you define y?")
   test_2 <- assigns_to("x", message = "You need x before y")
@@ -48,6 +53,12 @@ t})
 
 
 test_that("Function tests work", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
   test_1 <- assigns_to("x", message = "where's x?")
   test_2 <- fcall("x^2", "you didn't square x")
   one <- example_1 %>% test_1 %>% then %>% test_2
@@ -61,15 +72,21 @@ test_that("Function tests work", {
   expect_equal(two$message, "Why are you squaring x?")
 })
 
-test_that("The either() function works", {
+test_that("The any_test() function works", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
   test_1 <- assigns_to("z", "z not found")
   test_2 <- assigns_to("x", "x not found")
   test_3 <- assigns_to("w", "w not found")
-  test_4 <- either(test_1, test_2)
-  test_5 <- either(test_1, test_3) # should be wrong
+  test_4 <- any_test(test_1, test_2)
+  test_5 <- any_test(test_1, test_3) # should be wrong
   test_6 <- assigns_to("y2", "y2 not found")
-  test_7 <- either(test_1, test_6, test_3) # should be wrong
-  test_8 <- either(test_1, test_6, test_2, test_3) # should be true
+  test_7 <- any_test(test_1, test_6, test_3) # should be wrong
+  test_8 <- any_test(test_1, test_6, test_2, test_3) # should be true
   one <- example_1 %>% test_4
   expect_true(one$passed)
   two <- example_1 %>% test_5
@@ -81,3 +98,44 @@ test_that("The either() function works", {
 
 })
 
+test_that("The all_tests() function works", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
+  test_1 <- assigns_to("z", "z not found")
+  test_2 <- assigns_to("x", "x not found")
+  test_3 <- assigns_to("w", "w not found")
+  test_4 <- any_test(test_1, test_2)
+
+  expect_true(example_1 %>% all_tests()() %>% .$passed)
+  expect_false(example_1 %>% all_tests(test_1)() %>% .$passed)
+  expect_true(example_1 %>% all_tests(test_2)() %>% .$passed)
+  expect_false(example_1 %>% all_tests(test_1, test_2)() %>% .$passed)
+  expect_true(example_1 %>% all_tests(test_2, test_4)() %>% .$passed)
+  expect_true(example_1 %>% all_tests(test_2, any_test(test_1, test_2))() %>% .$passed)
+})
+
+test_that("branch_test() works", {
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+
+  test_0 <- assigns_to("w", "w not found")
+  test_1 <- assigns_to("z", "z not found")
+  test_2 <- assigns_to("x", "x not found")
+  test_3 <- has_formula()
+  test_4 <- has_formula(test = match_formula(hp ~ mpg)) # should fail
+  expect_false(example_1 %>% test_1 %>% .$passed)
+  expect_true(example_1 %>% test_2 %>% .$passed)
+  expect_true(example_1 %>% branch_test(test_1, test_2, test_3)() %>% .$passed)
+  expect_false(example_1 %>% branch_test(test_1, test_2, test_0)() %>% .$passed)
+  expect_true(example_1 %>% branch_test(test_2, test_3, test_1)() %>% .$passed)
+  expect_false(example_1 %>% branch_test(test_2, test_0, test_1)() %>% .$passed)
+
+
+})

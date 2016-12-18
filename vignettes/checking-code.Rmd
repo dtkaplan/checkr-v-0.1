@@ -281,7 +281,14 @@ USER_CODE %>%
   show_results
 ```
 
+## Combining tests
 
+Combining two tests means to use the output of one test as the intput to another. Here are functions that combine tests in various ways. All of them produce a function as output. This output function takes a capture object as input to carry out the test.
+
+
+* `any_test(t1, t2, ...)` checks whether any of the tests pass. If so, the overall result is a pass. Stops when it first finds a passing match.
+* `all_tests(t1, t2, ...)` requires all the tests to pass. This accomplishes the same thing as combining the tests with `%>%`. Stops when it first encounters a failing match. 
+* `branch_test(condition, yes_test, no_test)` evaluate the condition test on the capture object input. If it passes, then the result of the overall test will be the result of running the yes-test on the capture object input. Otherwise, the result of the no-test on the capture object will be the output.
 
 ## Example: Testing assignment
 
@@ -432,7 +439,7 @@ capture.code(submission_1) %>%
 
 If either would suffice ...
 ```{r}
-test_3 <- either(test_1, test_2)
+test_3 <- any_test(test_1, test_2)
 capture.code(submission_1) %>%
   test_3 %>%
   show_results

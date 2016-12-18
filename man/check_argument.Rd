@@ -16,10 +16,12 @@ Works on a single line, that identified by the previous locator test.}
 }
 \value{
 a capture object
-#' @seealso \code{\link{check_value}}
 }
 \description{
 When previous locator tests have identified a matching line, this function can be used
 to check an argument to a function in that line.
+}
+\seealso{
+\code{\link{check_value}}
 }
 

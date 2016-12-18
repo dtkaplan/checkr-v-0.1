@@ -47,7 +47,7 @@
 
 #' @export
 fcall <- function(fun_spec, message = NULL, mistake = FALSE, hint = FALSE) {
-  fun_spec <- gsub("_{3,10}", "whatever", fun_spec) # accept ___ as equivalent to <whatever>
+  fun_spec <- gsub("_{3,20}", "whatever", fun_spec) # accept ___ as equivalent to <whatever>
   if (is.null(message)) {
     message <-
       if (mistake) sprintf("should not be calling %s", fun_spec)

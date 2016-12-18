@@ -32,7 +32,13 @@
 
 #' @export
 then <- function(capture, inclusive = FALSE) {
-  still_valid <- capture$valid_lines > capture$line
+  if (length(capture$valid_lines) == 1) {
+    # we're following an "inside" command
+    capture$valid_lines <- capture$line:length(capture$expressions)
+  }
+  still_valid <-
+    if (inclusive) capture$valid_lines >= capture$line
+    else capture$valid_lines > capture$line
   capture$valid_lines <- capture$valid_lines[still_valid]
   capture$line <- capture$valid_lines[1]
 

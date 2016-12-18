@@ -71,3 +71,21 @@ test_that("has_names() works", {
   expect_true(U %>% test_3 %>% .$passed)
 
 })
+
+test_that("has_formula() works", {
+  CPS85 <- mosaicData::CPS85
+  U1 <- capture.code("x <- sin(sqrt(3))\n y <- cos(x)")
+  U2 <- capture.code("mod <- lm(wage ~ age, data = CPS85)")
+  test_1 <- has_formula()
+  test_2 <- has_formula(test = match_formula(wage ~ age))
+  test_3 <- has_formula(test = match_formula(age ~ wage))
+  expect_false(U1 %>% test_1 %>% .$passed)
+  expect_true(U2 %>% test_1 %>% .$passed)
+  expect_true(U2 %>% test_2 %>% .$passed)
+  expect_false(U2 %>% test_3 %>% .$passed)
+  U3 <- capture.code("mod <- lm(wage ~ age, data = CPS85)\n mod_2 <- lm(age ~ wage, data = CPS85)")
+  three <- U3 %>% test_3
+  expect_true(three$line == 2)
+  four <- U3 %>% test_2
+  expect_true(four$line == 1)
+  })

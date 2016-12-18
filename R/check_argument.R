@@ -9,7 +9,7 @@
 #' and returns a message saying what's wrong. If that message is "", the test passes.
 #' Works on a single line, that identified by the previous locator test.
 #' @return a capture object
-#' #' @seealso \code{\link{check_value}}
+#' @seealso \code{\link{check_value}}
 
 #' @export
 check_argument <- function(arg_spec, test) {

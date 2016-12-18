@@ -69,7 +69,6 @@ test_that("has_names() works", {
   expect_true(U %>% test_1 %>% .$passed)
   expect_false(U %>% test_2 %>% .$passed)
   expect_true(U %>% test_3 %>% .$passed)
-
 })
 
 test_that("has_formula() works", {

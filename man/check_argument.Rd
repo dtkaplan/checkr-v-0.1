@@ -4,13 +4,15 @@
 \alias{check_argument}
 \title{Apply a test to the value of an argument}
 \usage{
-check_argument(arg_spec, test)
+check_argument(arg_spec, test, message = "")
 }
 \arguments{
 \item{arg_spec}{character string describing what we want to match, e.g. \code{"sin(grab_this)"}. There must always be a
 \code{grab_this} in \code{arg_spec}.}
 
-\item{test}{is a function that takes the concordance produced by <arg_spec>
+\item{test}{is a function that takes the concordance produced by <arg_spec>}
+
+\item{message}{optional message to give on failure
 and returns a message saying what's wrong. If that message is "", the test passes.
 Works on a single line, that identified by the previous locator test.}
 }
@@ -20,6 +22,9 @@ a capture object
 \description{
 When previous locator tests have identified a matching line, this function can be used
 to check an argument to a function in that line.
+}
+\details{
+by default, the message will be constructed by the test function.
 }
 \seealso{
 \code{\link{check_value}}

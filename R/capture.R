@@ -31,8 +31,8 @@
 #' @export
 capture.code <- function(code_text = NULL) {
   # Get the code from its file or text form
-  # turn it into evaluatable commands
-
+  # turn it into individual evaluatable commands, one per line
+  code_text <- as.character(parse(text = code_text))
   # deconstruct any magrittr chains
   for (k in seq_along(code_text)) {
     code_text[k] <- expand_chain(code_text[k])

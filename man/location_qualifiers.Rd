@@ -6,6 +6,7 @@
 \alias{location_qualifiers}
 \alias{previously}
 \alias{then}
+\alias{within_pipe}
 \title{Qualifiers on command lines to be searched by test statements together}
 \usage{
 then(capture, inclusive = FALSE)
@@ -15,6 +16,8 @@ final_(capture)
 previously(capture, inclusive = FALSE)
 
 inside(capture)
+
+within_pipe(capture)
 }
 \arguments{
 \item{capture}{A set of expressions of the sort returned by capture.code(). A "capture" is the
@@ -51,5 +54,10 @@ preceed the line located by \code{test_1}. (Again, there is an optional \code{in
 
 The \code{inside} qualifier directs \code{test_2} to examine only the single line identified
 by \code{test_1}.
+
+\code{within_pipe()} should be passed a capture object marking the start of the pipe
+}
+\seealso{
+\code{\link{find_pipe_start}}
 }
 

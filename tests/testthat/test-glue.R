@@ -136,6 +136,15 @@ test_that("branch_test() works", {
   expect_false(example_1 %>% branch_test(test_1, test_2, test_0)() %>% .$passed)
   expect_true(example_1 %>% branch_test(test_2, test_3, test_1)() %>% .$passed)
   expect_false(example_1 %>% branch_test(test_2, test_0, test_1)() %>% .$passed)
-
-
 })
+
+test_that("within_pipe() correctly identifies the extent of a pipe", {
+  U1 <- capture.code("x <- 7\n mtcars %>% arrange(hp) %>% filter(hp > 10)\n iris %>% select(Sepal.Length, Sepal.Width) %>%
+                     mutate(Sepal.Area = Sepal.Length * Sepal.Width) %>% summarise(marea <- mean(Sepal.Area))\n y <- 6")
+
+  test_1 <- find_pipe_start("mtcars")
+  test_2 <- find_pipe_start("iris")
+  one <- U1 %>% test_1 %>% within_pipe
+  two <- U1 %>% test_2 %>% within_pipe
+})
+

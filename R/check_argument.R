@@ -6,16 +6,19 @@
 #' @param arg_spec character string describing what we want to match, e.g. \code{"sin(grab_this)"}. There must always be a
 #' \code{grab_this} in \code{arg_spec}.
 #' @param test is a function that takes the concordance produced by <arg_spec>
+#' @param message optional message to give on failure
 #' and returns a message saying what's wrong. If that message is "", the test passes.
 #' Works on a single line, that identified by the previous locator test.
+#'
+#' @details by default, the message will be constructed by the test function.
 #' @return a capture object
 #' @seealso \code{\link{check_value}}
 
 #' @export
-check_argument <- function(arg_spec, test) {
+check_argument <- function(arg_spec, test, message = "") {
   f <- function(capture) {
     expanded <- as.list(parse(text = arg_spec)[[1]])
-    message <- sprintf("couldn't find match to %s", arg_spec)
+    res <- sprintf("couldn't find match to %s", arg_spec)
     the_fun <- expanded[[1]]
     if ( ! capture$passed) return(capture) # short circuit the test
     if ( ! capture$line %in% capture$valid_lines)
@@ -27,10 +30,10 @@ check_argument <- function(arg_spec, test) {
       call_to_check <- as.call(all_calls$args[[j]])
       result <- corresponding_arguments(call_to_check, expanded)
       for (i in seq_along(result$grabbed)) {
-        message <- test(eval(result$grabbed[[i]], envir = capture$names[[capture$line]]))
-        if(message == "") { # it passed, so no need to check others
+        res <- test(eval(result$grabbed[[i]], envir = capture$names[[capture$line]]))
+        if(res == "") { # it passed, so no need to check others
           capture$passed <- TRUE
-          capture$message <- message
+          capture$message <- ifelse(nchar(message), message, res)
           return(capture)
         }
       }
@@ -42,7 +45,7 @@ check_argument <- function(arg_spec, test) {
     capture$message <- paste("in function call",
                              sprintf("%s", call_text),
                              "the argument",
-                             message)
+                             res)
 
     capture
   }

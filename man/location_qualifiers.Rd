@@ -6,6 +6,7 @@
 \alias{location_qualifiers}
 \alias{previously}
 \alias{then}
+\alias{was_mistake}
 \alias{within_pipe}
 \title{Qualifiers on command lines to be searched by test statements together}
 \usage{
@@ -18,6 +19,8 @@ previously(capture, inclusive = FALSE)
 inside(capture)
 
 within_pipe(capture)
+
+was_mistake(capture, message = "")
 }
 \arguments{
 \item{capture}{A set of expressions of the sort returned by capture.code(). A "capture" is the

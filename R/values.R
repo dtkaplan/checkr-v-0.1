@@ -26,6 +26,7 @@
 #' @export
 check_value <- function(test, message = NULL, mistake = FALSE) {
   test_text <- deparse(substitute(test))
+  if ("." == test_text) stop("you need to add function evaluation parentheses so that it looks like check_value(stuff)()")
   if (is.null(message))
     message <- ifelse(mistake,
       sprintf("test '%s' shouldn't pass", test_text),

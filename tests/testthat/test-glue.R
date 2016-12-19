@@ -148,3 +148,13 @@ test_that("within_pipe() correctly identifies the extent of a pipe", {
   two <- U1 %>% test_2 %>% within_pipe
 })
 
+test_that("was_mistake() works", {
+  U1 <- capture.code("theta <- pi \n sin(theta)")
+  test_1 <- fcall("sin()")
+  expect_true(U1 %>% test_1 %>% .$passed)
+  two <- U1 %>% test_1 %>% was_mistake
+  expect_false(two$passed)
+  three <- U1 %>% test_1 %>% was_mistake(message = "use cos() and not sin().")
+  expect_false(three$passed)
+  expect_equal("use cos() and not sin().", three$message)
+})

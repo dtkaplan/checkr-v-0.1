@@ -290,6 +290,22 @@ Combining two tests means to use the output of one test as the intput to another
 * `all_tests(t1, t2, ...)` requires all the tests to pass. This accomplishes the same thing as combining the tests with `%>%`. Stops when it first encounters a failing match. 
 * `branch_test(condition, yes_test, no_test)` evaluate the condition test on the capture object input. If it passes, then the result of the overall test will be the result of running the yes-test on the capture object input. Otherwise, the result of the no-test on the capture object will be the output.
 
+## Common student mistakes
+
+If you know about a common sort of student mistake, you may want to test specifically for that in order to give a helpful failure message. To do this, construct a test for the anticipated mistake, following it with `was_mistake()`. For example:
+
+> What is the $x$-coordinate of a point on the unit circle at $\pi/2$?
+
+```{r}
+USER_CODE <- capture.code("sin(pi / 2)") 
+test_1 <- fcall("pi/2", "you need to compute pi / 2.")
+test_2 <- fcall("sin()") # wrong, but common mistake
+test_3 <- fcall("cos()")
+USER_CODE %>% 
+  test_1 %>% test_2 %>% 
+  was_mistake(message = "the x-coordinate is given by the cosine function") %>% 
+  test_3 %>% final_ %>% check_value(match_number(cos(pi/2)))
+```
 ## Example: Testing assignment
 
 Consider a problem like this:

@@ -97,4 +97,20 @@ within_pipe <- function(capture) {
   return(capture)
 }
 
+#' @rdname location_qualifiers
+#' @export
+was_mistake <- function(capture, message = "") {
+  if (! is.capture(capture)) stop("was_mistake() message argument must be explicitly named message = .")
+  if (nchar(message) == 0) {
+    message <- sprintf("%s is a common mistake. Think again.", capture$statements[[capture$line]])
+  }
+
+  if (capture$passed) {
+    capture$message <- message
+    capture$passed <- FALSE
+  }
+
+  capture
+}
+
 

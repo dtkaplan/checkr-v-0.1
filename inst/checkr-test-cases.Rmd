@@ -33,10 +33,10 @@ Modify the code to add two and two:
 ```
 
 ```{r example_0-check}
-test_0 <- fcall("whatever + whatever", "use addition (+)")
-test_1 <- fcall("2 + whatever", "first argument should be two ")
-test_2 <- fcall("whatever + 2", "second argument should also be two")
-test_3 <- fcall("2 + 2", "remember to add two plus two")
+test_0 <- find_call("whatever + whatever", "use addition (+)")
+test_1 <- find_call("2 + whatever", "first argument should be two ")
+test_2 <- find_call("whatever + 2", "second argument should also be two")
+test_3 <- find_call("2 + 2", "remember to add two plus two")
 USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3
 soln_test(USER_CODE, SOLN_CODE,
              res = final_,
@@ -56,12 +56,12 @@ sqrt(3^2 + 4^2)
 ```
 
 ```{r example-triangle-check}
-test_1 <- fcall("whatever ^ 2", "need to square the lengths")
-test_A <- fcall("2 ^ whatever", "you've reversed the arguments to '^'", mistake = TRUE)
-test_2 <- fcall("3 ^ 2", "one of the lengths is 3")
-test_3 <- fcall("4 ^ 2", "one of the lengths is 4")
-test_4 <- fcall("sqrt()", "you'll have to use the square-root function to get the length.")
-test_5 <- fcall("whatever + whatever", "remember to add the squares")
+test_1 <- find_call("whatever ^ 2", "need to square the lengths")
+test_A <- find_call("2 ^ whatever", "you've reversed the arguments to '^'", mistake = TRUE)
+test_2 <- find_call("3 ^ 2", "one of the lengths is 3")
+test_3 <- find_call("4 ^ 2", "one of the lengths is 4")
+test_4 <- find_call("sqrt()", "you'll have to use the square-root function to get the length.")
+test_5 <- find_call("whatever + whatever", "remember to add the squares")
 test_6 <- in_values(match_number(5, range = c(4.99, 5.01)), "the overall result should be 5.")
 USER_CODE %>% test_A %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6
 
@@ -85,9 +85,9 @@ ggplot(mtcars, aes(x=hp, y = mpg)) + geom_point(aes(color = carb))
 ```
 
 ```{r mtcarplot-check}
-test_1 <- fcall("aes(y = mpg)", message = "mpg should be the y aesthetic")
-test_2 <- fcall("aes(x = hp, y = mpg)", message = "set the aesthetics via aes() to put the right variable on each axis.")
-test_3 <- fcall("aes(color = carb)", "map carb to the color aethetic")
+test_1 <- find_call("aes(y = mpg)", message = "mpg should be the y aesthetic")
+test_2 <- find_call("aes(x = hp, y = mpg)", message = "set the aesthetics via aes() to put the right variable on each axis.")
+test_3 <- find_call("aes(color = carb)", "map carb to the color aethetic")
 USER_CODE %>% test_1
 USER_CODE %>% test_1 %>% test_2
 USER_CODE %>% test_3
@@ -115,11 +115,11 @@ mtcars %>%
 # Note that even though summarise() is used with a named argument
 # we can disregard the name
 test_1 <- in_statements("mtcars", "use the <mtcars> data frame")
-test_2 <- fcall("filter()")
+test_2 <- find_call("filter()")
 test_3 <- check_argument("cyl == grab_this", match_number(4, hint = TRUE))
 test_4 <- in_statements("cyl == 4", "it's the cylinders we want to restrict to 4")
-test_5 <- fcall("summarise(whatever)", "use summarise to compute the mean")
-test_6 <- fcall("mean(hp)", "calculate the mean horsepower")
+test_5 <- find_call("summarise(whatever)", "use summarise to compute the mean")
+test_6 <- find_call("mean(hp)", "calculate the mean horsepower")
 
 USER_CODE %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6
 
@@ -155,8 +155,8 @@ my_mod <- lm(wage ~ sector *educ + sex + married + union, data = CPS85)
 ```
 
 ```{r cps85r-check}
-test_1 <- fcall("data('CPS85')", "remember to use data() to bring in the data." )
-test_2 <- fcall("wage ~ whatever", "wage should be the response variable")
+test_1 <- find_call("data('CPS85')", "remember to use data() to bring in the data." )
+test_2 <- find_call("wage ~ whatever", "wage should be the response variable")
 final_val <- check_value(test = function(mod) ifelse(mosaic::rsquared(mod) > .25, "", "not good enough"), message = "your R^2 is not good enough. Try some new explanatory terms.")
 USER_CODE %>% test_1 %>% test_2 %>% final_val
 #soln_test(USER_CODE, SOLN_CODE,
@@ -180,9 +180,9 @@ y <- cos(x)
 test_1 <- find_assignment("x", "couldn't find assignment to x")
 test_2 <- check_value(match_number(7)) # looks at value of statement
 test_3 <- in_values(50)
-test_4 <- fcall("cos()", "didn't see the cos() function being used")
-test_5 <- fcall("x^2", "you didn't square x")
-test_6 <- fcall("x^2 + 1", "you should have added 1 to x^2")
+test_4 <- find_call("cos()", "didn't see the cos() function being used")
+test_5 <- find_call("x^2", "you didn't square x")
+test_6 <- find_call("x^2 + 1", "you should have added 1 to x^2")
 test_7 <- check_argument("cos(grab_this)", match_number(7))
 test_7a <- find_assignment("y", "remember to name the object cos(x) as y")
 test_8 <- check_value(match_number(50))

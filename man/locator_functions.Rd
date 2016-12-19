@@ -58,6 +58,6 @@ test_1 <- has_constants(37, 14)
 
 }
 \seealso{
-other locator functions \code{\link{find_assignment}}, \code{\link{fcall}}
+other locator functions \code{\link{find_assignment}}, \code{\link{find_call}}
 }
 

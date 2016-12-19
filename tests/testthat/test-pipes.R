@@ -17,7 +17,7 @@ test_that("find_pipe_start() works", {
 test_that("check_pipe_input() works", {
   U1 <- capture.code("x <- 7\nresult<- mtcars %>% summarise(mean_hp = mean(hp)) %>% arrange(mean_hp)")
   test_1 <- find_pipe_start("mtcars")
-  test_2 <- fcall("summarise()", "can't find summarise() step in the pipe.")
+  test_2 <- find_call("summarise()", "can't find summarise() step in the pipe.")
   in_test <- check_pipe_input(test = match_data_frame(mtcars), message = "start the pipe with 'mtcars'.")
   out_test <- check_pipe_output(test = function(x) ifelse(nrow(x) == 1, "", nrow(x)), "should have only one row")
   out_test_2 <- check_pipe_output(test = match_data_frame(mtcars), message = "start the pipe with 'mtcars'.")

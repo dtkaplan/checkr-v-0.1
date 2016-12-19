@@ -10,7 +10,7 @@
 #' particular argument.
 #'
 #' @details The "key words" \code{whatever}, \code{eval}, and \code{grab_this} in a statement
-#' are presumed to be instructions to \code{fcall} rather than bona fide variable or function
+#' are presumed to be instructions to \code{find_call} rather than bona fide variable or function
 #' names.
 #'
 #' @seealso \code{\link{check_argument}}
@@ -34,19 +34,19 @@
 #' @examples
 #' require(magrittr)
 #' USER_CODE <- capture.code("(1:4)^2") # student submission, say
-#' test_1 <- fcall("whatever ^ 2")
+#' test_1 <- find_call("whatever ^ 2")
 #' USER_CODE %>% test_1 %>% .$passed
-#' test_2 <- fcall("(1:4) ^ whatever")
+#' test_2 <- find_call("(1:4) ^ whatever")
 #' USER_CODE %>% test_2 %>% .$passed
 #' # suppose user has a different R statement for the left argument ...
 #' USER_CODE_2 <- capture.code("c(1,2,3,4) ^ 2")
 #' USER_CODE_2 %>% test_2 %>% .$passed # fails
-#' test_3 <- fcall("eval(1:4) ^ whatever")
+#' test_3 <- find_call("eval(1:4) ^ whatever")
 #' # use eval() to check for value match rather than statement match
 #' USER_CODE_2 %>% test_3 %>% .$passed
 
 #' @export
-fcall <- function(fun_spec, message = NULL, mistake = FALSE, hint = FALSE) {
+find_call <- function(fun_spec, message = NULL, mistake = FALSE, hint = FALSE) {
   fun_spec <- gsub("_{3,20}", "whatever", fun_spec) # accept ___ as equivalent to <whatever>
   if (is.null(message)) {
     message <-

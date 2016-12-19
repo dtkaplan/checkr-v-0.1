@@ -12,9 +12,9 @@ submission_3 <- "3 + 2" # right function but wrong arguments
 
 ## ------------------------------------------------------------------------
 library(checkr)
-test_1 <- fcall("whatever + whatever", "need to use addition (+)")
-test_2 <- fcall("2 + whatever", "first argument should be 2")
-test_3 <- fcall("whatever + 2", "second argument should be 2")
+test_1 <- find_call("whatever + whatever", "need to use addition (+)")
+test_2 <- find_call("2 + whatever", "first argument should be 2")
+test_3 <- find_call("whatever + 2", "second argument should be 2")
 
 ## ----echo = FALSE--------------------------------------------------------
 show_results <- function(test_output) {
@@ -58,14 +58,14 @@ soln_test(USER_CODE, SOLN_CODE,
 
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("x <- 7 + 3\n sin(x)")
-test_1 <- fcall("sin(whatever)", "you didn't use sin().")
+test_1 <- find_call("sin(whatever)", "you didn't use sin().")
 test_2 <- check_value(match_number(sin(10), "something's wrong with the sin() line."))
 USER_CODE %>%
   test_1 %>% test_2 %>%
   show_results
 
 ## ------------------------------------------------------------------------
-test_a <- fcall("whatever + whatever", "remember to use +") # regular location test
+test_a <- find_call("whatever + whatever", "remember to use +") # regular location test
 test_b <- check_argument("grab_this + whatever", 
                          match_number(17, tol = 0.1))
 USER_CODE %>%
@@ -74,9 +74,9 @@ USER_CODE %>%
 
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("sin(pi / 2)") 
-test_1 <- fcall("pi/2", "you need to compute pi / 2.")
-test_2 <- fcall("sin()") # wrong, but common mistake
-test_3 <- fcall("cos()")
+test_1 <- find_call("pi/2", "you need to compute pi / 2.")
+test_2 <- find_call("sin()") # wrong, but common mistake
+test_3 <- find_call("cos()")
 USER_CODE %>% 
   test_1 %>% test_2 %>% 
   was_mistake(message = "the x-coordinate is given by the cosine function") %>% 
@@ -86,7 +86,7 @@ USER_CODE %>%
 
 ## ------------------------------------------------------------------------
 USER_CODE <- capture.code("xx <- sin(7)") # wrong in so many ways!
-test_1 <- fcall("sqrt(whatever)", "use the sqrt() function.")
+test_1 <- find_call("sqrt(whatever)", "use the sqrt() function.")
 test_2 <- find_assignment("x")
 test_3 <- check_argument("sqrt(grab_this)", match_number(7))
 
@@ -110,11 +110,11 @@ submission_6 <- c(
 
 ## ------------------------------------------------------------------------
 library(ggplot2)
-test_1 <- fcall("aes(x = hp, y = whatever)", "variable 'hp' goes on the x axis")
-test_2 <- fcall("aes(y = mpg, x = whatever)", "variable 'mpg' goes on the y axis")
-test_3 <- fcall("geom_point()", "include a 'geom_point()' layer")
+test_1 <- find_call("aes(x = hp, y = whatever)", "variable 'hp' goes on the x axis")
+test_2 <- find_call("aes(y = mpg, x = whatever)", "variable 'mpg' goes on the y axis")
+test_3 <- find_call("geom_point()", "include a 'geom_point()' layer")
 test_4 <- in_statements("mtcars") 
-test_5 <- fcall("ggplot(data = whatever)", "no data handed to ggplot()")
+test_5 <- find_call("ggplot(data = whatever)", "no data handed to ggplot()")
 test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
 test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
 test_8 <- check_argument("ggplot(data = grab_this)", 
@@ -188,7 +188,7 @@ submission_3 <- capture.code("11 + 2*(1:11)") # uses colon, but wrong result
 
 
 ## ------------------------------------------------------------------------
-test_1 <- fcall("whatever : whatever", "you didn't use the colon operator")
+test_1 <- find_call("whatever : whatever", "you didn't use the colon operator")
 test_2 <- check_value(match_vector(seq(11, 31, by = 2), hint = TRUE))
 
 submission_1 %>% test_1 %>% test_2 %>% show_results
@@ -201,7 +201,7 @@ submission_2 <- capture.code("lm(mpg ~ hp + wt, data = mtcars)") # right
 submission_3 <- capture.code("lm(mpg ~ wt, data = mtcars)") # wrong
 
 ## ------------------------------------------------------------------------
-test_1 <- fcall("lm(data = mtcars)", "use lm() on mtcars data")
+test_1 <- find_call("lm(data = mtcars)", "use lm() on mtcars data")
 test_2 <- check_value(function(x) {'wt' %in% names(coef(x))}, 
                       "what about the covariate wt?")
 test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))}, 
@@ -241,7 +241,7 @@ soln_test(USER_CODE, SOLN_CODE,
 
 ## ----eval = FALSE--------------------------------------------------------
 #  submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
-#  test_1 <- fcall("filter()", "should call filter()")
+#  test_1 <- find_call("filter()", "should call filter()")
 #  test_2 <- check_argument("mpg > grab_this", match_number(15))
 #  test_2A <- check_argument("mpg > grab_this", match_number(16))
 #  test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, hint = TRUE))
@@ -251,7 +251,7 @@ soln_test(USER_CODE, SOLN_CODE,
 
 ## ------------------------------------------------------------------------
 submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
-test_4 <- fcall("group_by()")
+test_4 <- find_call("group_by()")
 test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
 submission_2 %>% test_4 %>% test_5 %>% show_results
 

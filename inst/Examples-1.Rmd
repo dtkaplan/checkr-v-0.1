@@ -45,13 +45,13 @@ rep(1:4, ___ = 3)
 
 ```{r bunch-1-a-check, echo = FALSE}
 # Simple test to see if it was done the way we wanted
-test_0 <- fcall("c(1,1,1,2,2)", "Use `rep()` for this exercise, not `c()`", mistake = TRUE)
-test_1 <- fcall("rep()", "remember to use the `rep()` function!")
-test_2 <- fcall("whatever <- whatever", "give the result a name.")
+test_0 <- find_call("c(1,1,1,2,2)", "Use `rep()` for this exercise, not `c()`", mistake = TRUE)
+test_1 <- find_call("rep()", "remember to use the `rep()` function!")
+test_2 <- find_call("whatever <- whatever", "give the result a name.")
 test_3 <- find_assignment('Id', "give the result the name `Id`.")
 test_4 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
 test_5 <- check_argument("rep(whatever, each = grab_this)", match_number(3))
-test_all <- fcall("rep(eval(1:4), each = 3)", message = 
+test_all <- find_call("rep(eval(1:4), each = 3)", message = 
                   "some hints: use `rep()` with 1:4 as an input", 
                   diag = TRUE)
 test_result <- check_value(match_vector(rep(1:4, each = 3), diag = TRUE), "the output value is not correct")
@@ -79,12 +79,12 @@ rep(___, each = 3)
 
 ```{r bunch-1-b-check, echo = FALSE}
 # Simple test to see if it was done the way we wanted
-test_0 <- fcall("rep()", "Use `rep()` for this exercise")
-test_1 <- fcall("whatever <- whatever", "give the result a name.")
+test_0 <- find_call("rep()", "Use `rep()` for this exercise")
+test_1 <- find_call("whatever <- whatever", "give the result a name.")
 test_2 <- find_assignment('Letter', "give the result the name `Letter`.")
 test_3 <- in_statements(regex = "each *=", message = "use the `each = ` argument to `rep()`")
 test_4 <- check_argument("rep(whatever, each = grab_this)", match_number(4))
-test_5 <- fcall("rep(eval(letters[1:3]), each = 4)", message = 
+test_5 <- find_call("rep(eval(letters[1:3]), each = 4)", message = 
                   "some hints: use `rep()` with the character vector 'a', 'b', 'c' as an input", 
                   diag = TRUE)
 test_result <- check_value(match_vector(rep(letters[1:3], each = 4)), "the output value is not correct")
@@ -134,11 +134,11 @@ Modify the code to add two and two:
 ```{r example_0-check}
 soln_test(USER_CODE, SOLN_CODE,
              res = in_statements(regex="+"),
-             b = fcall("whatever + grabthis", "Second argument to +"),
+             b = find_call("whatever + grabthis", "Second argument to +"),
              same_num(res))
 
-# test_0 <- fcall("whatever + whatever", "use addition (+)")
-# test_1 <- fcall("2 + whatever", "first argument should be two ")
-# test_2 <- fcall("whatever + 2", "second argument should also be two")
+# test_0 <- find_call("whatever + whatever", "use addition (+)")
+# test_1 <- find_call("2 + whatever", "first argument should be two ")
+# test_2 <- find_call("whatever + 2", "second argument should also be two")
 # USER_CODE %>% test_0 %>% test_1 %>% test_2 
 ```

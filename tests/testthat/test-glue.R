@@ -60,13 +60,13 @@ test_that("Function tests work", {
   )
 
   test_1 <- find_assignment("x", message = "where's x?")
-  test_2 <- fcall("x^2", "you didn't square x")
+  test_2 <- find_call("x^2", "you didn't square x")
   one <- example_1 %>% test_1 %>% then %>% test_2
   expect_true(one$passed)
   one <- example_1 %>% test_2 %>% then %>% test_1
   expect_false(one$passed)
   # testing whether specific mistake is found
-  test_3 <- fcall("x^2", mistake = TRUE, "Why are you squaring x?")
+  test_3 <- find_call("x^2", mistake = TRUE, "Why are you squaring x?")
   two <- example_1 %>%  test_3
   expect_false(two$passed)
   expect_equal(two$message, "Why are you squaring x?")
@@ -150,7 +150,7 @@ test_that("within_pipe() correctly identifies the extent of a pipe", {
 
 test_that("was_mistake() works", {
   U1 <- capture.code("theta <- pi \n sin(theta)")
-  test_1 <- fcall("sin()")
+  test_1 <- find_call("sin()")
   expect_true(U1 %>% test_1 %>% .$passed)
   two <- U1 %>% test_1 %>% was_mistake
   expect_false(two$passed)

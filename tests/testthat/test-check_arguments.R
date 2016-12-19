@@ -25,7 +25,7 @@ test_that("argument alignment works (internal)", {
 test_that("can pull out an argument match from a line", {
   example_1 <- capture.code("x <- 3 + 1
                           y <- x ^ 2")
-  get_x_line <- assigns_to("x")
+  get_x_line <- find_assignment("x")
   test_3 <- check_argument("grab_this + 1", arg_is(3))
   test_4 <- check_argument("grab_this + 1", arg_is(4))
   test_5 <- check_argument("grab_this + 1", arg_is(4, hint=TRUE))

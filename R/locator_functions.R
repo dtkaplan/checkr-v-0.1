@@ -26,7 +26,7 @@
 #' @param mistake if \code{TRUE}, the test fails if the pattern is located
 #' @param ... placeholder for future possible arguments
 #'
-#' @seealso other locator functions \code{\link{assigns_to}}, \code{\link{fcall}}
+#' @seealso other locator functions \code{\link{find_assignment}}, \code{\link{fcall}}
 #' @examples
 #' U <- capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
 #' test_1 <- has_constants(37, 14)

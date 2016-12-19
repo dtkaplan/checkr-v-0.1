@@ -53,7 +53,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
   f
 }
 
-# Do I want to use this in assigns_to()?
+# Do I want to use this in find_assignment()?
 # but doesn't need to be exported
 get_match_ind <- function(what, nms, strict = TRUE) {
   if (strict) {

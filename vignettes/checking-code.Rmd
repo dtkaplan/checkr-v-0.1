@@ -17,9 +17,9 @@ library(magrittr)
 ```
 
 > IN DRAFT: To do:    
->    * Adopt Garrett's `get()` and `check()` notation for locator functions. That will be better than the hodge-podge of `fcall()`, `assigns_to()`, ...     
+>    * Adopt Garrett's `get()` and `check()` notation for locator functions. That will be better than the hodge-podge of `fcall()`, , ...   using `find_` rather than get  
 >    * Add examples for `magrittr` pipelines.
-
+>    * add `test=` to all `find_` functions
 
 
 
@@ -247,7 +247,7 @@ The tests are run from left to right. Any test failing causes the test to termin
 
 The location tests currently provided by `checkr` are:
 
-* `assigns_to("var")` looks for a statement which involves assignment to the variable named in the argument (`"var"` in this example). It can also take a regex. 
+* `find_assignment("var")` looks for a statement which involves assignment to the variable named in the argument (`"var"` in this example). It can also take a regex. 
 * `in_statements()` looks for a character string or regex match to the body of a statement.
 * `in_values()` looks for a match to the value produced by a statement
 * `similar_names("sqrt(abs(x))")` looks for a statement that has similar names (function names, variables) to those contained in the statement provided as an argument
@@ -304,7 +304,9 @@ test_3 <- fcall("cos()")
 USER_CODE %>% 
   test_1 %>% test_2 %>% 
   was_mistake(message = "the x-coordinate is given by the cosine function") %>% 
-  test_3 %>% final_ %>% check_value(match_number(cos(pi/2)))
+  test_3 %>% 
+  final_ %>% check_value(match_number(cos(pi/2)))() %>%
+  show_results()
 ```
 ## Example: Testing assignment
 
@@ -324,7 +326,7 @@ It's the author's choice whether to test all these things. Here are some locator
 ```{r}
 USER_CODE <- capture.code("xx <- sin(7)") # wrong in so many ways!
 test_1 <- fcall("sqrt(whatever)", "use the sqrt() function.")
-test_2 <- assigns_to("x")
+test_2 <- find_assignment("x")
 test_3 <- check_argument("sqrt(grab_this)", match_number(7))
 ```
 
@@ -555,7 +557,7 @@ The point of having such transformations -- e.g. `abs()` in the above example --
 USER_CODE <- capture.code("mod <- lm(mpg ~ hp + carb, data = mtcars)")
 SOLN_CODE <- capture.code("mod <- lm(mpg ~ hp * carb, data = mtcars)")
 soln_test(USER_CODE, SOLN_CODE,
-             res = assigns_to("mod"),
+             res = find_assignment("mod"),
              same_vec(coef(res))) %>% 
   show_results
 ```

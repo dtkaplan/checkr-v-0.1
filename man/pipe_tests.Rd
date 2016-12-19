@@ -16,6 +16,8 @@ check_pipe_output(test, message = "")
 \item{pattern}{a character string or complete expression starting the pipe.}
 
 \item{message}{character string failure message}
+
+\item{test}{a test function to run for find_pipe_input() or find_pipe_output()}
 }
 \description{
 Locator and check functions relating to pipes

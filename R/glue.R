@@ -27,6 +27,8 @@
 #' @param capture A set of expressions of the sort returned by capture.code(). A "capture" is the
 #' kind of object taken as input to a locator test and generated as output from the test and,
 #' in the end, used to set the information passed back to `tutor`.
+#' @param message for \code{was_mistake()}, the character string message to give when the submitted
+#' code contains the mistake sought for in the previous test.
 #'
 #' @details \code{within_pipe()} should be passed a capture object marking the start of the pipe
 #'

@@ -13,7 +13,7 @@
 #' @param hint if \code{TRUE}, failure message should show the name to the student
 #' @param regex a regex that defines the match
 #' @export
-assigns_to <- function(name= NULL, message = NULL, hint = FALSE, regex = NULL) {
+find_assignment <- function(name= NULL, message = NULL, hint = FALSE, regex = NULL) {
   name <- as.character(substitute(name))
   specified_name <-
     if (is.null(regex)) name

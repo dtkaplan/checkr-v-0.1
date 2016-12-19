@@ -7,14 +7,14 @@ test_that("simple checks work", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_1 <- assigns_to("x", message = "Did you define x?")
+  test_1 <- find_assignment("x", message = "Did you define x?")
   one <- example_1 %>% test_1
   expect_true(one$passed)
-  test_2 <- assigns_to("bogus", message = "no object named 'bogus' found")
+  test_2 <- find_assignment("bogus", message = "no object named 'bogus' found")
   two <- example_1 %>% test_2
   expect_false(two$passed)
   expect_equal(two$message, "no object named 'bogus' found")
-  test_3 <- assigns_to("bogus")
+  test_3 <- find_assignment("bogus")
   three <- example_1 %>% test_3
   expect_false(three$passed)
   expect_equal(three$message, "didn't see the assignment the problem asked you to make")
@@ -34,10 +34,10 @@ test_that("checks go in the right sequence", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_0 <- assigns_to("x", message = "Did you define x?")
-  test_1 <- assigns_to("y", message = "Did you define y?")
-  test_2 <- assigns_to("x", message = "You need x before y")
-  test_3 <- assigns_to("bogus", message = "need to define 'bogus' before 'y'")
+  test_0 <- find_assignment("x", message = "Did you define x?")
+  test_1 <- find_assignment("y", message = "Did you define y?")
+  test_2 <- find_assignment("x", message = "You need x before y")
+  test_3 <- find_assignment("bogus", message = "need to define 'bogus' before 'y'")
   one <- example_1 %>% test_0 %>% test_2 %>% then %>% test_1
   expect_true(one$passed)
   three <- example_1 %>% test_1 %>% previously %>% test_2
@@ -45,7 +45,7 @@ test_that("checks go in the right sequence", {
   four <- example_1 %>% test_1 %>% previously %>% test_3
   expect_false(four$passed)
   expect_equal(four$message, "need to define 'bogus' before 'y'")
-  test_5 <- assigns_to("z", "Did you define z?")
+  test_5 <- find_assignment("z", "Did you define z?")
   five <- example_1 %>% test_5
   expect_false(five$passed)
   expect_equal(five$message, "Did you define z?")
@@ -59,7 +59,7 @@ test_that("Function tests work", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_1 <- assigns_to("x", message = "where's x?")
+  test_1 <- find_assignment("x", message = "where's x?")
   test_2 <- fcall("x^2", "you didn't square x")
   one <- example_1 %>% test_1 %>% then %>% test_2
   expect_true(one$passed)
@@ -79,12 +79,12 @@ test_that("The any_test() function works", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_1 <- assigns_to("z", "z not found")
-  test_2 <- assigns_to("x", "x not found")
-  test_3 <- assigns_to("w", "w not found")
+  test_1 <- find_assignment("z", "z not found")
+  test_2 <- find_assignment("x", "x not found")
+  test_3 <- find_assignment("w", "w not found")
   test_4 <- any_test(test_1, test_2)
   test_5 <- any_test(test_1, test_3) # should be wrong
-  test_6 <- assigns_to("y2", "y2 not found")
+  test_6 <- find_assignment("y2", "y2 not found")
   test_7 <- any_test(test_1, test_6, test_3) # should be wrong
   test_8 <- any_test(test_1, test_6, test_2, test_3) # should be true
   one <- example_1 %>% test_4
@@ -105,9 +105,9 @@ test_that("The all_tests() function works", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_1 <- assigns_to("z", "z not found")
-  test_2 <- assigns_to("x", "x not found")
-  test_3 <- assigns_to("w", "w not found")
+  test_1 <- find_assignment("z", "z not found")
+  test_2 <- find_assignment("x", "x not found")
+  test_3 <- find_assignment("w", "w not found")
   test_4 <- any_test(test_1, test_2)
 
   expect_true(example_1 %>% all_tests()() %>% .$passed)
@@ -125,9 +125,9 @@ test_that("branch_test() works", {
     lm(mpg ~ hp, data = mtcars)"
   )
 
-  test_0 <- assigns_to("w", "w not found")
-  test_1 <- assigns_to("z", "z not found")
-  test_2 <- assigns_to("x", "x not found")
+  test_0 <- find_assignment("w", "w not found")
+  test_1 <- find_assignment("z", "z not found")
+  test_2 <- find_assignment("x", "x not found")
   test_3 <- has_formula()
   test_4 <- has_formula(test = match_formula(hp ~ mpg)) # should fail
   expect_false(example_1 %>% test_1 %>% .$passed)

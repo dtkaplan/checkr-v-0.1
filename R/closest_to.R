@@ -29,7 +29,7 @@ closest_to <- function(what) {
       # perform the match and extract the value
       new_capture <-
         if(is.name(what)) {
-          assigns_to(as.character(what))(capture)
+          find_assignment(as.character(what))(capture)
         } else {
           in_statements(as.character(what))(capture)
         }

@@ -2,6 +2,7 @@
 #'
 #' @param pattern a character string or complete expression starting the pipe.
 #' @param message character string failure message
+#' @param test a test function to run for find_pipe_input() or find_pipe_output()
 #' @rdname pipe_tests
 #' @export
 find_pipe_start <- function(pattern = NULL, message = "no %>% pipe found.") {

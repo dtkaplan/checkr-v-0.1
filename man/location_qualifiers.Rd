@@ -29,6 +29,9 @@ in the end, used to set the information passed back to `tutor`.}
 
 \item{inclusive}{if \code{TRUE} then include the previously matched line in the set of
 lines to be tested in subsequent tests}
+
+\item{message}{for \code{was_mistake()}, the character string message to give when the submitted
+code contains the mistake sought for in the previous test.}
 }
 \description{
 Qualifiers on command lines to be searched by test statements together

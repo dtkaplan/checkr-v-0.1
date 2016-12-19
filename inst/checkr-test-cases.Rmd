@@ -177,14 +177,14 @@ y <- cos(x)
 ```
 
 ```{r example-misc-check}
-test_1 <- assigns_to("x", "couldn't find assignment to x")
+test_1 <- find_assignment("x", "couldn't find assignment to x")
 test_2 <- check_value(match_number(7)) # looks at value of statement
 test_3 <- in_values(50)
 test_4 <- fcall("cos()", "didn't see the cos() function being used")
 test_5 <- fcall("x^2", "you didn't square x")
 test_6 <- fcall("x^2 + 1", "you should have added 1 to x^2")
 test_7 <- check_argument("cos(grab_this)", match_number(7))
-test_7a <- assigns_to("y", "remember to name the object cos(x) as y")
+test_7a <- find_assignment("y", "remember to name the object cos(x) as y")
 test_8 <- check_value(match_number(50))
 test_9 <- check_value(match_number(cos(7)))
 

@@ -159,13 +159,13 @@ submission_1 <- "
 ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" 
 
 ## ------------------------------------------------------------------------
-test_1 <- in_values(match_class("ggplot"))
+test_1 <- find_value(match_class("ggplot"))
 capture.code(submission_1) %>%
   test_1 %>%
   show_results
 
 ## ----eval = FALSE--------------------------------------------------------
-#  test_2 <- in_values(match_class("lattice"))
+#  test_2 <- find_value(match_class("lattice"))
 #  capture.code(submission_1) %>%
 #    test_2 %>%
 #    show_results
@@ -177,7 +177,7 @@ capture.code(submission_1) %>%
   show_results
 
 ## ------------------------------------------------------------------------
-test_4 <- in_values(match_number(8, range = c(7.9, 8.1)))
+test_4 <- find_value(match_number(8, range = c(7.9, 8.1)))
 capture.code(submission_1) %>% test_4 %>%
   show_results
 

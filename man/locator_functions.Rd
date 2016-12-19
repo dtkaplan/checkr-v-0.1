@@ -2,9 +2,9 @@
 % Please edit documentation in R/locator_functions.R
 \name{has_constants}
 \alias{find_statement}
+\alias{find_value}
 \alias{has_constants}
 \alias{has_names}
-\alias{in_values}
 \alias{similar_names}
 \title{Locator functions}
 \usage{
@@ -16,7 +16,7 @@ find_statement(pattern, message = NULL, regex = FALSE, mistake = FALSE)
 
 similar_names(x, message = NULL)
 
-in_values(x, message = NULL)
+find_value(x, message = NULL)
 }
 \arguments{
 \item{...}{placeholder for future possible arguments}
@@ -36,7 +36,7 @@ Specify the match in terms of a comparison function}
 \code{find_statement} looks for character matches to the code
 }
 \details{
-\code{in_values} looks for a match to the values produced by the code
+\code{find_value} looks for a match to the values produced by the code
 
 \code{has_names} looks for variables and functions in the expression that match all of those
 given in \code{pattern}. The \code{pattern} should be an unquoted expression. A good

@@ -18,10 +18,10 @@ test_that("simple checks work", {
   three <- example_1 %>% test_3
   expect_false(three$passed)
   expect_equal(three$message, "didn't see the assignment the problem asked you to make")
-  test_4 <- in_values(4)
+  test_4 <- find_value(4)
   four <- example_1 %>% test_4
   expect_true(four$passed)
-  test_5 <- in_values(7)
+  test_5 <- find_value(7)
   five <- example_1 %>% test_5
   expect_false(five$passed)
   expect_equal(five$message, "no value created matching 7")

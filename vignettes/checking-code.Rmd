@@ -249,7 +249,7 @@ The location tests currently provided by `checkr` are:
 
 * `find_assignment("var")` looks for a statement which involves assignment to the variable named in the argument (`"var"` in this example). It can also take a regex. 
 * `find_statement()` looks for a character string or regex match to the body of a statement.
-* `in_values()` looks for a match to the value produced by a statement
+* `find_value()` looks for a match to the value produced by a statement
 * `similar_names("sqrt(abs(x))")` looks for a statement that has similar names (function names, variables) to those contained in the statement provided as an argument
 * `final()` identifies the final statement. No argument necessary
 * `find_call("cos(x + whatever)")` looks for a statement containing a function call that matches the one provided as an argument. 
@@ -441,7 +441,7 @@ ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()"
 
 A simple test for this is:
 ```{r}
-test_1 <- in_values(match_class("ggplot"))
+test_1 <- find_value(match_class("ggplot"))
 capture.code(submission_1) %>%
   test_1 %>%
   show_results
@@ -449,7 +449,7 @@ capture.code(submission_1) %>%
 
 But if we were looking for a `lattice` graphics object, the submission fails:
 ```{r eval = FALSE}
-test_2 <- in_values(match_class("lattice"))
+test_2 <- find_value(match_class("lattice"))
 capture.code(submission_1) %>%
   test_2 %>%
   show_results
@@ -465,7 +465,7 @@ capture.code(submission_1) %>%
 
 Suppose that we want to check that a number near 8 is created ...
 ```{r}
-test_4 <- in_values(match_number(8, range = c(7.9, 8.1)))
+test_4 <- find_value(match_number(8, range = c(7.9, 8.1)))
 capture.code(submission_1) %>% test_4 %>%
   show_results
 ```

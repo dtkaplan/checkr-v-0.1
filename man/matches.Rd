@@ -54,6 +54,6 @@ test and returns an failure message. (\code{""} means the test passed.)
 There are two steps in using a comparison function. First, call the \code{match_} function itself, setting the
 argument \code{x} to be the reference value to which you will want the comparison to be made. This
 will return a function that will actually carry out the comparison. Second, use that returned function
-as the argument to a locator function like \code{check_value()} or \code{check_argument} or \code{in_values()}.
+as the argument to a locator function like \code{check_value()} or \code{check_argument()} or \code{find_value()}.
 }
 

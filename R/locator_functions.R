@@ -2,7 +2,7 @@
 #'
 #' \code{find_statement} looks for character matches to the code
 #'
-#' \code{in_values} looks for a match to the values produced by the code
+#' \code{find_value} looks for a match to the values produced by the code
 #'
 #' \code{has_names} looks for variables and functions in the expression that match all of those
 #' given in \code{pattern}. The \code{pattern} should be an unquoted expression. A good
@@ -156,7 +156,7 @@ similar_names <- function(x, message = NULL) {
 #' @rdname locator_functions
 #' @export
 #'
-in_values <- function(x, message = NULL) {
+find_value <- function(x, message = NULL) {
   # test will be a comparison test
   if (is.function(x)) {
     test <- x

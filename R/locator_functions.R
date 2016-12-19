@@ -1,6 +1,6 @@
 #' Locator functions
 #'
-#' \code{in_statements} looks for character matches to the code
+#' \code{find_statement} looks for character matches to the code
 #'
 #' \code{in_values} looks for a match to the values produced by the code
 #'
@@ -102,11 +102,11 @@ has_names <- function(pattern, message = NULL, mistake = FALSE) {
 
 #' @rdname locator_functions
 #' @export
-in_statements <- function(pattern, message = NULL, regex = FALSE, mistake = FALSE ) {
+find_statement <- function(pattern, message = NULL, regex = FALSE, mistake = FALSE ) {
   f <- function(capture) {
     if (!capture$passed) return(capture) # short circuit the test if a previous test failed
 
-    capture$created_by <- sprintf("in_statements(%s)", pattern)
+    capture$created_by <- sprintf("find_statement(%s)", pattern)
     for (k in capture$valid_lines) {
       if (grepl(pattern, capture$statements[[k]], fixed = !regex)) {
         # we found a match!

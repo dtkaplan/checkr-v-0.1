@@ -114,10 +114,10 @@ mtcars %>%
 ```{r mtcardplyr-check}
 # Note that even though summarise() is used with a named argument
 # we can disregard the name
-test_1 <- in_statements("mtcars", "use the <mtcars> data frame")
+test_1 <- find_statement("mtcars", "use the <mtcars> data frame")
 test_2 <- find_call("filter()")
 test_3 <- check_argument("cyl == grab_this", match_number(4, hint = TRUE))
-test_4 <- in_statements("cyl == 4", "it's the cylinders we want to restrict to 4")
+test_4 <- find_statement("cyl == 4", "it's the cylinders we want to restrict to 4")
 test_5 <- find_call("summarise(whatever)", "use summarise to compute the mean")
 test_6 <- find_call("mean(hp)", "calculate the mean horsepower")
 

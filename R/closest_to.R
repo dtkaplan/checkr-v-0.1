@@ -31,7 +31,7 @@ closest_to <- function(what) {
         if(is.name(what)) {
           find_assignment(as.character(what))(capture)
         } else {
-          in_statements(as.character(what))(capture)
+          find_statement(as.character(what))(capture)
         }
       if (! new_capture$passed) {
         # still haven't found a match

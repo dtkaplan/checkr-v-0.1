@@ -2,7 +2,7 @@ context("grab_arguments")
 
 
 
-test_that("in_statements() works", {
+test_that("find_statement() works", {
   USER_CODE <- capture.code("1 + 3")
   SOLN_CODE <- capture.code("2 + 2")
   test_1 <- find_call("whatever + whatever")
@@ -11,7 +11,7 @@ test_that("in_statements() works", {
   expect_false(one$passed)
   # check the value, not the argument
   two <- soln_test(USER_CODE, SOLN_CODE,
-               a = in_statements("+"),
+               a = find_statement("+"),
                same_num(a))
   expect_true(two$passed)
 })

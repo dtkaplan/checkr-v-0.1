@@ -113,7 +113,7 @@ library(ggplot2)
 test_1 <- find_call("aes(x = hp, y = whatever)", "variable 'hp' goes on the x axis")
 test_2 <- find_call("aes(y = mpg, x = whatever)", "variable 'mpg' goes on the y axis")
 test_3 <- find_call("geom_point()", "include a 'geom_point()' layer")
-test_4 <- in_statements("mtcars") 
+test_4 <- find_statement("mtcars") 
 test_5 <- find_call("ggplot(data = whatever)", "no data handed to ggplot()")
 test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
 test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
@@ -219,7 +219,7 @@ test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt)
 USER_CODE <- capture.code("2 + 3")
 SOLN_CODE <- capture.code("2 + 2")
 soln_test(USER_CODE, SOLN_CODE,
-             res = in_statements("2 *\\+", regex = TRUE),
+             res = find_statement("2 *\\+", regex = TRUE),
              same_num(res)) %>% 
   show_results
 
@@ -227,7 +227,7 @@ soln_test(USER_CODE, SOLN_CODE,
 USER_CODE <- capture.code("2 + -6")
 SOLN_CODE <- capture.code("2 + 2")
 soln_test(USER_CODE, SOLN_CODE,
-             res = in_statements("2 *\\+", regex = TRUE),
+             res = find_statement("2 *\\+", regex = TRUE),
              same_num(abs(res))) %>% 
   show_results
 

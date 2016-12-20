@@ -103,7 +103,6 @@ compose_tests <- function(test_1, test_2, ...) {
     res <- capture
     for (k in seq_along(tests)) {
       res <- tests[[k]](capture)
-      if (! res$passed) return(res)
     }
 
     res

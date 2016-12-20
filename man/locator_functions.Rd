@@ -8,11 +8,11 @@
 \alias{similar_names}
 \title{Locator functions}
 \usage{
-find_constants(..., message = NULL, mistake = FALSE)
+find_constants(..., message = NULL)
 
-find_names(pattern, message = NULL, mistake = FALSE)
+find_names(pattern, message = NULL)
 
-find_statement(pattern, message = NULL, regex = FALSE, mistake = FALSE)
+find_statement(pattern, message = NULL, regex = FALSE)
 
 similar_names(x, message = NULL)
 
@@ -22,8 +22,6 @@ find_value(x, message = NULL)
 \item{...}{placeholder for future possible arguments}
 
 \item{message}{character string giving the failure message}
-
-\item{mistake}{if \code{TRUE}, the test fails if the pattern is located}
 
 \item{pattern}{character string containing the pattern to search for in the statements}
 

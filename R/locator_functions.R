@@ -23,7 +23,6 @@
 #' @param pattern character string containing the pattern to search for in the statements
 #' @param message character string giving the failure message
 #' @param regex if \code{TRUE} treat the pattern as a regex
-#' @param mistake if \code{TRUE}, the test fails if the pattern is located
 #' @param ... placeholder for future possible arguments
 #'
 #' @seealso other locator functions \code{\link{find_assignment}}, \code{\link{find_call}}
@@ -33,7 +32,7 @@
 #'
 #' @rdname locator_functions
 #' @export
-find_constants <- function(..., message=NULL, mistake = FALSE) {
+find_constants <- function(..., message=NULL) {
   constants <- list(...)
   types <- unlist(lapply(constants, FUN = class))
   numerical_values <-
@@ -58,11 +57,10 @@ find_constants <- function(..., message=NULL, mistake = FALSE) {
       if (all(nmatch) && all(smatch)) {
         # we found a match
         capture$line <- k
-        if (mistake) break
-        else return(capture)
+        return(capture)
       }
     }
-    # if we got here, the test failed or the mistake was found
+    # if we got here, the test failed
     capture$passed <- FALSE
     capture$message <- message
 
@@ -73,7 +71,7 @@ find_constants <- function(..., message=NULL, mistake = FALSE) {
 
 #' @rdname locator_functions
 #' @export
-find_names <- function(pattern, message = NULL, mistake = FALSE) {
+find_names <- function(pattern, message = NULL) {
   EX <- substitute(pattern)
   look_for_names <- all.names(EX)
   f <- function(capture) {
@@ -86,11 +84,10 @@ find_names <- function(pattern, message = NULL, mistake = FALSE) {
       if (all(look_for_names %in% line_names)) {
         # we found a match
         capture$line <- k
-        if (mistake) break
-        else return(capture)
+        return(capture)
       }
     }
-    # if we got here, the test failed or the mistake was found
+    # if we got here, the test failed
     capture$passed <- FALSE
     capture$message <- message
 
@@ -102,7 +99,7 @@ find_names <- function(pattern, message = NULL, mistake = FALSE) {
 
 #' @rdname locator_functions
 #' @export
-find_statement <- function(pattern, message = NULL, regex = FALSE, mistake = FALSE ) {
+find_statement <- function(pattern, message = NULL, regex = FALSE) {
   f <- function(capture) {
     if (!capture$passed) return(capture) # short circuit the test if a previous test failed
 
@@ -111,8 +108,7 @@ find_statement <- function(pattern, message = NULL, regex = FALSE, mistake = FAL
       if (grepl(pattern, capture$statements[[k]], fixed = !regex)) {
         # we found a match!
         capture$line <- k
-        if (mistake) break
-        else return(capture)
+        return(capture)
       }
     }
 

@@ -1,19 +1,16 @@
 context("Argument matching")
 
-
-example_1 <- capture.code(
-  " x <- 2
-  y <- x^2
-  lm(mpg ~ hp, data = mtcars)"
-)
-
 test_that("Looking for mistakes works", {
-  test_1 <- find_call("lm(hp ~ mpg, data = whatever)", mistake = TRUE, "Response should be 'mpg'.")
-  one <- example_1 %>% test_1
+  example_1 <- capture.code(
+    " x <- 2
+    y <- x^2
+    lm(mpg ~ hp, data = mtcars)"
+  )
+  test_1 <- find_call("lm(hp ~ mpg, data = whatever)")
+  one <- example_1 %>% test_1 %>% was_mistake("Response should be 'mpg'.")
   expect_true(one$passed) # the mistake wasn't in the submitted code
-  test_2 <- find_call("lm(mpg ~ hp, data = whatever)", mistake = TRUE,
-                  "Well, ... not really a mistake, but just for testing purposes.")
-  two <- example_1 %>% test_2
+  test_2 <- find_call("lm(mpg ~ hp, data = whatever)")
+  two <- example_1 %>% test_2 %>% was_mistake("Well, ... not really a mistake, but just for testing purposes.")
   expect_false(two$passed)
   test_3 <- find_call("lm(mpg ~ hp)", "This should pass")
   three <- example_1 %>% test_3

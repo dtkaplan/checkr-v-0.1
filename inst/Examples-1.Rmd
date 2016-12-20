@@ -45,7 +45,7 @@ rep(1:4, ___ = 3)
 
 ```{r bunch-1-a-check, echo = FALSE}
 # Simple test to see if it was done the way we wanted
-test_0 <- find_call("c(1,1,1,2,2)", "Use `rep()` for this exercise, not `c()`", mistake = TRUE)
+test_0 <- find_call("c(1,1,1,2,2)")
 test_1 <- find_call("rep()", "remember to use the `rep()` function!")
 test_2 <- find_call("whatever <- whatever", "give the result a name.")
 test_3 <- find_assignment('Id', "give the result the name `Id`.")
@@ -55,7 +55,8 @@ test_all <- find_call("rep(eval(1:4), each = 3)", message =
                   "some hints: use `rep()` with 1:4 as an input", 
                   diag = TRUE)
 test_result <- check_value(match_vector(rep(1:4, each = 3), diag = TRUE), "the output value is not correct")
-USER_CODE %>% test_0 %>% test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_all %>% test_result
+USER_CODE %>% test_0 %>% was_mistake("Use `rep()` for this exercise, not `c()`") %>%
+  test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_all %>% test_result
 ```
 
 

@@ -103,13 +103,15 @@ within_pipe <- function(capture) {
 #' @export
 was_mistake <- function(capture, message = "") {
   if (! is.capture(capture)) stop("was_mistake() message argument must be explicitly named message = .")
-  if (nchar(message) == 0) {
+  if (result_is_pass(message)) {
     message <- sprintf("%s is a common mistake. Think again.", capture$statements[[capture$line]])
   }
 
   if (capture$passed) {
     capture$message <- message
     capture$passed <- FALSE
+  } else {
+    capture$passed <- TRUE # the pattern was not found in the previous test, so it wasn't a mistake. Move on!
   }
 
   capture

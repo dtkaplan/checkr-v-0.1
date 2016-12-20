@@ -46,7 +46,7 @@ same_ <- function(compare_fun, objname, hint = FALSE, ...) {
     R <- eval(objname, envir = reference)
     if (length(S) == 1 && S == "no such command found") message <- "no corresponding command found"
     else message <- compare_fun(S, R, hint = hint, ...)
-    if (nchar(message)) {
+    if (! result_is_pass(message)) {
       res$message <- message
       res$passed <- FALSE
     }
@@ -74,7 +74,7 @@ same_num <- function(objname, hint = FALSE, ...) {
     R <- eval(objname, envir = reference)
     if (length(S) == 1 && S == "no such command found") message <- "no corresponding command found"
     else message <- compare_numbers(S, R, hint = hint, ...)
-    if (nchar(message)) {
+    if (! result_is_pass(message)) {
       res$message <- message
       res$passed <- FALSE
     }
@@ -127,7 +127,7 @@ compare_vectors <- function(S, R, same_order = TRUE, hint = FALSE) {
     return(paste("should be a vector", ifelse(hint, capture.output(R), "")))
   }
   message <- compare_length(S, R, hint = hint)
-  if (nchar(message)) return(message)
+  if (! result_is_pass(message)) return(message)
 
   if (same_order) {
     message <-
@@ -152,7 +152,7 @@ compare_vectors <- function(S, R, same_order = TRUE, hint = FALSE) {
 
 compare_numbers <- function(S, R, tol = NULL, pm = 1e-8, hint = FALSE) {
   message <- compare_length(S, R, hint = hint)
-  if (nchar(message)) return(message)
+  if (! result_is_pass(message)) return(message)
   message <-
     if (hint) {
       if ( ! is.null(tol)) sprintf("should be %s", paste0(R, collapse = " "))

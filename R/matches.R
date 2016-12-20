@@ -139,9 +139,9 @@ match_data_frame <- function(x, names_contain = TRUE, names_match = FALSE,
 match_formula <- function(x) {
   f <- function(student) {
     res <- f_same_response(student, x)
-    if (nchar(res) != 0) return(res)
+    if (! result_is_pass(res)) return(res)
     res <- f_same_explanatory(student, x)
-    if (nchar(res) != 0) return(res)
+    if (! result_is_pass(res)) return(res)
 
     return("")
   }
@@ -191,7 +191,7 @@ is_in_formula <- function(x){
   f <- function(student) {
     res <- ""
     if (length(x) > 2) res <- f_same_response(student, x)
-    if (nchar(res) != 0) return(res)
+    if (! result_is_pass(res)) return(res)
 
     res <- f_same_explanatory(student, x)
     missing <- attr(res, "missing")

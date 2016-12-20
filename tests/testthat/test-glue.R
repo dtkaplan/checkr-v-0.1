@@ -24,7 +24,7 @@ test_that("simple checks work", {
   test_5 <- find_value(7)
   five <- example_1 %>% test_5
   expect_false(five$passed)
-  expect_equal(five$message, "no value created matching 7")
+  expect_equal(five$message, "no value created matching [1] 7")
 })
 
 test_that("checks go in the right sequence", {
@@ -66,8 +66,8 @@ test_that("Function tests work", {
   one <- example_1 %>% test_2 %>% then %>% test_1
   expect_false(one$passed)
   # testing whether specific mistake is found
-  test_3 <- find_call("x^2", mistake = TRUE, "Why are you squaring x?")
-  two <- example_1 %>%  test_3
+  test_3 <- find_call("x^2")
+  two <- example_1 %>%  test_3 %>% was_mistake("Why are you squaring x?")
   expect_false(two$passed)
   expect_equal(two$message, "Why are you squaring x?")
 })
@@ -128,8 +128,8 @@ test_that("branch_test() works", {
   test_0 <- find_assignment("w", "w not found")
   test_1 <- find_assignment("z", "z not found")
   test_2 <- find_assignment("x", "x not found")
-  test_3 <- has_formula()
-  test_4 <- has_formula(test = match_formula(hp ~ mpg)) # should fail
+  test_3 <- find_formula()
+  test_4 <- find_formula(test = match_formula(hp ~ mpg)) # should fail
   expect_false(example_1 %>% test_1 %>% .$passed)
   expect_true(example_1 %>% test_2 %>% .$passed)
   expect_true(example_1 %>% branch_test(test_1, test_2, test_3)() %>% .$passed)

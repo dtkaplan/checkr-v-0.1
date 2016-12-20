@@ -6,7 +6,7 @@
 #'
 #'
 #' @export
-has_formula <- function(test = NULL, message = "couldn't find a formula") {
+find_formula <- function(test = NULL, message = "couldn't find a formula") {
   if (is.null(test)) test <-
       function(x) ifelse(inherits(x, "formula"), "", message)
   f <- function(capture) {
@@ -18,7 +18,7 @@ has_formula <- function(test = NULL, message = "couldn't find a formula") {
         for (k in 1:length(formulas)) { # there might be more than one
           # any one that passes is good enough
           passed <- test(formulas[[k]])
-          if (nchar(passed) == 0) { # test passed
+          if (result_is_pass(passed)) {
             capture$passed <- TRUE
             capture$line <- j
             return(capture)

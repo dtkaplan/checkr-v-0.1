@@ -4,12 +4,12 @@
 #'
 #' \code{find_value} looks for a match to the values produced by the code
 #'
-#' \code{has_names} looks for variables and functions in the expression that match all of those
+#' \code{find_names} looks for variables and functions in the expression that match all of those
 #' given in \code{pattern}. The \code{pattern} should be an unquoted expression. A good
 #' trick if you just want a set of names, e.g. \code{fred}, \code{betty}, \code{sarah}, is to
 #' set pattern to a kind of function call: \code{fred(betty, sarah)}.
 #'
-#' \code{has_constants} looks for numbers and character strings in an expression. (These are different from function names
+#' \code{find_constants} looks for numbers and character strings in an expression. (These are different from function names
 #' and object names.)
 #'
 #' \code{similar_names} takes a character string containing an R expression.
@@ -29,11 +29,11 @@
 #' @seealso other locator functions \code{\link{find_assignment}}, \code{\link{find_call}}
 #' @examples
 #' U <- capture.code("ifelse(sin(37 + 14) > .5, 'yes', 'no way')")
-#' test_1 <- has_constants(37, 14)
+#' test_1 <- find_constants(37, 14)
 #'
 #' @rdname locator_functions
 #' @export
-has_constants <- function(..., message=NULL, mistake = FALSE) {
+find_constants <- function(..., message=NULL, mistake = FALSE) {
   constants <- list(...)
   types <- unlist(lapply(constants, FUN = class))
   numerical_values <-
@@ -73,7 +73,7 @@ has_constants <- function(..., message=NULL, mistake = FALSE) {
 
 #' @rdname locator_functions
 #' @export
-has_names <- function(pattern, message = NULL, mistake = FALSE) {
+find_names <- function(pattern, message = NULL, mistake = FALSE) {
   EX <- substitute(pattern)
   look_for_names <- all.names(EX)
   f <- function(capture) {
@@ -166,7 +166,7 @@ find_value <- function(x, message = NULL) {
     test <- function(val) {
       res <- all.equal(val, x)
       if (isTRUE(res)) return("")
-      else return(sprintf("no value created matching %s", x))
+      else return(sprintf("no value created matching %s", capture.output(x)))
     }
   }
   f <- function(capture) {
@@ -174,7 +174,7 @@ find_value <- function(x, message = NULL) {
 
     for (k in capture$valid_lines) {
       res <- test(capture$returns[[k]])
-      if (nchar(res) == 0) { # we found a match
+      if (result_is_pass(res)) { # we found a match
         capture$line <- k
         return(capture)
       }

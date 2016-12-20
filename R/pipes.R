@@ -58,7 +58,7 @@ pipe_input_output <- function(test, message = "", offset = 1) {
     if (length(inds) > 0) {
       input_name <- line_names[inds[1]]
       res <- test(get(input_name, capture$names[[capture$line]]))
-      if (nchar(res)) { # non-null message from test
+      if (! result_is_pass(res)) { # non-null message from test
         capture$passed <- FALSE
         capture$message <- ifelse(nchar(message), message, res)
         return(capture)

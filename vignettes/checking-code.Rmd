@@ -20,7 +20,7 @@ library(magrittr)
 >    * Adopt Garrett's `get()` and `check()` notation for locator functions. That will be better than the hodge-podge of `find_call()`, , ...   using `find_` rather than get  
 >    * Add examples for `magrittr` pipelines.
 >    * add `test=` to all `find_` functions
-
+>    * document the agrees() test-building function
 
 
 In tutorial systems such as [DataCamp.com](http://DataCamp.com) or the `tutor` package in R, problems are posed that call for the student to write an answer in R code. This package provides a system for checking whether that R code has done what's required and, if not, where the problem might fall. A working example, using `tutor` is available via ... [right now, it's in `inst/checkr-test-cases.Rmd`. Just open that in an editor and "Run Document." Try making small changes in the answers and see what the feedback messages say.]
@@ -249,13 +249,13 @@ The location tests currently provided by `checkr` are:
 
 * `find_assignment("var")` looks for a statement which involves assignment to the variable named in the argument (`"var"` in this example). It can also take a regex. 
 * `find_statement()` looks for a character string or regex match to the body of a statement.
-* `find_value()` looks for a match to the value produced by a statement
+* `find_value(1:10)` looks for a match to the value produced by a statement. Note that the argument is unquoted.
 * `similar_names("sqrt(abs(x))")` looks for a statement that has similar names (function names, variables) to those contained in the statement provided as an argument
 * `final()` identifies the final statement. No argument necessary
 * `find_call("cos(x + whatever)")` looks for a statement containing a function call that matches the one provided as an argument. 
-* `has_names(sqrt(3 * x + y))` will look for a statement that contains function and object names matching those in the argument. Note that the argument is unquoted.
-* `has_constants(3, "skippidee")` looks for a statement with numbers and character strings matching those given in the arguments. You can include as many constants as you like.
-* `has_formula()` looks for a statement containing a formula.
+* `find_names(sqrt(3 * x + y))` will look for a statement that contains function and object names matching those in the argument. Note that the argument is unquoted.
+* `find_constants(3, "skippidee")` looks for a statement with numbers and character strings matching those given in the arguments. You can include as many constants as you like.
+* `find_formula()` looks for a statement containing a formula.
 
 Each passing test records the particular command line that matched the pattern. Subsequent tests can be directed to look for matches before, after, or within the command line that matched the previous test. See the location-qualifier functions \code{then}, \code{previously}, and \code{inside}. Of course, you need not use a location qualifier, in which case subsequent tests will look at *all* command lines.
 

@@ -122,13 +122,13 @@ $(document).ready(function () {
 <pre class="text"><code>2 + 2</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="example_0-check" data-caption="Code" data-lines="0">
-<pre class="text"><code>test_0 &lt;- fcall(&quot;whatever + whatever&quot;, &quot;use addition (+)&quot;)
-test_1 &lt;- fcall(&quot;2 + whatever&quot;, &quot;first argument should be two &quot;)
-test_2 &lt;- fcall(&quot;whatever + 2&quot;, &quot;second argument should also be two&quot;)
-test_3 &lt;- fcall(&quot;2 + 2&quot;, &quot;remember to add two plus two&quot;)
+<pre class="text"><code>test_0 &lt;- find_call(&quot;whatever + whatever&quot;, &quot;use addition (+)&quot;)
+test_1 &lt;- find_call(&quot;2 + whatever&quot;, &quot;first argument should be two &quot;)
+test_2 &lt;- find_call(&quot;whatever + 2&quot;, &quot;second argument should also be two&quot;)
+test_3 &lt;- find_call(&quot;2 + 2&quot;, &quot;remember to add two plus two&quot;)
 USER_CODE %&gt;% test_0 %&gt;% test_1 %&gt;% test_2 %&gt;% test_3
 soln_test(USER_CODE, SOLN_CODE,
-             res = final_(),
+             res = final_,
              same_num(res))</code></pre>
 </div>
 </div>
@@ -143,14 +143,15 @@ soln_test(USER_CODE, SOLN_CODE,
 <pre class="text"><code>sqrt(3^2 + 4^2)</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="example-triangle-check" data-caption="Code" data-lines="0">
-<pre class="text"><code>test_1 &lt;- fcall(&quot;whatever ^ 2&quot;, &quot;need to square the lengths&quot;)
-test_A &lt;- fcall(&quot;2 ^ whatever&quot;, &quot;you&#39;ve reversed the arguments to &#39;^&#39;&quot;, mistake = TRUE)
-test_2 &lt;- fcall(&quot;3 ^ 2&quot;, &quot;one of the lengths is 3&quot;)
-test_3 &lt;- fcall(&quot;4 ^ 2&quot;, &quot;one of the lengths is 4&quot;)
-test_4 &lt;- fcall(&quot;sqrt()&quot;, &quot;you&#39;ll have to use the square-root function to get the length.&quot;)
-test_5 &lt;- fcall(&quot;whatever + whatever&quot;, &quot;remember to add the squares&quot;)
-test_6 &lt;- in_values(match_number(5, range = c(4.99, 5.01)), &quot;the overall result should be 5.&quot;)
-USER_CODE %&gt;% test_A %&gt;% test_1 %&gt;% test_2 %&gt;% test_3 %&gt;% test_4 %&gt;% test_5 %&gt;% test_6</code></pre>
+<pre class="text"><code>test_1 &lt;- find_call(&quot;whatever ^ 2&quot;, &quot;need to square the lengths&quot;)
+test_A &lt;- find_call(&quot;2 ^ whatever&quot;)
+test_2 &lt;- find_call(&quot;3 ^ 2&quot;, &quot;one of the lengths is 3&quot;)
+test_3 &lt;- find_call(&quot;4 ^ 2&quot;, &quot;one of the lengths is 4&quot;)
+test_4 &lt;- find_call(&quot;sqrt()&quot;, &quot;you&#39;ll have to use the square-root function to get the length.&quot;)
+test_5 &lt;- find_call(&quot;whatever + whatever&quot;, &quot;remember to add the squares&quot;)
+test_6 &lt;- find_value(match_number(5, range = c(4.99, 5.01)), &quot;the overall result should be 5.&quot;)
+USER_CODE %&gt;% test_A %&gt;% was_mistake(&quot;you&#39;ve reversed the arguments to &#39;^&#39;&quot;) %&gt;%
+  test_1 %&gt;% test_2 %&gt;% test_3 %&gt;% test_4 %&gt;% test_5 %&gt;% test_6</code></pre>
 </div>
 </div>
 <div id="section-example-3" class="section level2">
@@ -165,9 +166,9 @@ USER_CODE %&gt;% test_A %&gt;% test_1 %&gt;% test_2 %&gt;% test_3 %&gt;% test_4 
 <pre class="text"><code>ggplot(mtcars, aes(x=hp, y = mpg)) + geom_point(aes(color = carb))</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="mtcarplot-check" data-caption="Code" data-lines="0">
-<pre class="text"><code>test_1 &lt;- fcall(&quot;aes(y = mpg)&quot;, message = &quot;mpg should be the y aesthetic&quot;)
-test_2 &lt;- fcall(&quot;aes(x = hp, y = mpg)&quot;, message = &quot;set the aesthetics via aes() to put the right variable on each axis.&quot;)
-test_3 &lt;- fcall(&quot;aes(color = carb)&quot;, &quot;map carb to the color aethetic&quot;)
+<pre class="text"><code>test_1 &lt;- find_call(&quot;aes(y = mpg)&quot;, message = &quot;mpg should be the y aesthetic&quot;)
+test_2 &lt;- find_call(&quot;aes(x = hp, y = mpg)&quot;, message = &quot;set the aesthetics via aes() to put the right variable on each axis.&quot;)
+test_3 &lt;- find_call(&quot;aes(color = carb)&quot;, &quot;map carb to the color aethetic&quot;)
 USER_CODE %&gt;% test_1
 USER_CODE %&gt;% test_1 %&gt;% test_2
 USER_CODE %&gt;% test_3</code></pre>
@@ -192,17 +193,17 @@ mtcars %&gt;%
 <div class="tutor-exercise-support" data-label="mtcardplyr-check" data-caption="Code" data-lines="0">
 <pre class="text"><code># Note that even though summarise() is used with a named argument
 # we can disregard the name
-test_1 &lt;- in_statements(&quot;mtcars&quot;, &quot;use the &lt;mtcars&gt; data frame&quot;)
-test_2 &lt;- fcall(&quot;filter()&quot;)
+test_1 &lt;- find_statement(&quot;mtcars&quot;, &quot;use the &lt;mtcars&gt; data frame&quot;)
+test_2 &lt;- find_call(&quot;filter()&quot;)
 test_3 &lt;- check_argument(&quot;cyl == grab_this&quot;, match_number(4, hint = TRUE))
-test_4 &lt;- in_statements(&quot;cyl == 4&quot;, &quot;it&#39;s the cylinders we want to restrict to 4&quot;)
-test_5 &lt;- fcall(&quot;summarise(whatever)&quot;, &quot;use summarise to compute the mean&quot;)
-test_6 &lt;- fcall(&quot;mean(hp)&quot;, &quot;calculate the mean horsepower&quot;)
+test_4 &lt;- find_statement(&quot;cyl == 4&quot;, &quot;it&#39;s the cylinders we want to restrict to 4&quot;)
+test_5 &lt;- find_call(&quot;summarise(whatever)&quot;, &quot;use summarise to compute the mean&quot;)
+test_6 &lt;- find_call(&quot;mean(hp)&quot;, &quot;calculate the mean horsepower&quot;)
 
 USER_CODE %&gt;% test_1 %&gt;% test_2 %&gt;% test_3 %&gt;% test_4 %&gt;% test_5 %&gt;% test_6
 
 soln_test(USER_CODE, SOLN_CODE,
-          a = final_(),
+          a = final_,
           same_num(nrow(a)),
           same_num(length(a)))</code></pre>
 </div>
@@ -226,8 +227,8 @@ my_mod &lt;- lm(wage ~ sector *educ + sex + married + union, data = CPS85)</code
 my_mod &lt;- lm(wage ~ sector *educ + sex + married + union, data = CPS85)</code></pre>
 </div>
 <div class="tutor-exercise-support" data-label="cps85r-check" data-caption="Code" data-lines="0">
-<pre class="text"><code>test_1 &lt;- fcall(&quot;data(&#39;CPS85&#39;)&quot;, &quot;remember to use data() to bring in the data.&quot; )
-test_2 &lt;- fcall(&quot;wage ~ whatever&quot;, &quot;wage should be the response variable&quot;)
+<pre class="text"><code>test_1 &lt;- find_call(&quot;data(&#39;CPS85&#39;)&quot;, &quot;remember to use data() to bring in the data.&quot; )
+test_2 &lt;- find_call(&quot;wage ~ whatever&quot;, &quot;wage should be the response variable&quot;)
 final_val &lt;- check_value(test = function(mod) ifelse(mosaic::rsquared(mod) &gt; .25, &quot;&quot;, &quot;not good enough&quot;), message = &quot;your R^2 is not good enough. Try some new explanatory terms.&quot;)
 USER_CODE %&gt;% test_1 %&gt;% test_2 %&gt;% final_val
 #soln_test(USER_CODE, SOLN_CODE,
@@ -248,14 +249,14 @@ y &lt;- cos(x)</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":7,"fig.height":5,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":672,"warning":true,"error":false,"message":true,"exercise.df_print":"default","exercise.checker":["function (label = NULL, user_code = NULL, solution_code = NULL, ","    check_code = NULL, envir_result = NULL, evaluate_result = NULL, ","    ..., feedback = tutor::feedback, debug = TRUE) ","{","    if (debug) {","        save_file_name <- sprintf(\"~/Downloads/CheckR/chunk-%s.rds\", ","            label)","        saveRDS(list(label = label, user_code = user_code, solution_code = solution_code, ","            check_code = check_code, envir = envir_result, evaluate_result = evaluate_result), ","            file = save_file_name)","    }","    USER_CODE <- capture.code(user_code)","    SOLN_CODE <- if (is.null(solution_code)) ","        \"\"","    else capture.code(solution_code)","    test_envir <- new.env()","    assign(\"USER_CODE\", USER_CODE, envir = test_envir)","    assign(\"SOLN_CODE\", SOLN_CODE, envir = test_envir)","    commands <- parse(text = paste(check_code, collapse = \"\\n\"))","    for (k in 1:length(commands)) {","        R <- eval(commands[k], envir = test_envir)","        if (is.test_result(R) || is.capture(R)) {","            if (R$passed) ","                next","            else {","                return(feedback(paste(\"Sorry, but\", R$message), ","                  correct = FALSE, type = \"info\", location = \"prepend\"))","            }","            stop(\"Statement returned neither a test result or a capture.\")","        }","    }","    feedback(\"Good job!\", correct = TRUE, type = \"success\")","}"]}</script>
 </div>
 <div class="tutor-exercise-support" data-label="example-misc-check" data-caption="Code" data-lines="0">
-<pre class="text"><code>test_1 &lt;- assigns_to(&quot;x&quot;, &quot;couldn&#39;t find assignment to x&quot;)
+<pre class="text"><code>test_1 &lt;- find_assignment(&quot;x&quot;, &quot;couldn&#39;t find assignment to x&quot;)
 test_2 &lt;- check_value(match_number(7)) # looks at value of statement
-test_3 &lt;- in_values(50)
-test_4 &lt;- fcall(&quot;cos()&quot;, &quot;didn&#39;t see the cos() function being used&quot;)
-test_5 &lt;- fcall(&quot;x^2&quot;, &quot;you didn&#39;t square x&quot;)
-test_6 &lt;- fcall(&quot;x^2 + 1&quot;, &quot;you should have added 1 to x^2&quot;)
+test_3 &lt;- find_value(50)
+test_4 &lt;- find_call(&quot;cos()&quot;, &quot;didn&#39;t see the cos() function being used&quot;)
+test_5 &lt;- find_call(&quot;x^2&quot;, &quot;you didn&#39;t square x&quot;)
+test_6 &lt;- find_call(&quot;x^2 + 1&quot;, &quot;you should have added 1 to x^2&quot;)
 test_7 &lt;- check_argument(&quot;cos(grab_this)&quot;, match_number(7))
-test_7a &lt;- assigns_to(&quot;y&quot;, &quot;remember to name the object cos(x) as y&quot;)
+test_7a &lt;- find_assignment(&quot;y&quot;, &quot;remember to name the object cos(x) as y&quot;)
 test_8 &lt;- check_value(match_number(50))
 test_9 &lt;- check_value(match_number(cos(7)))
 

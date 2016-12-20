@@ -14,6 +14,9 @@
 #'
 #' @param test_1 a locator test
 #' @param test_2 another locator test
+#' @param condition a test to determine which of \code{yes} or \code{no}
+#' @param yes the test to run if \code{condition} passes
+#' @param no the test to run if \code{condition} fails
 #' @param ... optionally, more locator tests
 #'
 #' @rdname compose_tests
@@ -70,9 +73,7 @@ all_tests <- function(...) {
   f
 }
 
-#' @param condition a test to determine which of \code{yes} or \code{no}
-#' @param yes the test to run if \code{condition} passes
-#' @param no the test to run if \code{condition} fails
+
 #' @rdname compose_tests
 #' @aliases branch_test
 #' @export

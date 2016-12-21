@@ -16,14 +16,13 @@
 #' @param evaluate_result the output of evaluate::evaluate from the code input. Tutor provides
 #' this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.
 #' @param ... other arguments (see tutor documentation)
-#' @param feedback a function (provided by tutor) to convey a feedback message to the student
-#' via the tutor document
 #' @param debug if \code{TRUE}, write the information in the other arguments to a file
 #' \code{"~/Downloads/CheckR/chunk-[chunk-name].rds"}.
 #' Then, the stored information can be put through
 #' the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
 #' reads the RDS file and runs the tests.
 #'
+#' @return a list in the format required by tutor
 #' @details The arguments are set by the tutor system. Only \code{debug} isn't
 #' standard.
 #'
@@ -34,7 +33,6 @@ checkr_tutor <- function(label=NULL,
                              check_code = NULL,
                              envir_result = NULL,
                              evaluate_result = NULL, ...,
-                             feedback = tutor::feedback,
                              debug = TRUE) {
   # while debugging
   if(debug) {
@@ -65,12 +63,19 @@ checkr_tutor <- function(label=NULL,
       if (R$passed) next
       else {
         # failed this test
-        return(feedback(paste("Sorry, but", R$message), correct = FALSE, type = "info", location = "prepend"))
-
+        return(list(message = paste("Sorry, but", R$message),
+                    correct = FALSE,
+                    type = "info",
+                    location = "prepend"))
       }
-      stop("Statement returned neither a test result or a capture.")
+      stop("Shouldn't get here. Statement returned neither a test result or a capture.")
     }
   }
 
-  feedback("Good job!", correct = TRUE, type = "success")
+  message <- get_success_message()
+  cat(sprintf("preparing to return success_message: '%s'\n", message))
+
+  list(message = message,
+       correct = TRUE, type = "success", location = "prepend")
 }
+

@@ -21,7 +21,7 @@ check_info_to_file <- function(label=NULL,
   save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
   saveRDS(list(label = label, user_code = user_code, check_code = check_code, envir = envir_result, evaluate_result = evaluate_result),
           file = save_file_name)
-  tutor::feedback(paste("Check info saved in ", save_file_name), type = "success", location = "append")
+  list(message = paste("Check info saved in ", save_file_name), correct = TRUE, type = "success", location = "prepend")
 }
 
 #' @rdname debugging

@@ -21,7 +21,7 @@ library(magrittr)
 >    * Add examples for `magrittr` pipelines.
 >    * add `test=` to all `find_` functions
 >    * document the agrees() test-building function
->    * do I want to restructure all the find_() functions so that they can be used in either "define a test" mode or "part of a pipeline" mode? See was_mistake() for how to do this.
+>    * document `set_success_message()`
 
 
 In tutorial systems such as [DataCamp.com](http://DataCamp.com) or the `tutor` package in R, problems are posed that call for the student to write an answer in R code. This package provides a system for checking whether that R code has done what's required and, if not, where the problem might fall. A working example, using `tutor` is available via ... [right now, it's in `inst/checkr-test-cases.Rmd`. Just open that in an editor and "Run Document." Try making small changes in the answers and see what the feedback messages say.]

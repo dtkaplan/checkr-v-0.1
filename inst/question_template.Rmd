@@ -1,0 +1,32 @@
+---
+title: "..problem_id.."
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r include=FALSE}
+library(tutor)
+library(checkr)
+knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
+```
+
+<!-- narrative before exercise -->
+
+```{r ..problem_id.., exercise = TRUE, echo = FALSE}
+question('Which of the following is a data table identified by `"http://tiny.cc/dcf/CountryCodes.rda"`.',
+  answer("Choice 1", 
+         correct = TRUE,
+         message = "response 1" ),
+  answer("choice 2", 
+         correct = FALSE, 
+         message = "message 2."),
+  answer("choice 3", 
+         correct = FALSE,
+         message = "message 3"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+<!-- narrative to wrap up (if any) goes here -->
+

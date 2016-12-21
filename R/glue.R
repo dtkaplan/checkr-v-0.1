@@ -102,29 +102,19 @@ within_pipe <- function(capture) {
 #' @rdname location_qualifiers
 #' @export
 was_mistake <- function(capture, message = "") {
-  if (! missing(capture) && ! is.capture(capture))
-    stop("was_mistake() message argument must be explicitly named message = .")
-  helper <- function(capture) {
-    if (result_is_pass(message)) {
-      message <- sprintf("%s is a common mistake. Think again.", capture$statements[[capture$line]])
-    }
-
-    if (capture$passed) {
-      capture$message <- message
-      capture$passed <- FALSE
-    } else {
-      capture$passed <- TRUE # the pattern was not found in the previous test, so it wasn't a mistake. Move on!
-    }
-
-    capture
-  }
-  # allow to be used as part of a pipe, or to define a new test.
-  if (missing(capture)) {
-    f <- function(capture) helper(capture)
-    return(f)
+  if (! is.capture(capture)) stop("was_mistake() message argument must be explicitly named message = .")
+  if (result_is_pass(message)) {
+    message <- sprintf("%s is a common mistake. Think again.", capture$statements[[capture$line]])
   }
 
-  helper(capture)
+  if (capture$passed) {
+    capture$message <- message
+    capture$passed <- FALSE
+  } else {
+    capture$passed <- TRUE # the pattern was not found in the previous test, so it wasn't a mistake. Move on!
+  }
+
+  capture
 }
 
 

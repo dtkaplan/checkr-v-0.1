@@ -6,7 +6,7 @@
 \usage{
 checkr_tutor(label = NULL, user_code = NULL, solution_code = NULL,
   check_code = NULL, envir_result = NULL, evaluate_result = NULL, ...,
-  feedback = tutor::feedback, debug = TRUE)
+  debug = TRUE)
 }
 \arguments{
 \item{label}{character string containing name of the chunk that's being checked. For \code{run_tests_from_file()}, this
@@ -28,14 +28,14 @@ this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.}
 
 \item{...}{other arguments (see tutor documentation)}
 
-\item{feedback}{a function (provided by tutor) to convey a feedback message to the student
-via the tutor document}
-
 \item{debug}{if \code{TRUE}, write the information in the other arguments to a file
 \code{"~/Downloads/CheckR/chunk-[chunk-name].rds"}.
 Then, the stored information can be put through
 the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
 reads the RDS file and runs the tests.}
+}
+\value{
+a list in the format required by tutor
 }
 \description{
 The function that the \code{tutor} document will call when checking

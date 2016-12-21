@@ -81,6 +81,7 @@ match_class <- function(x, hint = FALSE) {
 #' @export
 match_data_frame <- function(x, names_contain = TRUE, names_match = FALSE,
                              nrow = FALSE, classes = FALSE, hint = FALSE) {
+  if (! is.data.frame(x)) stop("match_data_frame() requires a data frame as the first argument.")
   connector <- function(m) ifelse(nchar(m) > 0, "and ", "")
   f <- function(val) {
     message <- ""
@@ -104,7 +105,7 @@ match_data_frame <- function(x, names_contain = TRUE, names_match = FALSE,
       }
     }
     if (nrow) {
-      this_test <- nrow(x) == nrow(val)
+      this_test <- base::nrow(x) == base::nrow(val)
       if ( ! this_test) {
         message <- paste0(message, connector(message),
                           ifelse(hint, sprintf("has %d rows but needs %d rows", nrow(val), nrow(x)),

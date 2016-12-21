@@ -1,0 +1,38 @@
+---
+title: "..problem_id.."
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r include=FALSE}
+library(tutor)
+library(checkr)
+knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
+```
+
+```{r ..problem_id..-setup, echo = FALSE}
+# code to be evaluated before exercise code
+```
+
+<!-- narrative before exercise -->
+
+```{r ..problem_id.., exercise = TRUE, exercise.setup = "..problem_id..-setup", exercise.eval = FALSE}
+sqrt(17) # Starting code for exercise
+```
+
+<!-- narrative to wrap up (if any) goes here -->
+
+```{r ..problem_id..-hint, echo = FALSE}
+# hint text or code. Can offer multiple hints with similar chunks ending in hint-1, hint-2, etc.
+```
+
+```{r ..problem_id..-solution, echo = FALSE}
+# code or text that's a solution to the exercise
+```
+
+```{r ..problem_id..-check, echo = FALSE}
+set_success_message("Good job!") # change as you like
+test_1 <- final_ # replace with your own
+USER_CODE %>% test_1
+```
+

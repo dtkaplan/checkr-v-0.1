@@ -20,7 +20,7 @@
 #'
 # @importFrom lazyeval lazy_dots
 #' @importFrom stats terms.formula
-#' @importFrom utils capture.output
+#' @importFrom utils capture.output file.edit
 # # @importFrom sourcetools tokenize_string
 #' @import magrittr
 #'
@@ -48,7 +48,7 @@ capture.code <- function(code_text = NULL) {
   # Get the source code
   statements <- as.character(commands) #attr(commands, "srcref")
   # Run  the commands one at a time
-  for (k in 1:length(commands)) {
+  for (k in seq_along(commands)) {
     if (k > 1) {
       parent_environment <- environments[[k - 1]]
     } else {

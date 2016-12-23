@@ -45,12 +45,22 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
       # the pattern was not found when it should have been and
       # so the test fails
       capture$passed = FALSE
-      capture$message = paste(message, sprintf("for value of line '%s'", capture$statements[capture$line]))
+      capture$message =
+        paste(message,
+              sprintf("for value of line '%s'",
+                      kill_pipe_tmp_vars(capture$statements[capture$line])))
     }
 
     capture
   }
   f
+}
+
+# remove the internal markers for pipes so that lines print nicely.
+
+kill_pipe_tmp_vars <- function(str) {
+  tmp <- gsub("\\.\\.tmp[0-9]*\\.\\. *<- *", "", str)
+  gsub("\\.\\.tmp[0-9]\\.\\., *", "", tmp)
 }
 
 # Do I want to use this in find_assignment()?

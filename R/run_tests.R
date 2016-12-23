@@ -73,7 +73,6 @@ checkr_tutor <- function(label=NULL,
   }
 
   message <- get_success_message()
-  cat(sprintf("preparing to return success_message: '%s'\n", message))
 
   list(message = message,
        correct = TRUE, type = "success", location = "prepend")

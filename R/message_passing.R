@@ -16,7 +16,6 @@ get_success_message <- function() {
   tmp <- ""
   if ("success_message" %in% names(message_env)) {
     tmp <- get("success_message", envir = message_env)
-    cat(sprintf("recovered '%s' from message_env\n", tmp))
     assign("success_message", "", envir = message_env)
   }
 

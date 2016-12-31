@@ -1,0 +1,37 @@
+---
+title: "Authentication document"
+output: html_document
+runtime: shiny_prerendered
+---
+
+```{r setup, include = FALSE}
+library(checkr)
+```
+
+******************
+
+```{r echo = FALSE}
+span("Please log in:")
+textInput("user_name", "User ID:")
+passwordInput("password", "Password:")
+textOutput("login_success")
+```
+
+******************
+
+
+```{r echo = FALSE, context = "server"}
+# Very, very simple for now.
+output$login_success <- renderText({"Please log in."})
+output$login_success <-
+  renderText({
+    if (input$password == "pass") {
+      checkr::set_user_name(input$user_name)
+      return("Successful login!")
+    } else {
+      "Please login in."
+      return(checkr::set_user_name(""))
+    }
+  })
+
+```

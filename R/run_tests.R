@@ -57,24 +57,38 @@ checkr_tutor <- function(label=NULL,
   # run each of the check statements in turn
   # if the result is a capture object, see if passed is true. If not
   # signal the error right then.
+  final_result <- list(correct = TRUE, message = "passed",
+                       user_code = user_code,
+                       type = "success", location = "prepend")
   for (k in 1:length(commands)){
     R <- eval(commands[k], envir = test_envir)
     if ( is.test_result(R) || is.capture(R)) {
       if (R$passed) next
       else {
         # failed this test
-        return(list(message = paste("Sorry, but", R$message),
-                    correct = FALSE,
-                    type = "info",
-                    location = "prepend"))
+        final_result$message <- paste("Sorry, but", R$message)
+        final_result$correct = FALSE
+        final_result$type = "info"
+        break
       }
       stop("Shouldn't get here. Statement returned neither a test result or a capture.")
     }
   }
 
-  message <- get_success_message()
 
-  list(message = message,
-       correct = TRUE, type = "success", location = "prepend")
+  if (final_result$correct) {
+    final_result$message <- get_success_message()
+  }
+
+  # maybe put a check on whether user name is set. if not, signal this to the user.
+  log_entry <-
+      list(user = get_user_name(), date = date(), label = label, message = final_result$message,
+            correct = final_result$correct, user_code = final_result$user_code)
+
+  cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
+
+  final_result
+#  list(message = message,
+#       correct = TRUE, type = "success", location = "prepend")
 }
 

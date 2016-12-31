@@ -24,7 +24,9 @@ library(magrittr)
 >    * document `set_success_message()`
 
 
-In tutorial systems such as [DataCamp.com](http://DataCamp.com) or the `tutor` package in R, problems are posed that call for the student to write an answer in R code. This package provides a system for checking whether that R code has done what's required and, if not, where the problem might fall. A working example, using `tutor` is available via ... [right now, it's in `inst/checkr-test-cases.Rmd`. Just open that in an editor and "Run Document." Try making small changes in the answers and see what the feedback messages say.]
+In tutorial systems such as [DataCamp.com](http://DataCamp.com) or the `tutor` package in R, problems are posed that call for the student to write an answer in R code. This package, `checkr`, provides a system for checking whether that R code has done what's required and, if not, where the problem might fall. A working example, using `tutor` is available via ... [right now, it's in `inst/checkr-test-cases.Rmd`. Just open that in an editor and "Run Document." Try making small changes in the answers and see what the feedback messages say.]
+
+SAY SOMETHING ABOUT LOGGING.
 
 ## A trivial example: 2 + 2
 
@@ -600,3 +602,25 @@ test_4 <- find_call("group_by()")
 test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
 submission_2 %>% test_4 %>% test_5 %>% show_results
 ```
+
+## Logging and authentication
+
+> NOTE: This system is under development. We need to settle on a way to have persistent storage on `shinyapps.io`. Right now, this will work only on a user's machine. It still needs to be tested even on a regular shiny server.
+
+Each time an exercise submission is made, `checkr` logs information about the submission: user ID (if any), time stamp, user code, the message returned in response by `checkr`, and whether the submission was deemed correct. The log-file, `"log-test.txt"`, will eventually be made to live in the same directory as the Rmd file containing the tutorial. It is a flat, plain text file, with each submission recorded in JSON format as a list.
+
+If you are using the tutorial as part of a course, you may wish to record the student's submissions for scoring. Or, if you are writing a tutorial, you might want that record in order to see what kind of code submissions students have made, so that you can write better tests for them.
+
+If you want to record the user's ID along with the other submission data, add this chunk, verbatim, to the tutor Rmd document.
+
+    ```{r child = checkr::authentication()}
+    ```
+
+This will display text-entry fields for the student to enter an ID and password.
+
+The current version simply takes the entered ID at face value and checks whether the password is literally `pass`. Later versions will take the name of a file containing user-ID/password pairs.
+
+
+
+
+

@@ -23,6 +23,7 @@
 #' @importFrom utils capture.output file.edit
 # # @importFrom sourcetools tokenize_string
 #' @import magrittr
+# ' @importFrom jsonlite toJSON
 #'
 #' @examples
 #' capture.code("x <- 2 + 2\n#then square it\ny <- x^2")

@@ -6,7 +6,7 @@
 \usage{
 checkr_tutor(label = NULL, user_code = NULL, solution_code = NULL,
   check_code = NULL, envir_result = NULL, evaluate_result = NULL, ...,
-  debug = TRUE)
+  debug = FALSE)
 }
 \arguments{
 \item{label}{character string containing name of the chunk that's being checked. For \code{run_tests_from_file()}, this

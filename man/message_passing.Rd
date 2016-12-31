@@ -30,7 +30,8 @@ authentication. This is intended for future use.}
 }
 \description{
 Use this function to insert into a tutor document the user input fields for
-user ID and password.
+user ID and password. This is done in a simple, but unusual way: by creating an empty chunk with
+a `child` chunk attribute like this: \code{child = checkr::authentication()}.
 
 for communicating back from the tests to the final result.
 }

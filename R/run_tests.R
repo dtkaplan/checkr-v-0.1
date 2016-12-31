@@ -33,7 +33,7 @@ checkr_tutor <- function(label=NULL,
                              check_code = NULL,
                              envir_result = NULL,
                              evaluate_result = NULL, ...,
-                             debug = TRUE) {
+                             debug = FALSE) {
   # while debugging
   if(debug) {
     save_file_name <- sprintf("~/Downloads/CheckR/chunk-%s.rds", label)
@@ -85,6 +85,7 @@ checkr_tutor <- function(label=NULL,
       list(user = get_user_name(), date = date(), label = label, message = final_result$message,
             correct = final_result$correct, user_code = final_result$user_code)
 
+  warning("still writing logfile to Downloads directory.")
   cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
 
   final_result

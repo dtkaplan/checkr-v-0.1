@@ -46,9 +46,9 @@ check_function_calls <- function(user_code, fnames) {
 check_assignment_names <- function(user_code) {
   message <- ""
   user_code <- unlist(strsplit(user_code, "[\n;]"))
-  lines_with_assignment <- grep("^.*<-", user_code)
+  lines_with_assignment <- grep("^.*(<-|=)", user_code)
   if (length(lines_with_assignment) > 0) {
-    names <- gsub("^(.*)<-.*$", "\\1", user_code[lines_with_assignment])
+    names <- gsub("^(.*)(<-|=).*$", "\\1", user_code[lines_with_assignment])
     for (k in seq_along(names)) {
       res <- try(parse(text = names[k]), silent = TRUE)
       if (inherits(res, "try-error")) {

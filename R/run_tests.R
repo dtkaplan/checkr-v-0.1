@@ -11,8 +11,6 @@
 #' @param check_code the character string contents of the chunk that specifies the
 #' checks to run on the chunk being checked
 #' @param envir_result the R environment after the student's code has been run
-#' NOTE NOTE NOTE I would like to have the R environment *before* the student code is run. That way,
-#' I can run the solution_code in the same environment seen by the student code.
 #' @param evaluate_result the output of evaluate::evaluate from the code input. Tutor provides
 #' this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.
 #' @param ... other arguments (see tutor documentation)
@@ -96,8 +94,8 @@ checkr_tutor <- function(label=NULL,
       list(user = get_user_name(), date = date(), label = label, message = final_result$message,
             correct = final_result$correct, user_code = final_result$user_code)
 
-  warning("still writing logfile to Downloads directory.")
-  cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
+  # warning("still writing logfile to Downloads directory.")
+  # cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
 
   final_result
 }

@@ -22,9 +22,7 @@ will be used to refer to the saved file.}
 \item{check_code}{the character string contents of the chunk that specifies the
 checks to run on the chunk being checked}
 
-\item{envir_result}{the R environment after the student's code has been run
-NOTE NOTE NOTE I would like to have the R environment *before* the student code is run. That way,
-I can run the solution_code in the same environment seen by the student code.}
+\item{envir_result}{the R environment after the student's code has been run}
 
 \item{evaluate_result}{the output of evaluate::evaluate from the code input. Tutor provides
 this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.}

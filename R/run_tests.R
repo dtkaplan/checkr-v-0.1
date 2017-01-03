@@ -26,6 +26,7 @@
 #' @details The arguments are set by the tutor system. Only \code{debug} isn't
 #' standard.
 #'
+#' @rdname tutor_interface
 #' @export
 checkr_tutor <- function(label=NULL,
                              user_code = NULL,
@@ -45,6 +46,16 @@ checkr_tutor <- function(label=NULL,
                  evaluate_result = evaluate_result),
           file = save_file_name)
   }
+  # Pre-evaluation checking
+  if (is.null(envir_result)) {
+    res <- pre_check_code(user_code, check_code)
+    if (nchar(res) > 0)
+      return(list(message = res, correct = FALSE))
+    else
+      return(TRUE)
+  }
+
+
   # the tests
   USER_CODE <- capture.code(user_code)
   SOLN_CODE <-
@@ -89,7 +100,18 @@ checkr_tutor <- function(label=NULL,
   cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
 
   final_result
-#  list(message = message,
-#       correct = TRUE, type = "success", location = "prepend")
+}
+
+#' @rdname tutor_interface
+#' @export
+pre_check_code <- function(user_code, check_code) {
+  check_commands <- parse(text = paste(check_code, collapse = "\n"))
+  test_envir <- new.env()
+  assign("USER_CODE", user_code, envir = test_envir)
+  for (k in seq_along(check_commands)) {
+    message <- eval(check_commands[k], envir = test_envir)
+    if (is.character(message) && nchar(message)) return(message)
+  }
+  return("")
 }
 

@@ -603,6 +603,24 @@ test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
 submission_2 %>% test_4 %>% test_5 %>% show_results
 ```
 
+## Pre-checking user code
+
+Before the locator and value tests can be applied to user code, that code must run successfully (even if it doesn't satisfy the instructions given in the exercise).
+
+When the user code doesn't run, an R error will be displayed to the user. For many purposes, the tutorial author may regard this as perfectly satisfactory. But there may be circumstances where the author would like to intercept such errors in order to display a gentler or more helpful message.
+
+By creating a chunk whose label has the extension `-code-check`, you can set up `checkr` tests that don't rely on the code being syntactically correct or otherwise not producing errors. For instance, for the `example-0` exercises, you can add a chunk like this:
+
+    ```{r, example-0-code-check, exercise = TRUE}
+    USER_CODE %>% check_assignment_names()
+    USER_CODE %>% check_function_calls("sqrt") 
+    ```
+
+This particular set of instructions checks whether names used in assignment are formed legally and whether `sqrt` is used as a function (if it is used at all). Being "used as a function" simply means that there are open and closed parentheses. In the future, additional checks may be added.
+
+Notice that the pre-evaluation checking uses a different set of functions than the locator and value tests. That's because locator and value tests work on the assumption that the code being given them will evaluate properly. 
+
+
 ## Logging and authentication
 
 > NOTE: This system is under development. We need to settle on a way to have persistent storage on `shinyapps.io`. Right now, this will work only on a user's machine. It still needs to be tested even on a regular shiny server.

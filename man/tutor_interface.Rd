@@ -2,11 +2,14 @@
 % Please edit documentation in R/run_tests.R
 \name{checkr_tutor}
 \alias{checkr_tutor}
+\alias{pre_check_code}
 \title{Interface to tutor}
 \usage{
 checkr_tutor(label = NULL, user_code = NULL, solution_code = NULL,
   check_code = NULL, envir_result = NULL, evaluate_result = NULL, ...,
   debug = FALSE)
+
+pre_check_code(user_code, check_code)
 }
 \arguments{
 \item{label}{character string containing name of the chunk that's being checked. For \code{run_tests_from_file()}, this

@@ -162,7 +162,12 @@ find_value <- function(x, message = NULL) {
     test <- function(val) {
       res <- all.equal(val, x)
       if (isTRUE(res)) return("")
-      else return(sprintf("no value created matching %s", capture.output(x)))
+      else {
+        if (is.null(message))
+          return(sprintf("no value created matching %s", capture.output(x)))
+        else
+          return(message)
+      }
     }
   }
   f <- function(capture) {

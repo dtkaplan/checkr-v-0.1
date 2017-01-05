@@ -30,6 +30,13 @@ sqrt(17) # Starting code for exercise
 # code or text that's a solution to the exercise
 ```
 
+```{r ..problem_id..-code-check, echo = FALSE}
+# put pre-evaluation checking here. This can be blank, in which case
+# the code will be checked by the interpreter with the usual R error messages
+# shown in the even of a problem.
+check_blanks(USER_CODE)
+```
+
 ```{r ..problem_id..-check, echo = FALSE}
 set_success_message("Good job!") # change as you like
 test_1 <- final_ # replace with your own

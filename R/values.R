@@ -47,7 +47,7 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
       capture$passed = FALSE
       capture$message =
         paste(message,
-              sprintf("for value of line '%s'",
+              sprintf("See line '%s'.",
                       kill_pipe_tmp_vars(capture$statements[capture$line])))
     }
 

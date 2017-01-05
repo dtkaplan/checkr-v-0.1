@@ -8,7 +8,7 @@
 \alias{set_user_name}
 \title{Authenticate a user}
 \usage{
-authentication(password_file, ...)
+authentication(active = TRUE, password_file, ...)
 
 set_success_message(message)
 
@@ -19,6 +19,8 @@ set_user_name(user_name)
 get_user_name()
 }
 \arguments{
+\item{active}{if \code{TRUE} turn authentication on. Otherwise, don't include authentication.}
+
 \item{password_file}{The name of a file containing user-ID/password pairs to use in the
 authentication. This is intended for future use.}
 

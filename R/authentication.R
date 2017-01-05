@@ -6,10 +6,12 @@
 #'
 #'
 #' @rdname message_passing
+#' @param active if \code{TRUE} turn authentication on. Otherwise, don't include authentication.
 #' @param password_file The name of a file containing user-ID/password pairs to use in the
 #' authentication. This is intended for future use.
 #' @param ... other arguments for future use.
 #' @export
-authentication <- function(password_file, ...) {
-  system.file("authentication.Rmd", package = "checkr")
+authentication <- function(active = TRUE, password_file, ...) {
+  if (active) system.file("authentication.Rmd", package = "checkr")
+  else system.file("authentication-off.Rmd", package = "checkr")
 }

@@ -16,13 +16,7 @@ library(checkr)
 library(magrittr)
 ```
 
-> IN DRAFT: To do:    
->    * Add examples for `magrittr` pipelines.
->    * document the agrees() test-building function
->    * document `set_success_message()`
->    * document pre-evaluation testing.
-
-To help meet the demand for R-related training, various *interactive tutorial systems* have been developed. These include [Swirl](http://swirlstats.com/), [DataComp.com](http://DataCamp.com), and the Shiny-based system introduced by RStudio: `[tutor](http://github.com/rstudio/tutor)`. In each of these systems, a problem is posed to the student, who has an opportunity to construct R commands as a solution. The R commands are then passed to an evaluation system.
+To help meet the demand for R-related training, various *interactive tutorial systems* have been developed. These include [Swirl](http://swirlstats.com/), [DataComp.com](http://DataCamp.com), and the Shiny-based system introduced by RStudio: [`tutor`](http://github.com/rstudio/tutor). In each of these systems, a problem is posed to the student, who has an opportunity to construct R commands as a solution. The R commands are then passed to an evaluation system.
 
 The `checkr` package provides such an evaluation system that provides both evaluative and formative feedback and, at the instructor's discretion, logs student submissions for assigning credit and to support looking for common patterns of misconception in student answers.
 
@@ -95,7 +89,7 @@ The `final_` directive means to feed the last calculated value from the `USER_CO
 Ordinarily, these test statements would be used in conjunction with the interactive tutorial system. A later section of this document will how how to set up the "two plus two" problem using `tutor`. But first, let's examine how the tests perform on the several possible submissions listed above. Since the `USER_CODE` provided by `tutor`/`checkr` will not be available in this static document, I'll use `capture.code()` to mimic the capture and transmission of code from `tutor` to `checkr`.
 
 ```{r echo = FALSE}
-print.capture <- function(test_output) {
+print.test_result <- print.capture <- function(test_output) {
   if (test_output$passed) cat("Passed!\n")
   else cat(paste("Sorry, but", test_output$message), "\n")
   return(invisible(test_output))
@@ -126,25 +120,49 @@ capture.code("2 / 2") %>%
 
 # Using `checkr` with `tutor`
 
-In a tutor document, the R/Markdown to set up the "two plus two" problem would look like this:
+The documentation for the `tutor` package has instructions and examples for creating exercises. In a nutshell, you create an ordinary Rmd file with code chunks labelled to identify the exercise and the various components of the exercise:
 
-    1. Write a statement to calculate two plus two.
-    
-    ```{r, example-0, exercise = TRUE}
-    # your code goes here
-    ```
+a. The exercise itself in a chunk with a unique label. This label will identify the exercise. It's best if it is globally unique. For this example, I'll use `2016-01-04-b7f4e`.
+b. [optional] the `-solution` chunk. In this example the full label will be `2016-02-04-b7f4e-solution`. This chunk contains code that solves the problem.
+c. [optional] the `check` chunk that contains your problem checking statements.
+d. [optional] the `code-check` chunk containing checking statements to be applied to the student's code *before* it is evaluated.
+e. [optional] the `-hint` chunk containing a hint that the student can call up while working on the problem.
 
-To tell `tutor` to use the `checkr` tests, the `setup` chunk at the beginning of the Rmd file should set the `exercise.checker` chunk option to be the `run_tests()` function from the `checkr` package.
+The document should start with a `setup` chunk, which will minimally look like the following but may also include other `library()` statements and other R code.
+
+The third line in the chunk tells `tutor` to use the `checkr` system. Use it exactly as shown below. 
 
     ```{r setup, include=FALSE}
     library(tutor)
     library(checkr)
     knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
     ```
+Following the `setup` chunk, you write freeform Rmd that includes appropriately named chunks for the exercise(s) you want to include in the file. For instance, the markdown for the "two plus two" exercise could look like this:
 
-When the student presses the "submit" button in the `tutor` code window, the student's code is sent off for checking.  You place the test statements in the problem's `-check` chunk, like this:
+    Write a statement to calculate two plus two.
+    
+    ```{r, 2016-02-04-b7f4e, exercise = TRUE}
+    ____ + ____
+    ```
+    
+You can put any text you deem appropriate inside the chunk. Here, for this example, I've put a little hint: "____ + _____"; this is a pedagogical choice that you make when designing the exercise. You can include any text you like, even if it is not valid R. This chunk will create an exercise "code pane" that students can edit and evaluate. 
 
-    ``{r example-0-check, echo=FALSE}
+
+When the student presses the "Submit Answer" button in the `tutor` code pane, the student's code is sent off for checking. There are two kinds of check:
+
+1. Checking of the text of the student's submission, without evaluating it. Any such checks are to be put in the `-code-check` chunk for the problem. For instance, `____ + ____` is not valid R syntax (variables can't start with `_`). By default, the code checks are nil. That is, by default there is no pre-evaluation checking of the code. Nonetheless, every bit of submitted code must pass the usual execution-time checks provided by the R interpreter.
+
+There's no strict need to include pre-evaluation checking, but it can make the tutorial friendlier for neophytes. For this exercise, which has some blanks in the text pre-positioned in the code pane, an pre-evaluation check like this would be appropriate.
+
+    ```{r 2016-02-04-b7f4e-check, echo=FALSE}
+    check_blanks(USER_CODE)
+    ```
+
+2. Checking of the evaluatable text in the code pane. Once the code pane text passes the pre-evaluation check, it is subjected to the tests given in the `-check` chunk. Since the pre-evaluation check always includes the R interpreter, any code that reaches the `-check` chunk must have been valid, executable R. You can write your check statements with this in mind.
+
+The `-check` chunk contains R code. In principle, any R code can be included. In practice, the chunk will include functions from the `checkr` package. The checking code is run in an environment that includes a object called `USER_CODE`, which is the text of the code pane as well as the results of evaluating the code. If you included an optional `-solution` chunk, there will be a similar object based on that code, named `SOLN_CODE`. These two objects are used as inputs to the `checkr` tests.
+
+    ``{r 2016-02-04-b7f4e-check, echo=FALSE}
     test_1 <- find_call("whatever + whatever",  
                 message = "need to use addition (+)")
     test_2 <- find_call("2 + whatever", 
@@ -156,44 +174,55 @@ When the student presses the "submit" button in the `tutor` code window, the stu
     USER_CODE %>% test_1 %>% test_2 %>% test_3 %>% final_ %>% test_4
     ```
 
-The `tutor` system will call `checkr_tutor()` with information about the various chunks relating to the problem. In turn, `run_tests()` will evaluate the code in the `-check` chunk. The `USER_CODE` object is created by `run_tests()` to provide access to the code submitted by the user.
+# A Starting Template
+
+It's easy to make mistakes with the names of exercise chunks. To simplify things, `checkr` provides a `new_exercise()` function. This generates a template exercise file with a (probably) unique name and saves it in the current working directory (use `getwd()` to see what this is and `setwd()` to change it *before* calling `new_exercise()`.) The template is a complete working exercise with all the related chunks given consistent names.
+
+`New_exercise()` takes two character-string arguments that are used to form the unique name for the exercise. The first, `collection` is the starting bit for the name. You can set this to whatever you like. I recommend that you use a short string of letters that identifies the project of which the exercise forms a part. For instance, for my *[Data Computing](http://project-mosaic-books.com/?page_id=16)* book, I set `collection` to `DC`. The second argument `unique_id` is there in case you want to create your own ID for the exercise. If it is omitted, a unique ID will be provided for you in the form of a date followed by a five number random hex code. For example: `DC-2017-01-05-496c5`.
+
+The file created by `new_exercise()` is contains the properly named `tutor` chunks for one exercise. I develop and test the exercise using just that file. But for deploying the exercise, I create another `tutor` file that includes single-exercise files as child documents. That file looks like this:
+
+    ---
+    title: "Data Computing: Chapter 4"
+    output: 
+    tutor::tutorial: default
+    html_document: 
+    number_sections: yes
+    toc: yes
+    runtime: shiny_prerendered
+    ---
+    
+    ```{r include=FALSE}
+    library(tutor)
+    library(checkr)
+    knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
+    ```
+    
+    ```{r child = checkr::authentication(FALSE)}
+    ```
+
+    # Reading data from files
+
+    ```{r child="Chapter-04/DC-2017-01-01-f13ea.Rmd"}
+    ```
+
+    # Data from R packages
+    ```{r child="Chapter-04/DC-2017-01-01-d386f.Rmd"}
+    ```
+
+    <!-- and so on -->
+
+I am hoping that a community of instructors will share exercises for interactive tutorials. This simple system of one exercise per file may facilitate that.
+
+In deploying `tutor` exercises in this one-per-file manner, make sure that both the parent document and all the child documents are installed on the server. 
+
+Note that `tutor` has a template for interactive tutorial documents that contains multiple exercises. You may well prefer to work with that format
 
 
-## Matching values
 
-The R statements in the student's submission, presumably, produce values. These might be assigned a name with `<-` or they might be unnamed. Each complete statement produces a value.
+# Framework for testing
 
-The tests shown above for the "two plus two" problem don't actually require that the value produced be 4. For example, the following submission, `2 + 2 + 2` does not produce a value of 4. Nonetheless, it passes the tests:
-```{r}
-capture.code("2 + 2 + 2") %>% 
-  test_1 %>% test_2 %>% test_3 
-```
-It's tempting to apply a test that says, "and nothing more."  I've rejected this strategy for the present, noting that sometimes a valid statement (e.g. `I(2 + 2)`) will have more than the test writer expected. Instead, you can test the values of the results produced by the student code.
-
-```{r}
-# these values are provided by tutor
-USER_CODE   <- capture.code("2 + 2 + 2")
-SOLN_CODE   <- capture.code("2 + 2")
-
-# the -check chunk contents would look like
-soln_test(USER_CODE, SOLN_CODE,
-             res = final_,
-             same_num(res)) 
-```
-The `soln_test()` function from `checkr` compares the values produced by the student's code and the values produced by code provided by the test writer in a `-solution` chunk. `USER_CODE` and `SOLN_CODE` convey the contents of the submission and solution chunks, respectively. 
-
-The next argument to `soln_test()` uses a function `final_()`, which looks for the *last* value produced by the student and by the solution code. In this example, there's only one value, but in general there may be multiple values produced by submitted code. Whatever that last value be, and regardless of whether the student's or solution code assigned a name to the value, the argument name will be assigned to that value for future reference.
-
-The final argument to `soln_test()` refers to the name `ref` created in the previous argument. The `same_num()` function compares the `ref` value in the student and the solution code. 
-
-Later, we'll show examples using `soln_test()` that can deal with more complicated structure in the student and solution code. For instance, you can have as many reference-named values and comparison tests as you like, but that's hardly needed in this simple example.
-
-
-## Framework for testing
-
-Before it can be tested, the student answer must run, even if the answer is not correct. Parsing errors and run-time errors are absorbed by the `tutor` system, so any code with such errors will not be handed over to `checkr` for evaluation.
-
-`Checkr` examines code one command line at a time. A command line is a complete piece of R code that generates a value, such as would be given in the console and evaluated when "return" is pressed. Here are some examples of statements:
+`Checkr` examines submitted code one command line at a time. A command line is a complete piece of R code that generates a value, such as would be given in the console and evaluated when "return" is pressed. Here are some examples of statements:
 
 * `x <- 7`
 * `library(ggplot2)`
@@ -234,29 +263,7 @@ funnel <- function(x, width=3) {
 In the future, we anticipate providing `checkr` tests that work with such constructions.
 
 
-
-## Solution-matching tests and location tests
-
-There are two basic kinds of `checkr` tests: solution-matching tests and location tests.
-
-1. In a **solution-matching test**, a comparison is made between a solution provided by the problem author and the student's submitted code. Solution-matching tests are contained within the `soln_test()` function. 
-2. In a **location test**, there is no reference to the author's solution. Instead, the test looks for patterns within the student's code. Location tests start with `USER_CODE %>% [one or more tests]`.
-
-A `-check` chunk is composed of one or more test: solution-matching tests can be freely intermixed with location tests.
-
-## Location tests
-
-Location tests specify a pattern that is expected to be in the student code. Each location test either fails or identifies a single command line in the code being examined that matches the specified pattern. Location tests look through the command lines in a student answer to find the match. There are several ways to specify patterns:
-
-- a character string (or regex) matches 
-- a specified function (and, optionally, specified arguments) is called
-- assignment to a name is done by the statement.
-
-Location tests are often specified as sequences of tests, written
-
-    USER_CODE %>% test_1 %>% test_2 ... and so on
-
-The tests are run from left to right. Any test failing causes the test to terminate. The failure message from the whole sequence will be the failure message from the test that failed. If a test passes, the next test in the sequence is applied, and so on. 
+# Location tests
 
 The location tests currently provided by `checkr` are:
 
@@ -268,16 +275,22 @@ The location tests currently provided by `checkr` are:
 * `find_call("cos(x + whatever)")` looks for a statement containing a function call that matches the one provided as an argument. 
 * `find_names(sqrt(3 * x + y))` will look for a statement that contains function and object names matching those in the argument. Note that the argument is unquoted.
 * `find_constants(3, "skippidee")` looks for a statement with numbers and character strings matching those given in the arguments. You can include as many constants as you like.
-* `find_formula()` looks for a statement containing a formula.
+* `find_formula()` looks for a statement containing a formula, e.g. as in `lm()`.
 
 Each passing test records the particular command line that matched the pattern. Subsequent tests can be directed to look for matches before, after, or within the command line that matched the previous test. See the location-qualifier functions \code{then}, \code{previously}, and \code{inside}. Of course, you need not use a location qualifier, in which case subsequent tests will look at *all* command lines.
 
-There are location tests that allow you to test a value generated by the code. The simplest is \code{check_value}, which looks at the value of the whole command line. A previous locator test should have identified the particular line whose value is to be tested.  For example:
+There are location tests that allow you to test a value generated by the code. The simplest is \code{check_value}, which looks at the value of the whole command line. A previous locator test should have identified the particular line whose value is to be tested.  To start the example in this static vignette, here is a statement that mimics `tutor` handing off some submitted code to `checkr`.
 
 ```{r}
+# this line isn't needed in an actual tutor document
 USER_CODE <- capture.code("x <- 7 + 3\n sin(x)")
+```
+
+And here is what a tutor `-check` chunk using `check_value()` might look like:
+```{r}
 test_1 <- find_call("sin(whatever)", "you didn't use sin().")
-test_2 <- check_value(match_number(sin(10), "something's wrong with the sin() line."))
+test_2 <- check_value(match_number(sin(10), 
+                                   "something's wrong with the sin() line."))
 USER_CODE %>%
   test_1 %>% test_2 
 ```
@@ -318,6 +331,7 @@ USER_CODE %>%
   test_3 %>% 
   final_ %>% check_value(match_number(cos(pi/2)))() 
 ```
+
 ## Example: Testing assignment
 
 Consider a problem like this:
@@ -349,22 +363,38 @@ Or, the author might want to check first that the `sqrt()` function was used.
 USER_CODE %>% test_1 %>% test_3 %>% test_2 
 ```
 
+## Example
 
-## Creating and debugging tests
+Suppose the stated problem is to create some graphics showing the relationship between horsepower and gasoline mileage in the `mtcars` data.
 
-Note that in the examples, the location tests are all created and named *before* being used in the `USER_CODE %>% ...` checking line. Each test is implemented as an unevaluated function.
+Here's a reasonable student submission that creates a `ggplot` object.
 
-You might **incorrectly** write
-```r
-USER_CODE %>% find_call("whatever + whatever", "remember to use +")
+```{r}
+USER_CODE <- capture.code("
+ggplot(mtcars, aes(y = mpg, x = hp)) + 
+    geom_point()" 
+)
 ```
-This is not a check statement. Instead, the statement passes `USER_CODE` to the `find_call()` function. But `find_call()` doesn't take user code as an input. Rather, `find_call()`'s first argument should be the pattern to be matched. The output of `find_call()` is another function. That function *does* take user code as input.
 
-In debugging a single test such as `test_a`, you should call `debug(test_a)`. This "functional programming" style has the potential to be confusing to many users.
+A simple test for this is:
+```{r}
+test_1 <- find_value(match_class("ggplot"))
+USER_CODE %>% test_1
+```
 
-## A richer example
+But if we were looking for a `lattice` graphics object, the submission fails:
+```{r eval = FALSE}
+test_2 <- find_value(match_class("lattice"))
+USER_CODE %>% test_2 
+```
 
-Here's a problem that's more difficult: Using `ggplot()`, make a scatterplot of miles-per-gallon versus horsepower in the `mtcars` data.
+If either would suffice ...
+```{r}
+test_3 <- any_test(test_1, test_2)
+USER_CODE %>% test_3 
+```
+
+The above example gives almost no formative feedback. By creating tests that look for narrow conditions, the feedback can be tailored to match the mistake.
 
 Let's look at these possible submissions:
 
@@ -381,7 +411,7 @@ submission_6 <- c(
 "ggplot(my_cars, aes(y = mpg, x = hp)) + geom_point()")
 ```
 
-Submission 1 has the roles of the variables `mpg` and `hp` reversed from the problem statement. Submission 2 uses `geom_line()` instead of the required `geom_point()`. Submissions 3 and 4 will all create the specified plot, but each is arranged in a different way.
+Submission 1 has the roles of the variables `mpg` and `hp` reversed from the problem statement. Submission 2 uses `geom_line()` instead of the required `geom_point()`. Submissions 3 and 4 will all create the specified plot, but each is arranged in a different way. 
 
 Here are some tests. Remember, the second argument is the message to return if the test *fails*.
 ```{r}
@@ -393,12 +423,6 @@ test_4 <- find_statement("mtcars")
 test_5 <- find_call("ggplot(data = whatever)", "no data handed to ggplot()")
 test_6 <- check_argument("ggplot(data = grab_this)", test = match_class("data.frame"))
 test_7 <- check_argument("ggplot(data = grab_this)", match_data_frame(mtcars))
-test_8 <- check_argument("ggplot(data = grab_this)", 
-                         match_data_frame(mtcars, hint = TRUE))
-test_9 <- check_argument("ggplot(data = grab_this)",
-                         match_data_frame(
-                           mtcars %>% select(hp, mpg, carb), 
-                           hint = TRUE))
 ```
 
 We'll chain these seven tests together and see the results for the different submissions.
@@ -414,63 +438,26 @@ capture.code(submission_4) %>%
   test_1 %>% test_2 %>% test_3 %>% test_4 %>% test_5 %>% test_6 %>% test_7 
 ```
 
-These examples show passes and fails when checking the value of an argument to a function.
+## Setting the success message
 
-```{r}
-capture.code(submission_5) %>% test_5 %>% test_7 
-capture.code(submission_6) %>% test_5 %>% test_7 
-capture.code(submission_6) %>% test_5 %>% test_8 
-capture.code(submission_6) %>% test_5 %>% test_9 
-```
-  
+When the tests pass, you may want to provide a custom message to the student. For instance, you might want to comment on some aspect of the result, e.g. "$R^2$ always goes up when you add a new term to a model."
 
-## Checking values
-
-Each command produces a value. You have access to these, both named and unnamed. 
-
-For instance, this command does some arithmetic and creates a `ggplot` object.
-
-```{r}
-submission_1 <- "
-3 + 5
-ggplot(mtcars, aes(y = mpg, x = hp)) + geom_point()" 
-```
-
-A simple test for this is:
-```{r}
-test_1 <- find_value(match_class("ggplot"))
-capture.code(submission_1) %>% test_1
-```
-
-But if we were looking for a `lattice` graphics object, the submission fails:
-```{r eval = FALSE}
-test_2 <- find_value(match_class("lattice"))
-capture.code(submission_1) %>% test_2 
-```
-
-If either would suffice ...
-```{r}
-test_3 <- any_test(test_1, test_2)
-capture.code(submission_1) %>% test_3 
-```
-
-Suppose that we want to check that a number near 8 is created ...
-```{r}
-test_4 <- find_value(match_number(8, range = c(7.9, 8.1)))
-capture.code(submission_1) %>% test_4 
-```
+You can set the message with `set_success_message()` in the `-check` chunk.
 
 ## Checking the value itself
 
+`Checkr` includes a variety of functions for checking whether a value produced by a command meets specified criteria.  For example, imagine this exercise statement:
 
-A sequence of odd numbers from 11 to 31 (inclusive) using the colon operator.
+> Create a sequence of odd numbers from 11 to 31 (inclusive) using the colon operator.
 
+Here are a few reasonable student submissions:
 ```{r}
 submission_1 <- capture.code("seq(11, 31, by = 2)") # right value, but not what was asked
 submission_2 <- capture.code("11 + 2*(0:10)") # right
 submission_3 <- capture.code("11 + 2*(1:11)") # uses colon, but wrong result
-
 ```
+
+In checking the submission, you want to make sure that the colon operator was used and that the final result is what was asked for.
 
 ```{r}
 test_1 <- find_call("whatever : whatever", "you didn't use the colon operator")
@@ -481,9 +468,18 @@ submission_2 %>% test_1 %>% test_2
 submission_3 %>% test_1 %>% test_2 
 ```
 
+`Checkr` provides these matching functions:
 
+* `match_number()` allows numerical comparison with a stated tolerance.
+* `match_class()` checks that the class of the object is as specified.
+* `match_data_frame()` provides a variety of tests on properties of a data frame.
+* `match_formula()` checks symbolic formulas, e.g. `mpg ~ hp + carb`
+* `match_vector()` provides tests for the equivalence of two vectors
+* `agrees()` provides a way to make your own matching function from standard components.
 
-Suppose we ask the student to construct a somewhat complicated object that we want to run some checks on. For instance, "Construct a model of `mpg` versus `hp` using `wt` as a covariate."
+Consider this exercise statement:
+
+> Construct a linear model of `mpg` versus `hp` using `wt` as a covariate.
 
 ```{r}
 submission_1 <- capture.code("lm(mpg ~ hp, data = mtcars)")  # wrong
@@ -491,11 +487,13 @@ submission_2 <- capture.code("lm(mpg ~ hp + wt, data = mtcars)") # right
 submission_3 <- capture.code("lm(mpg ~ wt, data = mtcars)") # wrong
 ```
 
+Depending on the kind of formative feedback you want to give, you might construct a sequence of tests, each of which looks for a specific problem in the submission.
+
 ```{r}
 test_1 <- find_call("lm(data = mtcars)", "use lm() on mtcars data")
-test_2 <- check_value(function(x) {'wt' %in% names(coef(x))}, 
+test_2 <- check_value(agrees('wt' %in% names(coef(x))), 
                       "what about the covariate wt?")
-test_3 <- check_value(function(x) {all(c("hp", "wt") %in% names(coef(x)))}, 
+test_3 <- check_value(agrees(all(c("hp", "wt") %in% names(coef(x)))), 
                       'include both hp and the covariate as explanatory variables')
 test_4 <- check_argument("lm(formula = grab_this)", match_formula(mpg ~ hp + wt))
 ```
@@ -508,29 +506,110 @@ submission_1 %>% test_1 %>% test_4
 submission_3 %>% test_1 %>% test_4 
 ```
 
-## Comparing to a given solution
 
-IN DRAFT. TALK ABOUT `closest_to("what")`, which finds the value in the user code that's closest to the value in the solution code identified by the <what> string. The <what> string *must* be a parsable command, but does not need to be the whole line of code. Alternatively, you can give `closest_to()` an unquoted name, corresponding to some named object produced by the solution code.
 
-Often, perhaps most of the time, the question author will provide an example solution. The `soln_test()` function lets you compare the values generated by the solution to the values generated by the user's code.
+## Creating and debugging tests
 
-To illustrate, let's construct by hand the `USER_CODE` and `SOLN_CODE` contents that get produced from the question chunks in a `tutor` document.
+Note that in the examples, the location tests are all created and named *before* being used in the `USER_CODE %>% ...` checking line. Each test is implemented as an unevaluated function.
+
+You might **incorrectly** write
+```r
+USER_CODE %>% find_call("whatever + whatever", "remember to use +")
+```
+This is not a check statement. Instead, the statement passes `USER_CODE` to the `find_call()` function. But `find_call()` doesn't take user code as an input. Rather, the first argument to `find_call()` should be the pattern to be matched. The output of `find_call()` is another function. That function *does* take user code as input.
+
+In debugging a single test such as `test_a`, you should call `debug(test_a)`. This "functional programming" style has the potential to be confusing to many users.
+
+
+
+# Matching values
+
+Sometimes, all you want to do is check the output values produced by the submitted code against a `-solution` that you have provided. The `soln_test()` function in `checkr` makes this relatively easy. To illustrate, let's mimic the work done by `tutor` in handing off submitted code and `-solution` code to `checkr`.
+
 ```{r}
-USER_CODE <- capture.code("2 + 3")
-SOLN_CODE <- capture.code("2 + 2")
+# these values are provided by tutor
+USER_CODE   <- capture.code("2 + 2 + 2")
+SOLN_CODE   <- capture.code("2 + 2")
+```
+
+Obviously, the result of the user code will not, in this example, match the output of the solution code. Here's a simple solution-matching `-check` statement.
+
+
+```{r}
 soln_test(USER_CODE, SOLN_CODE,
-             res = find_statement("2 *\\+", regex = TRUE),
+             res = final_,
              same_num(res)) 
 ```
-The first two arguments to `soln_test()` are always the user code and the solution code in that order. The following arguments to `soln_test()` are either named or unnamed. 
+The `soln_test()` function from `checkr` compares the values produced by the student's code and the values produced by code provided by the test writer in a `-solution` chunk. `USER_CODE` and `SOLN_CODE` convey the contents of the submission and solution chunks, respectively. 
 
-Named arguments -- e.g. `res = instatements(regex="2 *\\+")` -- are often set to be locator statements. The name itself will be used to refer to the value for the command found by the locator statement. Alternatively, named arguments can be used to calculate some value from those already located and named.
+The next argument to `soln_test()` uses a function `final_()`, which looks for the *last* value produced by the student and by the solution code. In this example, there's only one value, but in general there may be multiple values produced by submitted code. Whatever that last value be, and regardless of whether the student's or solution code assigned a name to the value, the argument name will be assigned to that value for future reference.
 
-Unnamed arguments -- e.g. `same_num(res)` -- are a comparison test selected from the `same_()` family of tests provided by `checkr`. 
+The final argument to `soln_test()` refers to the name `ref` created in the previous argument. The `same_num()` function compares the `ref` value in the student and the solution code. 
 
-In operation, `soln_test()` extracts out the values from the user code and the solution code for the command that passes the locator statement. The comparison tests are then run to compare the user values and the solution values.
+There are three `checkr` functions in the `same_` family:
 
-You can compute elements from the named values. For instance, here we compare not the result itself but the absolute value of the result. Thus, the user code, which does not match the solution code, still passes the `same_num()` test, since the value $-4$ computed by the user passes the test.
+* `same_num()` checks whether two numbers are the same
+* `same_vec()` checks whether two vectors are the same.
+* `same_()` allows you to provide your own comparison function.
+
+At this writing, I am unsure whether to expand the number of `same_` functions or to provide comparison functions that can be used with `same_()` and to support authors writing their own comparison functions.  The comparison functions are themselves quite simple. See `checkr:::compare_length`, `checkr:::compare_numbers`, `checkr:::compare_vectors`, `checkr:::compare_classes`.
+
+Comparison functions take three arguments (and, optionally, additional arguments in `...`). They are:
+
+* `S` which will be the value from the solution code
+* `R` which will be the value from the user's submission
+* `hint` which is a logical signalling whether the give a diagnostic hint.
+
+Comparison functions return an empty string (`""`) if the comparison passes, and a non-empty character string message (e.g., "has wrong length") if the comparison fails.
+
+To illustrate:
+```{r}
+checkr:::compare_length
+```
+
+The argument `res = final_` in the above example locates a particular value in the user submission and in the solution code. The name, in this case `res`, can be used to refer to the two values in the comparison, e.g. `same_num(res)`. The reason to give a new value to the particular value is that the values may be unnamed in the submitted or solution code, or they may have different names. 
+
+Use locator functions for the named arguments to `soln_test()`. You can use any of the `find_` set of functions -- e.g. `res = find_statement(regex="2 *\\+")`.
+
+One flexible strategy for locating values is to assign a name to the desired value in the `-solution` chunk. Then use `closest_to()` as the locator function, giving, as an argument the unquoted name used in the solution.
+
+For instance, suppose the (rather silly) problem statement is:
+
+> Compute $\sqrt{14}$ and $7 + 4$.
+
+The solution code might look like:
+```{r}
+SOLN_CODE <- capture.code("
+  a <- sqrt(14)
+  b <- 7 + 4")
+```
+
+Note that names have been assigned to the values being asked for.
+
+**Note in DRAFT: fix `closest_to()` system.** Readers, ignore the rest of this section.
+
+The student's submission might involve no names or extraneous names or misspelled names. For instance:
+```{r}
+USER_CODE <- capture.code("
+  frist <- 4 + 7
+  sqrt(14)")
+```
+
+Here's a simple solution-matching `-check` statement.
+
+
+```{r eval = FALSE}
+soln_test(USER_CODE, SOLN_CODE,
+          one = closest_to(a),
+          same_num(one, hint = TRUE),
+          two = closest_to(b),
+          same_num(b, hint = TRUE)) 
+```
+
+
+## Computing comparison features
+
+You can compute on the named values. For instance, here we compare not the result itself but the absolute value of the result. Thus, the user code, which does not match the solution code, still passes the `same_num()` test, since the value $-4$ computed by the user passes the test.
 
 ```{r}
 USER_CODE <- capture.code("2 + -6")
@@ -551,7 +630,27 @@ soln_test(USER_CODE, SOLN_CODE,
 
 
 
-## Magrittr pipelines
+
+
+# Pre-evaluation checking of user code
+
+Before the locator and value tests can be applied to user code, that code must run successfully (even if it doesn't satisfy the instructions given in the exercise).
+
+When the user code doesn't run, an R error will be displayed to the user. For many purposes, the tutorial author may regard this as perfectly satisfactory. But there may be circumstances where the author would like to intercept such errors in order to display a gentler or more helpful message.
+
+By creating a chunk whose label has the extension `-code-check`, you can set up `checkr` tests that don't rely on the code being syntactically correct or otherwise not producing errors. For instance, for the `example-0` exercises, you can add a chunk like this:
+
+    ```{r, example-0-code-check, exercise = TRUE}
+    USER_CODE %>% check_blanks()
+    USER_CODE %>% check_assignment_names()
+    USER_CODE %>% check_function_calls("sqrt") 
+    ```
+
+This particular set of instructions checks whether names used in assignment are formed legally and whether `sqrt` is used as a function (if it is used at all). Being "used as a function" simply means that there are open and closed parentheses. In the future, additional checks may be added.
+
+Notice that the pre-evaluation checking uses a different set of functions than the locator and value tests. That's because locator and value tests work on the assumption that the code being given them will evaluate properly. 
+
+# Magrittr pipelines
 
 Magrittr pipelines are translated into a sequence of commands. For instance,
 ```
@@ -566,48 +665,60 @@ select(..tmp1.., mpg) -> foobar
 This allows tests to be constructed as if each step in the chain were a separate command; the test statements can be constructed in the ordinary way. Do remember that the first argument to `dplyr` data verbs is `.data =`.
 
 
-```{r eval = FALSE}
+```{r}
+library(dplyr)
 submission_1 <- capture.code("foobar <- mtcars %>% filter(mpg > 15)")
 test_1 <- find_call("filter()", "should call filter()")
+# Check whether the right value is used in filter
 test_2 <- check_argument("mpg > grab_this", match_number(15))
+# A test that will fail
 test_2A <- check_argument("mpg > grab_this", match_number(16))
-test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(iris, hint = TRUE))
-submission_1 %>% test_1 %>% test_2 %>% test_3 
-submission_1 %>% test_1 %>% test_2A %>% test_3 
+test_3 <- check_argument("filter(.data = grab_this)", match_data_frame(mtcars))
+# A test that will fail
+test_3A <- check_argument("filter(.data = grab_this)", match_data_frame(iris, hint = TRUE))
+submission_1 %>% test_1 %>% test_2 %>% test_3 # should pass
+submission_1 %>% test_1 %>% test_2A # should fail
+submission_1 %>% test_1 %>% test_2 %>% test_3A # should fail
 
 ```
 
-STILL NEED TO HANDLE INTERNAL CHAINS and EXPLICIT "dot" arguments.
 
-This is not working. I think I need a new check_argument_symbol() that won't try to evaluate the symbols.
 ```{r}
-submission_2 <- capture.code("mtcars %>% filter(mpg > 15) %>% group_by(cyl) %>% summarise(mmpg = mean(mpg))")
-test_4 <- find_call("group_by()")
-test_5 <- check_argument("group_by(.data = whatever, grab_this)", function(x) x)
-submission_2 %>% test_4 %>% test_5
+submission_2 <- capture.code("
+  mtcars %>% 
+    filter(mpg > 15) %>% 
+    group_by(cyl) %>% 
+    summarise(mmpg = mean(mpg))")
+test_4 <- find_call("group_by()", "remember to group before summarizing.")
+test_5 <- find_call("group_by(.data = whatever, cyl)", "break down the result by `cyl`")
+test_6 <- find_call("summarise()", "use summarise() after grouping")
+test_7 <- find_call("mean(mpg)", "calculate the mean of mpg for each group")
+submission_2 %>% test_4 %>% test_5 %>%  then %>% test_6 %>% test_7
 ```
 
-## Pre-checking user code
+In contrast, this chain has steps that are individually value, but in the wrong order. 
 
-Before the locator and value tests can be applied to user code, that code must run successfully (even if it doesn't satisfy the instructions given in the exercise).
+```{r}
+submission_2 <- capture.code("
+  mtcars %>% 
+    filter(mpg > 15) %>% 
+    summarise(mmpg = mean(mpg), cyl = mean(cyl)) %>%
+    group_by(cyl)")
 
-When the user code doesn't run, an R error will be displayed to the user. For many purposes, the tutorial author may regard this as perfectly satisfactory. But there may be circumstances where the author would like to intercept such errors in order to display a gentler or more helpful message.
+submission_2 %>% test_4 %>% test_5 %>%  then %>% test_6 %>% test_7
+```
 
-By creating a chunk whose label has the extension `-code-check`, you can set up `checkr` tests that don't rely on the code being syntactically correct or otherwise not producing errors. For instance, for the `example-0` exercises, you can add a chunk like this:
-
-    ```{r, example-0-code-check, exercise = TRUE}
-    USER_CODE %>% check_assignment_names()
-    USER_CODE %>% check_function_calls("sqrt") 
-    ```
-
-This particular set of instructions checks whether names used in assignment are formed legally and whether `sqrt` is used as a function (if it is used at all). Being "used as a function" simply means that there are open and closed parentheses. In the future, additional checks may be added.
-
-Notice that the pre-evaluation checking uses a different set of functions than the locator and value tests. That's because locator and value tests work on the assumption that the code being given them will evaluate properly. 
+I'm exploring whether it's helpful to add pipe-specific tests that make it easy to check the order of statements.
 
 
-## Logging and authentication
+# Logging and authentication
 
-> NOTE: This system is under development. We need to settle on a way to have persistent storage on `shinyapps.io`. Right now, this will work only on a user's machine. It still needs to be tested even on a regular shiny server.
+> NOTE: This system is under development. The current version simply takes the entered ID at face value and checks whether the password is literally `pass`. Later versions will take the name of a file containing user-ID/password pairs.
+
+
+
+
+<!-- We need to settle on a way to have persistent storage on `shinyapps.io`. Right now, this will work only on a user's machine. It still needs to be tested even on a regular shiny server. -->
 
 Each time an exercise submission is made, `checkr` logs information about the submission: user ID (if any), time stamp, user code, the message returned in response by `checkr`, and whether the submission was deemed correct. The log-file, `"log-test.txt"`, will eventually be made to live in the same directory as the Rmd file containing the tutorial. It is a flat, plain text file, with each submission recorded in JSON format as a list.
 
@@ -619,9 +730,6 @@ If you want to record the user's ID along with the other submission data, add th
     ```
 
 This will display text-entry fields for the student to enter an ID and password.
-
-The current version simply takes the entered ID at face value and checks whether the password is literally `pass`. Later versions will take the name of a file containing user-ID/password pairs.
-
 
 
 

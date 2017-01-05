@@ -2,10 +2,13 @@
 % Please edit documentation in R/pre-evaluation-check.R
 \name{check_function_calls}
 \alias{check_assignment_names}
+\alias{check_blanks}
 \alias{check_function_calls}
 \title{Pre-evaluation checking of code}
 \usage{
 check_function_calls(user_code, fnames)
+
+check_blanks(user_code)
 
 check_assignment_names(user_code)
 }
@@ -28,6 +31,8 @@ beginning users.
 \code{check_function_calls()} checks whether functions are called with opening and closing parentheses.
 You need to provide a list of the functions it should look for (since no parens are needed for
 object names).
+
+\code{check_blanks()} looks to see if there are any fill-in-the-blanks left in the code.
 
 \code{check_assignment_names()} checks whether assignments are made to a legal name (or other
 syntactically legal construction).

@@ -8,6 +8,8 @@
 #' You need to provide a list of the functions it should look for (since no parens are needed for
 #' object names).
 #'
+#' \code{check_blanks()} looks to see if there are any fill-in-the-blanks left in the code.
+#'
 #' \code{check_assignment_names()} checks whether assignments are made to a legal name (or other
 #' syntactically legal construction).
 #'
@@ -39,6 +41,16 @@ check_function_calls <- function(user_code, fnames) {
   }
   return(message)
 
+}
+
+#' @rdname pre-evaluation
+#' @export
+check_blanks <- function(user_code) {
+  message <- ""
+  if (grepl("^_*", user_code) || grepl("__*", user_code))
+    message <- "you need to fill in the blanks before you can run the code!"
+
+  message
 }
 
 #' @rdname pre-evaluation

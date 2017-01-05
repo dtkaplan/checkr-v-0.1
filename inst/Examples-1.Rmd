@@ -8,7 +8,6 @@ runtime: shiny_prerendered
 library(tutor)
 library(ggplot2)
 library(checkr)
-library(magrittr)
 
 # A simple checker function
 
@@ -146,6 +145,10 @@ Modify the code to add two and two:
 
 ```{r example_0-solution}
 2 + 2
+```
+
+```{r example_0-code-check}
+check_blanks(USER_CODE)
 ```
 
 ```{r example_0-check}

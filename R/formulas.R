@@ -16,11 +16,11 @@ f_same_response <- function(student, answer) {
   if (length(answer) == 3) {
     # the answer has a response variable
     if (length(student) == 2) {
-      return(paste0("Formula '", stext, "' lacks a response variable."))
+      return(paste0("formula '", stext, "' lacks a response variable."))
     } else {
       # now we know they both have a LHS
       if (student[[2]] != answer[[2]])
-        return(paste0("Formula '", stext,"' has wrong response variable."))
+        return(paste0("formula '", stext,"' has wrong response variable."))
       else return("")
     }
   } else { # answer has only a RHS
@@ -89,9 +89,9 @@ f_same_explanatory <- function(student, answer) {
                             paste(paste0("'", missing, "'"), collapse = ", "))
     }
     if (length(extras) > 0 && length(missing) > 0)
-      connector <- "and"
+      connector <- " and "
 
-    message <- paste("Formula", stext, missing_text, connector, extra_text)
+    message <- paste0("formula '", stext, "' ", missing_text, connector, extra_text)
   }
 
   res <- message

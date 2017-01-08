@@ -42,7 +42,9 @@ check_argument <- function(arg_spec, test, message = "") {
     capture$passed <- FALSE
     capture$line <- NA
     call_text <- gsub("grab_this", "_____", as.character(arg_spec))
-    capture$message <- paste("in function call",
+    capture$message <-
+      if (nchar(message)) message
+      else paste("in function call",
                              sprintf("%s", call_text),
                              "the argument",
                              res)

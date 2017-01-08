@@ -47,7 +47,7 @@ check_function_calls <- function(user_code, fnames) {
 #' @export
 check_blanks <- function(user_code) {
   message <- ""
-  if (grepl("^_*", user_code) || grepl("__*", user_code))
+  if (grepl("^_", user_code) || grepl("_{2,}", user_code))
     message <- "you need to fill in the blanks before you can run the code!"
 
   message

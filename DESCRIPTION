@@ -1,7 +1,7 @@
 Package: checkr
 Type: Package
 Title: Facilities for checking R submissions in tutorials
-Version: 0.1.0
+Version: 0.2.0
 Author: Daniel Kaplan
 Maintainer: Daniel Kaplan <kaplan@macalester.edu>
 Description: Packages such as tutor support interactive documents that serve as tutorials in which students can submit R code and get feedback on correctness. This package provides facilities for specifying what tests should be run on the submitted code, and also provides an interface to the tutor system.
@@ -13,5 +13,5 @@ RoxygenNote: 5.0.1
 Suggests: tutor, testthat, dplyr,
     knitr, stringr, compare, sourcetools,
     rmarkdown, ggplot2, lazyeval
-Imports: jsonlite
+Imports: jsonlite, googlesheets
 VignetteBuilder: knitr

@@ -713,6 +713,37 @@ I'm exploring whether it's helpful to add pipe-specific tests that make it easy 
 
 # Logging and authentication
 
+## Setting up logging via Google Sheets
+
+Currently, the only logging system implemented is via Google Sheets. (This can be used on any Shiny server, as it does *not* require persistent storage on the server.) Using Google Sheets has the advantage that any instructor can set up a sheet and access it using ordinary tools. Thus, the instructor can maintain confidentiality and security.
+
+### Creating a sheet
+
+1. Create a Google Sheet using the usual interface. Give it whatever name you like, perhaps "STAT_325_submissions". You can set the sharing however you like to give access to the appropriate people. It does not need to be publicly accessible. Initialize the file by entering these values in the first two rows of the first column: "submission", "bogus".
+2. Each tutorial consists of an Rmd file. That file lives in some directory on your development machine. **One time only**, go to that directory and run `checkr::set_up_google_auth_token()`. This will bring up web pages for Google authentification. It will create two files, `.httr-oauth` and `checkr_app_token.rds`. These files must live in the directory of the .Rmd file. 
+
+> Security note: The `.httr-oauth` file gives access to all the sheets in the Google account used in the authentication process. You therefore want to keep it confidential. Some suggestions:    
+>    * Set up a Google account specifically for the purpose of logging.    
+
+>    * If you use publicly available version control (e.g. GitHub) make sure to add the files to your `.gitignore` file as soon as they are created. That is, make sure the `.httr-oauth` and `checkr_app_token.rds` files are not visible.
+
+>    * Put your tutorial on a server (e.g. `shinyapps.io`) where the student/user cannot access the source files.
+
+>    * If you want to distribute your tutorials in source form, do not include the `.httr-oauth` or `checkr_app_token.rds` files with the source. The person who uses your source materials can set up his or her own Google sheet for logging.
+        
+3. In the start-up chunk for each tutorial, put the following command:
+
+```r
+turn_on_google_logging("your_spreadsheet_title")
+```
+
+4. When you upload the files for the tutorial to a Shiny server, include the `.httr-oauth` and `checkr_app_token.rds` files alongside the tutorial Rmd file. You do *not* need to re-authenticate on the server (nor could you on servers like `shinyapps.io`).
+
+-----------------------
+
+
+
+
 > NOTE: This system is under development. The current version simply takes the entered ID at face value and checks whether the password is literally `pass`. Later versions will take the name of a file containing user-ID/password pairs.
 
 

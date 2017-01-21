@@ -23,6 +23,7 @@
 #' @importFrom utils capture.output file.edit
 # # @importFrom sourcetools tokenize_string
 #' @import magrittr
+#' @import googlesheets
 # ' @importFrom jsonlite toJSON
 #'
 #' @examples

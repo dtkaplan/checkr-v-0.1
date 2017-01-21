@@ -87,17 +87,20 @@ checkr_tutor <- function(label=NULL,
   }
 
 
+
   if (final_result$correct) {
     final_result$message <- get_success_message()
   }
 
+  # Logging of submissions
   # maybe put a check on whether user name is set. if not, signal this to the user.
   log_entry <-
       list(user = get_user_name(), date = date(), label = label, message = final_result$message,
             correct = final_result$correct, user_code = final_result$user_code)
 
-  # warning("still writing logfile to Downloads directory.")
-  # cat(paste0(jsonlite::toJSON(log_entry), "\n"), file = "~/Downloads/log-test.txt", append = TRUE)
+  logger_fun <- options("checkr.logger")[[1]] # default, do nothing
+  # but might have been set with `turn_on_google_logging(sheet_name)`
+  logger_fun(log_entry) # run whatever was set
 
   final_result
 }

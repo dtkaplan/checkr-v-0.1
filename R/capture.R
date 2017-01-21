@@ -57,7 +57,10 @@ capture.code <- function(code_text = NULL) {
     }
     environments[[k]] <- new.env(parent = parent_environment)
     # capture the unnamed objects created in this step of code
-    R[[k]] <- eval(commands[k], envir = environments[[k]])
+    res <- try(
+      eval(commands[k], envir = environments[[k]]),
+      silent = TRUE)
+    R[[k]] <- res
   }
 
   statements <- lapply(statements, FUN = as.character)

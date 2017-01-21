@@ -24,6 +24,7 @@ find_pipe_start <- function(pattern = NULL, message = "no %>% pipe found.") {
       }
     }
     # if we got here, the test failed
+    capture$message <- message
     capture$passed <- FALSE
 
     capture

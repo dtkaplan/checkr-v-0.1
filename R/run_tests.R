@@ -59,7 +59,8 @@ checkr_tutor <- function(label=NULL,
   SOLN_CODE <-
     if (is.null(solution_code)) ""
     else try(capture.code(solution_code), silent = TRUE)
-  if (inherits(SOLN_CODE, "try-error")) stop("Problem author, there is an error in the solution code.")
+  if (inherits(SOLN_CODE, "try-error"))
+    stop("Problem author, there is an error in the solution code.")
   test_envir <- new.env()
   assign("USER_CODE", USER_CODE, envir = test_envir)
   assign("SOLN_CODE", SOLN_CODE, envir = test_envir)

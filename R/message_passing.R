@@ -44,3 +44,18 @@ get_user_name <- function() {
   }
 }
 
+
+set_accounts <- function(df){
+  assign("accounts", df, envir = message_env)
+  invisible()
+}
+
+
+get_accounts <- function() {
+  if ("accounts" %in% names(message_env)) {
+    return(get("accounts", envir = message_env))
+  } else {
+    return(NULL)
+  }
+}
+

@@ -7,14 +7,16 @@
 \usage{
 set_up_google_auth_token(run = FALSE)
 
-turn_on_google_logging(sheet_name)
+turn_on_google_logging(submissions_sheet_name, id_sheet_name)
 }
 \arguments{
 \item{run}{set this to TRUE if you really want to re-authenticate.
 Run this only once, before uploading your app to the server
 It sets up the authentication for Google}
 
-\item{sheet_name}{character string name of the Google sheet that will be used for logging.}
+\item{submissions_sheet_name}{character string name of the Google sheet that will be used for logging.}
+
+\item{id_sheet_name}{character string name of the Google sheet with the user ids/passwords.}
 }
 \description{
 Functions for logging checkr results to a Google Spreadsheet

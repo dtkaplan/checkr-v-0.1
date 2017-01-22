@@ -25,12 +25,24 @@ textOutput("login_success")
 output$login_success <- renderText({"Please log in."})
 output$login_success <-
   renderText({
-    if (input$password == "pass") {
-      checkr::set_user_name(input$user_name)
-      return("Successful login!")
-    } else {
-      "Please login in."
-      return(checkr::set_user_name(""))
+    Accounts <- checkr:::get_accounts()
+    id <- input$user_name
+    password <- input$password
+    if (is.null(Accounts)) return("No accounts set up yet.")
+    else {
+      ind <- which(id == Accounts$id)
+      if (length(ind) > 0) {
+        if (password == Accounts$passwd[ind[1]] ) {
+          checkr::set_user_name(id)
+          return("Login successful.")
+        } else {
+          checkr::set_user_name("") # accept entries, but no user id
+          return("Wrong password!")
+        }
+      } else {
+        checkr::set_user_name("") # accept entries, but no user id
+        return("Invalid user id.")
+      }
     }
   })
 

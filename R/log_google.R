@@ -1,6 +1,7 @@
 #' Functions for logging checkr results to a Google Spreadsheet
 #'
-#' @param sheet_name character string name of the Google sheet that will be used for logging.
+#' @param submissions_sheet_name character string name of the Google sheet that will be used for logging.
+#' @param id_sheet_name character string name of the Google sheet with the user ids/passwords.
 #' @param run set this to TRUE if you really want to re-authenticate.
 
 ## prepare the OAuth token and set up the target sheet:
@@ -26,20 +27,38 @@ set_up_google_auth_token <- function(run = FALSE) {
   }
 }
 
+
+
+
 #' @rdname log_google
 #' @export
-turn_on_google_logging <- function(sheet_name){
-  google_sheet <- get_google_sheet(sheet_name)
-  f <- function(log_entry) {
-    googlesheets::gs_add_row(google_sheet, input = jsonlite::toJSON(log_entry))
+turn_on_google_logging <- function(submissions_sheet_name, id_sheet_name){
+  submissions <- get_google_log_sheet(submissions_sheet_name)
+  get_google_user_ids(id_sheet_name)
+  f <- function(log_entry) { # for exercises
+    googlesheets::gs_add_row(submissions, input = jsonlite::toJSON(log_entry))
+  }
+  # an event recorder for all actions. This doesn't need to go through the exercise submission process,
+  # but is called directly from tutor.
+  g <- function(tutorial_id, tutorial_version, user_id,  # for questions
+                         event, data) {
+    data$output <- NULL # kluge so that toJSON() works. I don't think I need this, anyways.
+    event <- list(user = get_user_name(),
+                  date = format(as.POSIXlt(Sys.time()), usetz = TRUE),
+                  tutorial_id = tutorial_id, tutorial_version = tutorial_version,
+                  event = event, data = data)
+    event$user_id <- get_user_name()
+    saveRDS(event, "~/Downloads/event.rds")
+    googlesheets::gs_add_row(submissions, input = jsonlite::toJSON(event))
   }
   # Set the logging function to write to the specified sheet
   options(checkr.logger = f)
+  options(tutor.event_recorder = g)
 
   invisible()
 }
 
-get_google_sheet <- function(sheet_name) {
+get_google_log_sheet <- function(sheet_name) {
   # check for a .httr-oauth file
   # if not there, give error message instructing user to setup the token
 
@@ -49,3 +68,15 @@ get_google_sheet <- function(sheet_name) {
 
   ss
 }
+get_google_user_ids <- function(sheet_name) {
+  # check for a .httr-oauth file
+  # if not there, give error message instructing user to setup the token
+
+  if (!file.exists("checkr_app_token.rds")) stop("Need to use `set_up_google_auth_token()` before you can log submissions on google.")
+  googlesheets::gs_auth(token = "checkr_app_token.rds")
+  ss <- googlesheets::gs_title(sheet_name)
+
+  set_accounts(gs_read(ss))
+}
+
+

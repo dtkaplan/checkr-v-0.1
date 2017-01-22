@@ -95,8 +95,10 @@ checkr_tutor <- function(label=NULL,
   # Logging of submissions
   # maybe put a check on whether user name is set. if not, signal this to the user.
   log_entry <-
-      list(user = get_user_name(), date = as.POSIXct(Sys.Date()), label = label, message = final_result$message,
-            correct = final_result$correct, user_code = final_result$user_code)
+      list(user = get_user_name(),
+           date = format(as.POSIXlt(Sys.time()), usetz = TRUE),
+           label = label, message = final_result$message,
+           correct = final_result$correct, user_code = final_result$user_code)
 
   logger_fun <- options("checkr.logger")[[1]] # default, do nothing
   # but might have been set with `turn_on_google_logging(sheet_name)`

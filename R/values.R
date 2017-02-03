@@ -45,10 +45,11 @@ check_value <- function(test, message = NULL, mistake = FALSE) {
       # the pattern was not found when it should have been and
       # so the test fails
       capture$passed = FALSE
-      capture$message =
-        paste(message,
-              sprintf("See line '%s'.",
-                      kill_pipe_tmp_vars(capture$statements[capture$line])))
+      capture$message = message
+      # took out the "See line ..." message on 2/3/17
+        # paste(message,
+        #       sprintf("See line '%s'.",
+        #               kill_pipe_tmp_vars(capture$statements[capture$line])))
     }
 
     capture

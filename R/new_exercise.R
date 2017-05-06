@@ -1,6 +1,6 @@
-#' Create a new tutor/checkr exercise or question
+#' Create a new learnr/checkr exercise or question
 #'
-#' Use these functions to create a blank template for a tutor exercise or question.
+#' Use these functions to create a blank template for a learnr exercise or question.
 #' Questions are multiple choice, exercises involve code. The template will be opened in the
 #' source editor on an actual file. So best to use these functions when the working directory is the place
 #' where you want to store the source file.

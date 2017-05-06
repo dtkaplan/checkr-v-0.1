@@ -2,10 +2,10 @@
 % Please edit documentation in R/authentication.R, R/message_passing.R
 \name{authentication}
 \alias{authentication}
-\alias{get_success_message}
-\alias{get_user_name}
 \alias{set_success_message}
+\alias{get_success_message}
 \alias{set_user_name}
+\alias{get_user_name}
 \title{Authenticate a user}
 \usage{
 authentication(active = TRUE, password_file, ...)
@@ -31,7 +31,7 @@ authentication. This is intended for future use.}
 \item{user_name}{a character string identifying the user.}
 }
 \description{
-Use this function to insert into a tutor document the user input fields for
+Use this function to insert into a learnr document the user input fields for
 user ID and password. This is done in a simple, but unusual way: by creating an empty chunk with
 a `child` chunk attribute like this: \code{child = checkr::authentication()}.
 
@@ -40,4 +40,3 @@ for communicating back from the tests to the final result.
 \details{
 \code{set_user_name} and \code{get_user_name} are used by the logging system
 }
-

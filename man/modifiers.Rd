@@ -19,4 +19,3 @@ the modified pass object
 These functions let the test-writer specify whether it's sufficient that a test be passed
 and whether it's required (\code{needs()}) that a test pass.
 }
-

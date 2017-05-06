@@ -12,4 +12,3 @@ expand_chain(chain_string)
 \description{
 Expand a Magrittr chain so arguments resolve correctly
 }
-

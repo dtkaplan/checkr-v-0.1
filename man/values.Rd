@@ -43,4 +43,3 @@ If the test passes, the value is returned in the "value" attribute of the captur
 \code{\link{check_argument}}
 }
 \keyword{datasets}
-

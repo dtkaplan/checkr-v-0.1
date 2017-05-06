@@ -3,7 +3,7 @@
 \name{checkr_tutor}
 \alias{checkr_tutor}
 \alias{pre_check_code}
-\title{Interface to tutor}
+\title{Interface to learnr}
 \usage{
 checkr_tutor(label = NULL, user_code = NULL, solution_code = NULL,
   check_code = NULL, envir_result = NULL, evaluate_result = NULL, ...,
@@ -24,27 +24,26 @@ checks to run on the chunk being checked}
 
 \item{envir_result}{the R environment after the student's code has been run}
 
-\item{evaluate_result}{the output of evaluate::evaluate from the code input. Tutor provides
+\item{evaluate_result}{the output of evaluate::evaluate from the code input. learnr provides
 this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.}
 
-\item{...}{other arguments (see tutor documentation)}
+\item{...}{other arguments (see learnr documentation)}
 
 \item{debug}{if \code{TRUE}, write the information in the other arguments to a file
 \code{"~/Downloads/CheckR/chunk-[chunk-name].rds"}.
 Then, the stored information can be put through
-the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
+the tests outside of the learnr system, allowing better debugging. See \code{run_tests_from_file()} which
 reads the RDS file and runs the tests.}
 }
 \value{
-a list in the format required by tutor
+a list in the format required by learnr
 }
 \description{
-The function that the \code{tutor} document will call when checking
-a submission. You can tell \code{tutor} to do this with a statement in the \code{tutor}
-document like \code{tutor_options(exercise.checker = checkr::checkr_tutor)}.
+The function that the \code{learnr} document will call when checking
+a submission. You can tell \code{learnr} to do this with a statement in the \code{learnr}
+document like \code{tutorial_options(exercise.checker = checkr::checkr_tutor)}.
 }
 \details{
-The arguments are set by the tutor system. Only \code{debug} isn't
+The arguments are set by the learnr system. Only \code{debug} isn't
 standard.
 }
-

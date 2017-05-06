@@ -21,4 +21,3 @@ It sets up the authentication for Google}
 \description{
 Functions for logging checkr results to a Google Spreadsheet
 }
-

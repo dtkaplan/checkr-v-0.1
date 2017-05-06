@@ -118,9 +118,9 @@ capture.code("2 / 2") %>%
   test_1 %>% test_2 %>% test_3 %>% final_ %>% test_4 
 ```
 
-# Using `checkr` with `tutor`
+# Using `checkr` with `learnr`
 
-The documentation for the `tutor` package has instructions and examples for creating exercises. In a nutshell, you create an ordinary Rmd file with code chunks labelled to identify the exercise and the various components of the exercise:
+The documentation for the `learnr` package has instructions and examples for creating exercises. In a nutshell, you create an ordinary Rmd file with code chunks labelled to identify the exercise and the various components of the exercise:
 
 a. The exercise itself in a chunk with a unique label. This label will identify the exercise. It's best if it is globally unique. For this example, I'll use `2016-01-04-b7f4e`.
 b. [optional] the `-solution` chunk. In this example the full label will be `2016-02-04-b7f4e-solution`. This chunk contains code that solves the problem.
@@ -130,10 +130,10 @@ e. [optional] the `-hint` chunk containing a hint that the student can call up w
 
 The document should start with a `setup` chunk, which will minimally look like the following but may also include other `library()` statements and other R code.
 
-The third line in the chunk tells `tutor` to use the `checkr` system. Use it exactly as shown below. 
+The third line in the chunk tells `learnr` to use the `checkr` system. Use it exactly as shown below. 
 
     ```{r setup, include=FALSE}
-    library(tutor)
+    library(learnr)
     library(checkr)
     knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
     ```
@@ -180,12 +180,12 @@ It's easy to make mistakes with the names of exercise chunks. To simplify things
 
 `New_exercise()` takes two character-string arguments that are used to form the unique name for the exercise. The first, `collection` is the starting bit for the name. You can set this to whatever you like. I recommend that you use a short string of letters that identifies the project of which the exercise forms a part. For instance, for my *[Data Computing](http://project-mosaic-books.com/?page_id=16)* book, I set `collection` to `DC`. The second argument `unique_id` is there in case you want to create your own ID for the exercise. If it is omitted, a unique ID will be provided for you in the form of a date followed by a five number random hex code. For example: `DC-2017-01-05-496c5`.
 
-The file created by `new_exercise()` is contains the properly named `tutor` chunks for one exercise. I develop and test the exercise using just that file. But for deploying the exercise, I create another `tutor` file that includes single-exercise files as child documents. That file looks like this:
+The file created by `new_exercise()` contains properly named `learnr` chunks for one exercise. I develop and test the exercise using just that file. But for deploying the exercise, I create another `learnr` file that includes single-exercise files as child documents. That file looks like this:
 
     ---
     title: "Data Computing: Chapter 4"
     output: 
-    tutor::tutorial: default
+    learnr::tutorial: default
     html_document: 
     number_sections: yes
     toc: yes
@@ -193,7 +193,7 @@ The file created by `new_exercise()` is contains the properly named `tutor` chun
     ---
     
     ```{r include=FALSE}
-    library(tutor)
+    library(learnr)
     library(checkr)
     knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
     ```
@@ -214,9 +214,9 @@ The file created by `new_exercise()` is contains the properly named `tutor` chun
 
 I am hoping that a community of instructors will share exercises for interactive tutorials. This simple system of one exercise per file may facilitate that.
 
-In deploying `tutor` exercises in this one-per-file manner, make sure that both the parent document and all the child documents are installed on the server. 
+In deploying `learnr` exercises in this one-per-file manner, make sure that both the parent document and all the child documents are installed on the server. 
 
-Note that `tutor` has a template for interactive tutorial documents that contains multiple exercises. You may well prefer to work with that format
+Note that `learnr` has a template for interactive tutorial documents that contains multiple exercises. You may well prefer to work with that format
 
 
 

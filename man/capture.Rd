@@ -39,4 +39,3 @@ parent environments, and so will give the most recent value of each object.
 capture.code("x <- 2 + 2\\n#then square it\\ny <- x^2")
 capture.code("for (k in 1:2) {\\n x <- k\\nsqrt(7)}")
 }
-

@@ -24,4 +24,3 @@ value of the line in the solution code. So long as there is some
 value in the student code, no matter how different from the solution code's value,
 a value will be returned.
 }
-

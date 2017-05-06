@@ -17,4 +17,3 @@ Look for a formula in a command line and apply a test to the formula
 \seealso{
 \code{\link{check_value}}, \code{\link{check_argument}}
 }
-

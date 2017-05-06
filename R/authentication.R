@@ -1,6 +1,6 @@
 #' Authenticate a user
 #'
-#' Use this function to insert into a tutor document the user input fields for
+#' Use this function to insert into a learnr document the user input fields for
 #' user ID and password. This is done in a simple, but unusual way: by creating an empty chunk with
 #' a `child` chunk attribute like this: \code{child = checkr::authentication()}.
 #'

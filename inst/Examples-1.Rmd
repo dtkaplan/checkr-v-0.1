@@ -1,11 +1,11 @@
 ---
-title: "Examples of Code-Checking using tutor and checkr"
+title: "Examples of Code-Checking using learnr and checkr"
 output: html_document
 runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-library(tutor)
+library(learnr)
 library(ggplot2)
 library(checkr)
 

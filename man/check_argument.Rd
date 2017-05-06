@@ -29,4 +29,3 @@ by default, the message will be constructed by the test function.
 \seealso{
 \code{\link{check_value}}
 }
-

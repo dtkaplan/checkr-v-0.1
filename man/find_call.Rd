@@ -58,4 +58,3 @@ USER_CODE_2 \%>\% test_3 \%>\% .$passed
 \seealso{
 \code{\link{check_argument}}
 }
-

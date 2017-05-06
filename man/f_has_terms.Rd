@@ -14,4 +14,3 @@ f_has_terms(student, term_formula)
 \description{
 checks on formula's
 }
-

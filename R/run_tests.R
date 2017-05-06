@@ -1,8 +1,8 @@
-#' Interface to tutor
+#' Interface to learnr
 #'
-#' The function that the \code{tutor} document will call when checking
-#' a submission. You can tell \code{tutor} to do this with a statement in the \code{tutor}
-#' document like \code{tutor_options(exercise.checker = checkr::checkr_tutor)}.
+#' The function that the \code{learnr} document will call when checking
+#' a submission. You can tell \code{learnr} to do this with a statement in the \code{learnr}
+#' document like \code{tutorial_options(exercise.checker = checkr::checkr_tutor)}.
 #'
 #' @param label character string containing name of the chunk that's being checked. For \code{run_tests_from_file()}, this
 #' will be used to refer to the saved file.
@@ -11,20 +11,20 @@
 #' @param check_code the character string contents of the chunk that specifies the
 #' checks to run on the chunk being checked
 #' @param envir_result the R environment after the student's code has been run
-#' @param evaluate_result the output of evaluate::evaluate from the code input. Tutor provides
+#' @param evaluate_result the output of evaluate::evaluate from the code input. learnr provides
 #' this, but checkr doesn't use it. IT MAY BE DESIRABLE TO USE IT IN THE FUTURE.
-#' @param ... other arguments (see tutor documentation)
+#' @param ... other arguments (see learnr documentation)
 #' @param debug if \code{TRUE}, write the information in the other arguments to a file
 #' \code{"~/Downloads/CheckR/chunk-[chunk-name].rds"}.
 #' Then, the stored information can be put through
-#' the tests outside of the tutor system, allowing better debugging. See \code{run_tests_from_file()} which
+#' the tests outside of the learnr system, allowing better debugging. See \code{run_tests_from_file()} which
 #' reads the RDS file and runs the tests.
 #'
-#' @return a list in the format required by tutor
-#' @details The arguments are set by the tutor system. Only \code{debug} isn't
+#' @return a list in the format required by learnr
+#' @details The arguments are set by the learnr system. Only \code{debug} isn't
 #' standard.
 #'
-#' @rdname tutor_interface
+#' @rdname learnr_interface
 #' @export
 checkr_tutor <- function(label=NULL,
                              user_code = NULL,
@@ -107,7 +107,7 @@ checkr_tutor <- function(label=NULL,
   final_result
 }
 
-#' @rdname tutor_interface
+#' @rdname learnr_interface
 #' @export
 pre_check_code <- function(user_code, check_code) {
   check_commands <- parse(text = paste(check_code, collapse = "\n"))

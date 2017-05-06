@@ -26,7 +26,7 @@
 #' lines to be tested in subsequent tests
 #' @param capture A set of expressions of the sort returned by capture.code(). A "capture" is the
 #' kind of object taken as input to a locator test and generated as output from the test and,
-#' in the end, used to set the information passed back to `tutor`.
+#' in the end, used to set the information passed back to `learnr`.
 #' @param message for \code{was_mistake()}, the character string message to give when the submitted
 #' code contains the mistake sought for in the previous test.
 #'

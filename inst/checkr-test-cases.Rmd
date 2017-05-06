@@ -5,7 +5,7 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-library(tutor)
+library(learnr)
 library(ggplot2)
 library(dplyr)
 library(checkr)

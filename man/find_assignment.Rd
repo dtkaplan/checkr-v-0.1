@@ -27,4 +27,3 @@ if \code{regex} is given, to a name matching the regex.
 You can specify both \code{name} and \code{regex}. If both are specified, the
 failure message will refer to \code{name} (if \code{hint = TRUE}).
 }
-

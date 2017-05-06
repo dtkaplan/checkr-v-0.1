@@ -4,8 +4,8 @@
 \alias{find_constants}
 \alias{find_names}
 \alias{find_statement}
-\alias{find_value}
 \alias{similar_names}
+\alias{find_value}
 \title{Locator functions}
 \usage{
 find_constants(..., message = NULL)
@@ -58,4 +58,3 @@ test_1 <- find_constants(37, 14)
 \seealso{
 other locator functions \code{\link{find_assignment}}, \code{\link{find_call}}
 }
-

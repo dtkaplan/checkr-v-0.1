@@ -5,7 +5,7 @@ runtime: shiny_prerendered
 ---
 
 ```{r include=FALSE}
-library(tutor)
+library(learnr)
 library(checkr)
 knitr::opts_chunk$set(exercise.checker = checkr::checkr_tutor)
 ```

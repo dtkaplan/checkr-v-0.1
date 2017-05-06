@@ -3,7 +3,7 @@
 \name{new_exercise}
 \alias{new_exercise}
 \alias{new_question}
-\title{Create a new tutor/checkr exercise or question}
+\title{Create a new learnr/checkr exercise or question}
 \usage{
 new_exercise(collection = NULL, unique_id = NULL)
 
@@ -15,9 +15,8 @@ new_question(collection = NULL, unique_id = NULL)
 \item{unique_id}{an optional character string to use for the problem id}
 }
 \description{
-Use these functions to create a blank template for a tutor exercise or question.
+Use these functions to create a blank template for a learnr exercise or question.
 Questions are multiple choice, exercises involve code. The template will be opened in the
 source editor on an actual file. So best to use these functions when the working directory is the place
 where you want to store the source file.
 }
-

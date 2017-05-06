@@ -14,4 +14,3 @@ agrees(expr, message = "")
 \description{
 Turn a logical expression into a test for check_() functions.
 }
-

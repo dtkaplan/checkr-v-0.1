@@ -23,4 +23,3 @@ that identify a line in the code. The returned value of that line will be given 
 Unnamed elements consist of comparison tests (see \code{same_()}) that operate on the
 objects given names in previous elements of the list.
 }
-

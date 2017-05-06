@@ -28,4 +28,3 @@ Use \code{arg_is()} as an argument to \code{check_argument()}
 }
 
 }
-

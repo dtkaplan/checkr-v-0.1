@@ -39,7 +39,7 @@ turn_on_google_logging <- function(submissions_sheet_name, id_sheet_name){
     googlesheets::gs_add_row(submissions, input = jsonlite::toJSON(log_entry))
   }
   # an event recorder for all actions. This doesn't need to go through the exercise submission process,
-  # but is called directly from tutor.
+  # but is called directly from learnr.
   g <- function(tutorial_id, tutorial_version, user_id,  # for questions
                          event, data) {
     data$output <- NULL # kluge so that toJSON() works. I don't think I need this, anyways.
@@ -53,7 +53,7 @@ turn_on_google_logging <- function(submissions_sheet_name, id_sheet_name){
   }
   # Set the logging function to write to the specified sheet
   options(checkr.logger = f)
-  options(tutor.event_recorder = g)
+  options(learnr.event_recorder = g) # Changed from tutor.event_recorder on May 5, 2017
 
   invisible()
 }

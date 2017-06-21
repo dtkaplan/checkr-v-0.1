@@ -152,13 +152,13 @@ check_blanks(USER_CODE)
 ```
 
 ```{r example_0-check}
-soln_test(USER_CODE, SOLN_CODE,
-             res = find_statement("+", regex = TRUE),
-             b = find_call("whatever + grabthis", "Second argument to +"),
-             same_num(res))
+# soln_test(USER_CODE, SOLN_CODE,
+#              res = find_statement("+", regex = TRUE),
+#              b = find_call("whatever + grabthis", "Second argument to +"),
+#              same_num(res))
 
-# test_0 <- find_call("whatever + whatever", "use addition (+)")
-# test_1 <- find_call("2 + whatever", "first argument should be two ")
-# test_2 <- find_call("whatever + 2", "second argument should also be two")
-# USER_CODE %>% test_0 %>% test_1 %>% test_2 
+test_0 <- find_call("whatever + whatever", "use addition (+)")
+test_1 <- find_call("2 + whatever", "first argument should be two ")
+test_2 <- find_call("whatever + 2", "second argument should also be two")
+USER_CODE %>% test_0 %>% test_1 %>% test_2 
 ```

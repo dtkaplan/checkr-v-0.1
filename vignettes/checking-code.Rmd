@@ -16,7 +16,7 @@ library(checkr)
 library(magrittr)
 ```
 
-To help meet the demand for R-related training, various *interactive tutorial systems* have been developed. These include [Swirl](http://swirlstats.com/), [DataComp.com](http://DataCamp.com), and the Shiny-based system introduced by RStudio: [`tutor`](http://github.com/rstudio/tutor). In each of these systems, a problem is posed to the student, who has an opportunity to construct R commands as a solution. The R commands are then passed to an evaluation system.
+To help meet the demand for R-related training, various *interactive tutorial systems* have been developed. These include [Swirl](http://swirlstats.com/), [DataCamp.com](http://DataCamp.com), and the Shiny-based system introduced by RStudio: [`tutor`](http://github.com/rstudio/tutor). In each of these systems, a problem is posed to the student, who has an opportunity to construct R commands as a solution. The R commands are then passed to an evaluation system.
 
 The `checkr` package provides such an evaluation system that provides both evaluative and formative feedback and, at the instructor's discretion, logs student submissions for assigning credit and to support looking for common patterns of misconception in student answers.
 
